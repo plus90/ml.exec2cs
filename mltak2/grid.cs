@@ -18,8 +18,23 @@ namespace mltak2
         public const int CellSize = 100;
         private bool __drawFromBlockStatuses = false;
         private System.Windows.Forms.PictureBox __pictureBox;
-        public Point StartPoint { get; set; }
+        public Point AgentPoint { get; set; }
         public Point GoalPoint { get; set; }
+        /// <summary>
+        /// Get block status of a grid-cell
+        /// </summary>
+        /// <param name="x">The grid-cell's x location</param>
+        /// <param name="y">The grid-cell's y location</param>
+        /// <returns>The block-status of the grid-cell</returns>
+        public BlockStatus this[int x, int y]
+        {
+            get { return this.__blockStatuses[x, y]; }
+        }
+        /// <summary>
+        /// Construct a new grid
+        /// </summary>
+        /// <param name="bs">Target block-status of the grid</param>
+        /// <param name="pb">The conatiner's handler</param>
         public Grid(BlockStatus[,] bs, System.Windows.Forms.PictureBox pb)
             : this(new Size(bs.GetLength(0), bs.GetLength(1)), pb.CreateGraphics())
         {
@@ -226,7 +241,7 @@ namespace mltak2
         /// <param name="y">The grid cell's Y location</param>
         /// <param name="blockStatus">The type of block status to validate</param>
         /// <returns>Returns true if the cell is blocked by the gived status; Otherwise false</returns>
-        private bool IsBlocked(int x, int y, BlockStatus blockStatus = BlockStatus.BLOCKED)
+        public bool IsBlocked(int x, int y, BlockStatus blockStatus = BlockStatus.BLOCKED)
         {
             return __blockStatuses[x, y].HasFlag(blockStatus);
         }
@@ -270,7 +285,7 @@ namespace mltak2
                     if (exit) break;
                 }
             }
-            catch (ArgumentException exp) { }
+            catch (ArgumentException) { }
             return color;
         }
         /// <summary>

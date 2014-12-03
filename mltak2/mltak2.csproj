@@ -53,6 +53,7 @@
     <Compile Include="GridForm.Designer.cs">
       <DependentUpon>GridForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="GridHelper.cs" />
     <Compile Include="output.cs">
       <SubType>Form</SubType>
     </Compile>

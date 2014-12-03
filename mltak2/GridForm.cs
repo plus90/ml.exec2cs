@@ -123,7 +123,7 @@ namespace mltak2
                 using (System.IO.FileStream fs = new System.IO.FileStream("config.dat", System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.None))
                 {
                     bf.Serialize(fs, g.GetStatus());
-                    bf.Serialize(fs, g.StartPoint);
+                    bf.Serialize(fs, g.AgentPoint);
                     bf.Serialize(fs, g.GoalPoint);
                 }
             }
@@ -138,7 +138,7 @@ namespace mltak2
                 {
                     this.grid.CreateGraphics().Clear(Color.FromKnownColor(KnownColor.Control));
                     g = new Grid((Grid.BlockStatus[,])bf.Deserialize(fs), this.grid);
-                    g.StartPoint = (Point)bf.Deserialize(fs);
+                    g.AgentPoint = (Point)bf.Deserialize(fs);
                     g.GoalPoint = (Point)bf.Deserialize(fs);
                     Timer t = new Timer();
                     t.Interval = 100;
@@ -147,7 +147,7 @@ namespace mltak2
                         t.Stop();
                         g.BlockBorders(this.grid);
                         g.Draw();
-                        __last_valid_grid_block = g.abs2grid(g.StartPoint);
+                        __last_valid_grid_block = g.abs2grid(g.AgentPoint);
                         MarkStartPointGrid_Click(new object(), new EventArgs());
                         __last_valid_grid_block = g.abs2grid(g.GoalPoint);
                         MarkGoalPointGrid_Click(new object(), new EventArgs());
@@ -177,7 +177,7 @@ namespace mltak2
         {
             using (var gfx = this.grid.CreateGraphics())
             {
-                var p = g.abs2grid(g.StartPoint);
+                var p = g.abs2grid(g.AgentPoint);
                 // clear previous flag
                 gfx.FillEllipse(new SolidBrush(Color.FromKnownColor(KnownColor.Control)), p.X - 15, p.Y - 12, 25, 25);
                 g.Write(" ", new Point(p.X - 10, p.Y - 10), gfx, Brushes.White);
@@ -188,7 +188,7 @@ namespace mltak2
                 g.Write("A", new Point(p.X - 10, p.Y - 10), gfx, Brushes.White);
 
                 // set the new point
-                g.StartPoint = g.grid2abs(p);
+                g.AgentPoint = g.grid2abs(p);
             }
         }
 

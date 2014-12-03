@@ -121,13 +121,13 @@
             this.MarkStartPointGrid,
             this.MarkGoalPointGrid});
             this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(174, 70);
+            this.contextMenuStrip.Size = new System.Drawing.Size(153, 70);
             // 
             // MarkStartPointGrid
             // 
             this.MarkStartPointGrid.Name = "MarkStartPointGrid";
-            this.MarkStartPointGrid.Size = new System.Drawing.Size(173, 22);
-            this.MarkStartPointGrid.Text = "Mark as &Start Point";
+            this.MarkStartPointGrid.Size = new System.Drawing.Size(152, 22);
+            this.MarkStartPointGrid.Text = "Mark as &Start";
             this.MarkStartPointGrid.Click += new System.EventHandler(this.MarkStartPointGrid_Click);
             // 
             // MarkGoalPointGrid
