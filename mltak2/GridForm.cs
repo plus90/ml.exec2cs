@@ -20,14 +20,15 @@ namespace mltak2
             /**
              * Draw the grid
              */
-            Size s = Grid.GetSizeOfGrid(new Size(6, 6));
+            Size gridSize = new Size(7, 7);
+            Size s = Grid.GetSizeOfGrid(gridSize);
             Grid g = null;
-            this.grid.Image = new Bitmap(s.Width, s.Height, this.grid.CreateGraphics());
+            this.grid.Image = new Bitmap(s.Width + 1, s.Height + 1, this.grid.CreateGraphics());
             using (Graphics gfx = Graphics.FromImage(this.grid.Image))
             {
-                g = new Grid(new Size(6, 6), gfx);
+                g = new Grid(gridSize, gfx);
                 g.Draw();
-                this.Size = new Size(s.Width + 21, s.Height + 45);
+                this.Size = new Size(s.Width + 21, s.Height + 40);
             }
             /**
              * 
@@ -38,7 +39,7 @@ namespace mltak2
                 switch (e.KeyCode)
                 {
                     case Keys.Escape: Application.Exit(); break;
-                    case Keys.S: g.getStatus(this.grid); break;
+                    case Keys.S: g.GetStatus(); break;
                 }
             }); 
             this.grid.MouseMove += new MouseEventHandler((sender, e) =>
