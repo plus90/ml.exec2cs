@@ -51,7 +51,7 @@ namespace mltak2
                 switch (e.KeyCode)
                 {
                     case Keys.Escape: Application.Exit(); break;
-                    case Keys.S: g.GetStatus(); break;
+                    case Keys.S: g.Write("Hi",new Point(2, 2), this.grid.CreateGraphics() );break;
                 }
             }); 
             this.grid.MouseMove += new MouseEventHandler((sender, e) =>
@@ -75,6 +75,24 @@ namespace mltak2
                 this.__NearBySearchTimer.Start();
             });
             this.grid.MouseDown +=new MouseEventHandler(grid_MouseDown);
+            this.toolStripStatus.TextChanged += new EventHandler((sende, e) =>
+            {
+                bool internal_change = false;
+                if (internal_change)
+                {
+                    internal_change = false;
+                    return;
+                }
+                Timer t = new Timer();
+                t.Interval = 4000;
+                t.Tick += new EventHandler((_s, _e) =>
+                {
+                    t.Stop();
+                    internal_change = true;
+                    this.toolStripStatus.Text = "";
+                });
+                t.Start();
+            });
         }
         public void grid_MouseDown(object sender, MouseEventArgs e)
         {
@@ -112,8 +130,8 @@ namespace mltak2
                     t.Tick += new EventHandler((_sender, _e) =>
                     {
                         t.Stop();
-                        g.Draw();
                         g.BlockBorders(this.grid);
+                        g.Draw();
                     });
                     t.Start();
                 }
@@ -123,14 +141,15 @@ namespace mltak2
 
         private void newConfigurationToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            this.grid.CreateGraphics().Clear(Color.FromKnownColor(KnownColor.Control));
             g = new Grid(g.Size, this.grid.CreateGraphics());
             Timer t = new Timer();
             t.Interval = 100;
             t.Tick += new EventHandler((_sender, _e) =>
             {
                 t.Stop();
-                g.Draw();
                 g.BlockBorders(this.grid);
+                g.Draw();
             });
             t.Start();
         }

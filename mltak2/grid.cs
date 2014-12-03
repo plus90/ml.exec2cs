@@ -9,7 +9,8 @@ namespace mltak2
 {
     class Grid : IDisposable
     {
-        public enum BlockStatus { UNBLOCKED = 0, NORTH, EAST, SOUTH, WEST, BLOCKED }
+        [Flags]
+        public enum BlockStatus { UNBLOCKED = 0x0, NORTH = 0x1, EAST = 0x2, SOUTH = 0x4, WEST = 0x8, BLOCKED = 0x10 }
         public Size Size { get; private set; }
         public Graphics Graphic { get; private set; }
         protected Hashtable Gridlines { get; set; }
@@ -22,7 +23,6 @@ namespace mltak2
         {
             this.__blockStatuses = bs;
             this.__drawFromBlockStatuses = true;
-            this.__pictureBox = pb;
             this.__pictureBox = pb;
         }
         /// <summary>
@@ -61,6 +61,9 @@ namespace mltak2
                 for (int j = 0; j < this.Size.Height; j++)
                 {
                     this.__drawBox(new Point(i, j));
+                    /**
+                     * Drawing related blockes to [i, j] cell based on loaded data
+                     */
                     if (this.__drawFromBlockStatuses)
                     {
                         foreach (var block_type in Enum.GetValues(typeof(BlockStatus)))
@@ -71,12 +74,27 @@ namespace mltak2
                                 {
                                     case BlockStatus.BLOCKED: /* Ingore the general block status */break;
                                     case BlockStatus.EAST:
-                                        this.Block(this.__pictureBox, new Point((i + 1) * CellSize, j * CellSize + CellSize / 2));
+                                        this.Block(this.__pictureBox, new Point((i + 1) * CellSize, j * CellSize + CellSize / 2), true);
                                         break;
                                     case BlockStatus.NORTH:
+                                        {
+                                            var b = this.__blockStatuses[i, j];
+                                            this.Block(this.__pictureBox, new Point(i * CellSize + CellSize / 2, j * CellSize), true);
+                                            this.__blockStatuses[i, j] = b;
+                                        }
+                                        break;
                                     case BlockStatus.SOUTH:
-                                    case BlockStatus.UNBLOCKED:
+                                        this.Block(this.__pictureBox, new Point(i * CellSize + CellSize / 2, (j + 1) * CellSize), true);
+                                        break;
                                     case BlockStatus.WEST:
+                                        {
+                                            var b = this.__blockStatuses[i, j];
+                                            this.Block(this.__pictureBox, new Point(i * CellSize, j * CellSize + CellSize / 2), true);
+                                            this.__blockStatuses[i, j] = b;
+                                        }
+                                        break;
+                                    case BlockStatus.UNBLOCKED:
+                                        this.UnBlock(this.__pictureBox, new Point(i * CellSize + CellSize / 2, j * CellSize + CellSize / 2), true);
                                         break;
                                     default:
                                         throw new InvalidProgramException("Undefined block-status");
@@ -86,6 +104,7 @@ namespace mltak2
                     }
                 }
             }
+            this.Dispose();
             return Grid.GetSizeOfGrid(this.Size);
         }
         /// <summary>
@@ -96,17 +115,15 @@ namespace mltak2
         {
             for (int i = 0; i < this.Size.Width; i++)
             {
-                this.Block(pb, new Point(0, i * CellSize + CellSize / 2));
-                this.__blockStatuses[0, i] = BlockStatus.NORTH;
-                this.Block(pb, new Point(i * CellSize + CellSize / 2, 0));
-                this.__blockStatuses[i, 0] = BlockStatus.WEST;
+                this.Block(pb, new Point(0, i * CellSize + CellSize / 2), true, false);
+                this.__apply_block_status(0, i, BlockStatus.WEST);
+                this.Block(pb, new Point(i * CellSize + CellSize / 2, 0), true, false);
+                this.__apply_block_status(i, 0, BlockStatus.NORTH);
             }
-            for (int i = 0; i < this.Size.Width; i++)
+            for (int i = 0; i < this.Size.Height; i++)
             {
                 this.Block(pb, new Point(this.Size.Width * CellSize, i * CellSize + CellSize / 2), true);
-                this.__blockStatuses[this.Size.Width - 1, i] = BlockStatus.EAST;
                 this.Block(pb, new Point(i * CellSize + CellSize / 2, this.Size.Height * CellSize), true);
-                this.__blockStatuses[i, this.Size.Height - 1] = BlockStatus.SOUTH;
             }
         }
         /// <summary>
@@ -114,7 +131,8 @@ namespace mltak2
         /// </summary>
         /// <param name="bp">The picture box which the changes will be applied to</param>
         /// <param name="p">A point in the bitmap to extract the line it has been linked</param>
-        public void ToggleBlock(System.Windows.Forms.PictureBox pb, Point p, bool force = false)
+        /// <param name="auto_update_status">Shoud it automatically update the grid's block status?</param>
+        public void ToggleBlock(System.Windows.Forms.PictureBox pb, Point p, bool force = false, bool auto_update_status = true)
         {
             var bm = (Bitmap)pb.Image;
             if (!force && (p.X == bm.Width - 1 || p.Y == bm.Height - 1)) return;
@@ -122,14 +140,13 @@ namespace mltak2
             if (c.A != 255) return;
             foreach (var line in this.__get_line_location(bm, p))
             {
-                var sig = String.Format("{0}{1}", line.Key.X / CellSize + line.Value.X / CellSize, (line.Value.Y / CellSize) + (line.Key.Y / CellSize));
-                if (this.Gridlines.Contains(sig))
+                if (this.Gridlines.Contains(line))
                 {
-                    this.UnBlock(pb, p, force);
+                    this.UnBlock(pb, p, force, auto_update_status);
                 }
                 else
                 {
-                    this.Block(pb, p, force);
+                    this.Block(pb, p, force, auto_update_status);
                 }
             }
         }
@@ -138,7 +155,8 @@ namespace mltak2
         /// </summary>
         /// <param name="bp">The picture box which the changes will be applied to</param>
         /// <param name="p">A point in the bitmap to extract the line it has been linked</param>
-        public void UnBlock(System.Windows.Forms.PictureBox pb, Point p, bool force = false)
+        /// <param name="auto_update_status">Shoud it automatically update the grid's block status?</param>
+        public void UnBlock(System.Windows.Forms.PictureBox pb, Point p, bool force = false, bool auto_update_status = true)
         {
             var bm = (Bitmap)pb.Image;
             if (!force && (p.X == bm.Width - 1 || p.Y == bm.Height - 1)) return;
@@ -148,15 +166,15 @@ namespace mltak2
             {
                 foreach (var line in this.__get_line_location(bm, p))
                 {
-                    var sig = String.Format("{0}{1}", line.Key.X / CellSize + line.Value.X / CellSize, (line.Value.Y / CellSize) + (line.Key.Y / CellSize));
-                    if (this.Gridlines.Contains(sig))
+                    if (this.Gridlines.Contains(line))
                     {
                         Pen pen = new Pen(Color.FromKnownColor(KnownColor.Control), 10);
                         g.DrawLine(pen, line.Key, line.Value);
                         pen = new Pen(Color.Black, 1);
                         g.DrawLine(pen, line.Key, line.Value);
-                        this.Gridlines.Remove(sig);
-                        this.__update_block_status(line, BlockStatus.UNBLOCKED);
+                        this.Gridlines.Remove(line);
+                        if (auto_update_status)
+                            this.__update_block_status(line, BlockStatus.UNBLOCKED);
                     }
                 }
             }
@@ -166,7 +184,8 @@ namespace mltak2
         /// </summary>
         /// <param name="bp">The picture box which the changes will be applied to</param>
         /// <param name="p">A point in the bitmap to extract the line it has been linked</param>
-        public void Block(System.Windows.Forms.PictureBox pb, Point p, bool force = false)
+        /// <param name="auto_update_status">Shoud it automatically update the grid's block status?</param>
+        public void Block(System.Windows.Forms.PictureBox pb, Point p, bool force = false, bool auto_update_status = true)
         {
             var bm = (Bitmap)pb.Image;
             if (!force && (p.X == bm.Width - 1 || p.Y == bm.Height - 1)) return;
@@ -176,13 +195,13 @@ namespace mltak2
             {
                 foreach (var line in this.__get_line_location(bm, p))
                 {
-                    var sig = String.Format("{0}{1}", line.Key.X / CellSize + line.Value.X / CellSize, (line.Value.Y / CellSize) + (line.Key.Y / CellSize));
-                    if (!this.Gridlines.Contains(sig))
+                    if (!this.Gridlines.Contains(line))
                     {
                         Pen pen = new Pen(Color.Black, 10);
-                        this.Gridlines.Add(sig, 1);
+                        this.Gridlines.Add(line, 1);
                         g.DrawLine(pen, line.Key, line.Value);
-                        this.__update_block_status(line, BlockStatus.BLOCKED);
+                        if (auto_update_status)
+                            this.__update_block_status(line, BlockStatus.BLOCKED);
                     }
                 }
             }
@@ -207,7 +226,7 @@ namespace mltak2
         /// <returns>Returns true if the cell is blocked by the gived status; Otherwise false</returns>
         private bool IsBlocked(int x, int y, BlockStatus blockStatus = BlockStatus.BLOCKED)
         {
-            return ((__blockStatuses[x, y] & blockStatus) == blockStatus);
+            return __blockStatuses[x, y].HasFlag(blockStatus);
         }
         /// <summary>
         /// Dispose resources
@@ -253,6 +272,19 @@ namespace mltak2
             return color;
         }
         /// <summary>
+        /// Write text on the grid
+        /// </summary>
+        /// <param name="text">The target text</param>
+        /// <param name="point">The location in the grid(The Actual Location)</param>
+        /// <param name="graphics">The grid's graphics</param>
+        public void Write(String text, Point point, Graphics graphics)
+        {
+            using (Font myFont = new Font("Arial", 14))
+            {
+                graphics.DrawString(text, myFont, Brushes.Green, point);
+            }
+        }
+        /// <summary>
         /// Updates a block's status
         /// </summary>
         /// <param name="line">The line the has been modified</param>
@@ -280,7 +312,7 @@ namespace mltak2
             if (blockStatus == BlockStatus.UNBLOCKED)
                 __blockStatuses[x, y] = blockStatus;
             else
-                __blockStatuses[x, y] = blockStatus | __blockStatuses[x, y];
+                __blockStatuses[x, y] = __blockStatuses[x, y] | blockStatus;
         }
         /// <summary>
         /// Get the point relared line's locations
