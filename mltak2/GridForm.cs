@@ -21,14 +21,13 @@ namespace mltak2
              * Draw the grid
              */
             Size s = Grid.GetSizeOfGrid(new Size(6, 6));
+            Grid g = null;
             this.grid.Image = new Bitmap(s.Width, s.Height, this.grid.CreateGraphics());
             using (Graphics gfx = Graphics.FromImage(this.grid.Image))
             {
-                using (Grid g = new Grid(new Size(6, 6), gfx))
-                {
-                    g.Draw();
-                    this.Size = new Size(s.Width + 21, s.Height + 45);
-                }
+                g = new Grid(new Size(6, 6), gfx);
+                g.Draw();
+                this.Size = new Size(s.Width + 21, s.Height + 45);
             }
             /**
              * 
@@ -39,6 +38,7 @@ namespace mltak2
                 switch (e.KeyCode)
                 {
                     case Keys.Escape: Application.Exit(); break;
+                    case Keys.S: g.getStatus(this.grid); break;
                 }
             }); 
             this.grid.MouseMove += new MouseEventHandler((sender, e) =>
@@ -66,7 +66,7 @@ namespace mltak2
                 var inf = this.getNearByLineInfo(this.grid, e.Location);
                 if (inf.Value.A != 0)
                 {
-                    Grid.ToggleBlock(this.grid, inf.Key);
+                    g.ToggleBlock(this.grid, inf.Key);
                     this.Invalidate();
                 }
             });

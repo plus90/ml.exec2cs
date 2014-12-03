@@ -21,6 +21,7 @@ namespace mltak2
         {
             this.richTextBox1.AppendText(s);
         }
+        public void clearText() { this.richTextBox1.Clear(); }
         public String getText { get { return this.richTextBox1.Text; } }
     }
 }
