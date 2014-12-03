@@ -46,16 +46,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="grid.cs">
+    <Compile Include="Grid.cs" />
+    <Compile Include="GridForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="grid.Designer.cs">
-      <DependentUpon>grid.cs</DependentUpon>
+    <Compile Include="GridForm.Designer.cs">
+      <DependentUpon>GridForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="output.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="output.Designer.cs">
+      <DependentUpon>output.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="grid.resx">
-      <DependentUpon>grid.cs</DependentUpon>
+    <EmbeddedResource Include="GridForm.resx">
+      <DependentUpon>GridForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="output.resx">
+      <DependentUpon>output.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
