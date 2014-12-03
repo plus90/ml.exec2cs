@@ -28,17 +28,22 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.grid = new System.Windows.Forms.PictureBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newConfigurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveConfigurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadConfigurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.toolStripStatus = new System.Windows.Forms.ToolStripLabel();
-            this.newConfigurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.MarkStartPointGrid = new System.Windows.Forms.ToolStripMenuItem();
+            this.MarkGoalPointGrid = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.toolStrip.SuspendLayout();
+            this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // grid
@@ -69,6 +74,14 @@
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
+            // 
+            // newConfigurationToolStripMenuItem
+            // 
+            this.newConfigurationToolStripMenuItem.Name = "newConfigurationToolStripMenuItem";
+            this.newConfigurationToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+            this.newConfigurationToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
+            this.newConfigurationToolStripMenuItem.Text = "New Configuration";
+            this.newConfigurationToolStripMenuItem.Click += new System.EventHandler(this.newConfigurationToolStripMenuItem_Click);
             // 
             // saveConfigurationToolStripMenuItem
             // 
@@ -102,13 +115,27 @@
             this.toolStripStatus.Name = "toolStripStatus";
             this.toolStripStatus.Size = new System.Drawing.Size(0, 22);
             // 
-            // newConfigurationToolStripMenuItem
+            // contextMenuStrip
             // 
-            this.newConfigurationToolStripMenuItem.Name = "newConfigurationToolStripMenuItem";
-            this.newConfigurationToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.newConfigurationToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
-            this.newConfigurationToolStripMenuItem.Text = "New Configuration";
-            this.newConfigurationToolStripMenuItem.Click += new System.EventHandler(this.newConfigurationToolStripMenuItem_Click);
+            this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MarkStartPointGrid,
+            this.MarkGoalPointGrid});
+            this.contextMenuStrip.Name = "contextMenuStrip";
+            this.contextMenuStrip.Size = new System.Drawing.Size(174, 70);
+            // 
+            // MarkStartPointGrid
+            // 
+            this.MarkStartPointGrid.Name = "MarkStartPointGrid";
+            this.MarkStartPointGrid.Size = new System.Drawing.Size(173, 22);
+            this.MarkStartPointGrid.Text = "Mark as &Start Point";
+            this.MarkStartPointGrid.Click += new System.EventHandler(this.MarkStartPointGrid_Click);
+            // 
+            // MarkGoalPointGrid
+            // 
+            this.MarkGoalPointGrid.Name = "MarkGoalPointGrid";
+            this.MarkGoalPointGrid.Size = new System.Drawing.Size(173, 22);
+            this.MarkGoalPointGrid.Text = "Mark as &Goal";
+            this.MarkGoalPointGrid.Click += new System.EventHandler(this.MarkGoalPointGrid_Click);
             // 
             // GridForm
             // 
@@ -128,6 +155,7 @@
             this.menuStrip1.PerformLayout();
             this.toolStrip.ResumeLayout(false);
             this.toolStrip.PerformLayout();
+            this.contextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -143,6 +171,9 @@
         private System.Windows.Forms.ToolStrip toolStrip;
         private System.Windows.Forms.ToolStripLabel toolStripStatus;
         private System.Windows.Forms.ToolStripMenuItem newConfigurationToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem MarkStartPointGrid;
+        private System.Windows.Forms.ToolStripMenuItem MarkGoalPointGrid;
     }
 }
 

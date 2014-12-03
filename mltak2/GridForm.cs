@@ -16,6 +16,7 @@ namespace mltak2
     {
         protected Timer __NearBySearchTimer { get; set; }
         Grid g { get; set; }
+        Point __last_valid_grid_block;
         public GridForm()
         {
             InitializeComponent();
@@ -51,7 +52,6 @@ namespace mltak2
                 switch (e.KeyCode)
                 {
                     case Keys.Escape: Application.Exit(); break;
-                    case Keys.S: g.Write("Hi",new Point(2, 2), this.grid.CreateGraphics() );break;
                 }
             }); 
             this.grid.MouseMove += new MouseEventHandler((sender, e) =>
@@ -99,8 +99,15 @@ namespace mltak2
             var inf = g.GetNearByLineInfo(this.grid, e.Location);
             if (inf.Value.A != 0)
             {
+                if (e.Button != System.Windows.Forms.MouseButtons.Left) return;
                 g.ToggleBlock(this.grid, inf.Key);
                 this.Invalidate();
+            }
+            else if (e.Button == System.Windows.Forms.MouseButtons.Right)
+            {
+                __last_valid_grid_block = e.Location;
+                contextMenuStrip.Show(this, new Point(e.Location.X, e.Location.Y + 25));
+                return;
             }
         }
 
@@ -111,6 +118,8 @@ namespace mltak2
                 using (System.IO.FileStream fs = new System.IO.FileStream("config.dat", System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.None))
                 {
                     bf.Serialize(fs, g.GetStatus());
+                    bf.Serialize(fs, g.StartPoint);
+                    bf.Serialize(fs, g.GoalPoint);
                 }
             }
             this.toolStripStatus.Text = "Configuration Saved Sucessfully...";
@@ -122,9 +131,10 @@ namespace mltak2
             {
                 using (System.IO.FileStream fs = new System.IO.FileStream("config.dat", System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.None))
                 {
-                    Grid.BlockStatus[,] bs = (Grid.BlockStatus[,])bf.Deserialize(fs);
                     this.grid.CreateGraphics().Clear(Color.FromKnownColor(KnownColor.Control));
-                    g = new Grid(bs, this.grid);
+                    g = new Grid((Grid.BlockStatus[,])bf.Deserialize(fs), this.grid);
+                    g.StartPoint = (Point)bf.Deserialize(fs);
+                    g.GoalPoint = (Point)bf.Deserialize(fs);
                     Timer t = new Timer();
                     t.Interval = 100;
                     t.Tick += new EventHandler((_sender, _e) =>
@@ -132,6 +142,10 @@ namespace mltak2
                         t.Stop();
                         g.BlockBorders(this.grid);
                         g.Draw();
+                        __last_valid_grid_block = g.StartPoint;
+                        MarkStartPointGrid_Click(new object(), new EventArgs());
+                        __last_valid_grid_block = g.GoalPoint;
+                        MarkGoalPointGrid_Click(new object(), new EventArgs());
                     });
                     t.Start();
                 }
@@ -152,6 +166,28 @@ namespace mltak2
                 g.Draw();
             });
             t.Start();
+        }
+
+        private void MarkStartPointGrid_Click(object sender, EventArgs e)
+        {
+            var p = g.abs2grid(g.grid2abs(__last_valid_grid_block));
+            using (var gfx = this.grid.CreateGraphics())
+            {
+                gfx.FillEllipse(Brushes.Red, p.X - 15, p.Y - 12, 25, 25);
+                g.Write("A", new Point(p.X - 10, p.Y - 10), gfx, Brushes.White);
+            }
+            g.StartPoint = p;
+        }
+
+        private void MarkGoalPointGrid_Click(object sender, EventArgs e)
+        {
+            var p = g.abs2grid(g.grid2abs(__last_valid_grid_block));
+            using (var gfx = this.grid.CreateGraphics())
+            {
+                gfx.FillEllipse(Brushes.Green, p.X - 15, p.Y - 15, 30, 30);
+                g.Write("G", new Point(p.X - 10, p.Y - 10), gfx, Brushes.White);
+            }
+            g.GoalPoint = p;
         }
     }
 }

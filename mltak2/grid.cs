@@ -18,6 +18,8 @@ namespace mltak2
         public const int CellSize = 100;
         private bool __drawFromBlockStatuses = false;
         private System.Windows.Forms.PictureBox __pictureBox;
+        public Point StartPoint { get; set; }
+        public Point GoalPoint { get; set; }
         public Grid(BlockStatus[,] bs, System.Windows.Forms.PictureBox pb)
             : this(new Size(bs.GetLength(0), bs.GetLength(1)), pb.CreateGraphics())
         {
@@ -277,12 +279,30 @@ namespace mltak2
         /// <param name="text">The target text</param>
         /// <param name="point">The location in the grid(The Actual Location)</param>
         /// <param name="graphics">The grid's graphics</param>
-        public void Write(String text, Point point, Graphics graphics)
+        public void Write(String text, Point point, Graphics graphics, Brush brush)
         {
             using (Font myFont = new Font("Arial", 14))
             {
-                graphics.DrawString(text, myFont, Brushes.Green, point);
+                graphics.DrawString(text, myFont, brush, point);
             }
+        }
+        /// <summary>
+        /// Converts an abstract point to its actual and cell-centered grid point
+        /// </summary>
+        /// <param name="p">The abstract location</param>
+        /// <returns>The actual and cell-centered grid point</returns>
+        public Point abs2grid(Point p)
+        {
+            return new Point(p.X * CellSize + CellSize / 2, p.Y * CellSize + CellSize / 2);
+        }
+        /// <summary>
+        /// Converts a grid point to its abstract point
+        /// </summary>
+        /// <param name="p">The grid location</param>
+        /// <returns>The abstract point</returns>
+        public Point grid2abs(Point p)
+        {
+            return new Point(p.X / CellSize, p.Y / CellSize);
         }
         /// <summary>
         /// Updates a block's status
