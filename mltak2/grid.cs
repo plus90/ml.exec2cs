@@ -9,7 +9,7 @@ namespace mltak2
 {
     class Grid : IDisposable
     {
-        public enum BlockStatus { BLOCKED, NOT_BLOCKED = 0}
+        public enum BlockStatus { NOT_BLOCKED = 0, BLOCKED}
         public Size Size { get; private set; }
         public Graphics Graphic { get; private set; }
         protected static Hashtable Gridlines { get; set; }
@@ -68,6 +68,7 @@ namespace mltak2
                     if (Gridlines.Contains(sig))
                     {
                         pen.Color = Color.FromKnownColor(KnownColor.Control);
+                        DrawLinePixels(ref pb, line, pen);
                         g.DrawLine(pen, line.Key, line.Value);
                         flag = Color.FromArgb(0, 240, 240, 240);
                         pen = new Pen(Color.Black, 1);
@@ -75,43 +76,79 @@ namespace mltak2
                         blocked = false;
                     }
                     else Gridlines.Add(sig, 1);
+                    DrawLinePixels(ref pb, line, pen);
                     g.DrawLine(pen, line.Key, line.Value);
-                    //UpdateBlockStatus(pb, line, blocked ? BlockStatus.BLOCKED : BlockStatus.NOT_BLOCKED);
+                    UpdateBlockStatus(pb, line, blocked ? BlockStatus.BLOCKED : BlockStatus.NOT_BLOCKED);
                 }
             }
         }
+
+        private void DrawLinePixels(ref System.Windows.Forms.PictureBox pb, KeyValuePair<Point, Point> line, Pen pen)
+        {
+            return;
+            int x_thickness = (line.Key.X == line.Value.X) ? 0 : (int)pen.Width;
+            int y_thickness = (line.Key.Y == line.Value.Y) ? 0 : (int)pen.Width;
+
+            for (int i = line.Key.X - x_thickness / 2; i <= line.Value.X + x_thickness / 2; i++)
+                for (int j = line.Key.Y - y_thickness / 2; j <= line.Value.Y + y_thickness / 2; j++)
+                {
+                    if (i < 0 || j < 0) continue;
+                    (pb.Image as Bitmap).SetPixel(i, j, pen.Color);
+                }
+        }
+
         protected void UpdateBlockStatus(System.Windows.Forms.PictureBox pb, KeyValuePair<Point, Point> p, BlockStatus b)
         {
-            for (int i = 0; i <= this.Size.Width; i++)
+
+            int x = (p.Key.X == p.Value.X) ? p.Key.X - CellSize / 2 : (p.Key.X + p.Value.X) / 2;
+            int y = (p.Key.Y == p.Value.Y) ? p.Key.Y - CellSize / 2 : (p.Key.Y + p.Value.Y) / 2;
+            o.clearText();
+            var g = pb.CreateGraphics();
+            g.FillRectangle((Brush)Brushes.Red, x, y, 4, 4);
+            o.appendText(String.Format("{0} {1}", x / CellSize, y / CellSize));
+            o.Show();
+            return;
+            //for (int i = 0; i < this.Size.Width; i++)
+            //{
+            //    for (int j = 0; j < this.Size.Height; j++)
+            //    {
+            //        foreach (var __p in (
+            //            new Point[]{
+            //                    new Point(i * CellSize - CellSize / 2, j * CellSize), 
+            //                    new Point(i * CellSize, j * CellSize - CellSize / 2)
+            //                })
+            //        )
+            //        {
+            //            if (__p.X < 10 || __p.Y < 10 || __p.X >= pb.Width || __p.Y >= pb.Height) continue;
+            //            var ll = this.getLineLocation(pb.Image as Bitmap, __p)[0];
+            //            if (ll.Key == p.Key && ll.Value == p.Value)
+            //            {
+            //                bs[i, j] = b;
+            //                goto __EXIT;
+            //            }
+            //        }
+            //    }
+            //}
+            __EXIT:
+            for (int i = 0; i < bs.GetLength(0); i++)
             {
-                for (int j = 0; j <= this.Size.Height; j++)
+                for (int j = 0; j < bs.GetLength(1); j++)
                 {
-                    foreach (var __p in (
-                        new Point[]{
-                                new Point(i * CellSize - CellSize / 2, j * CellSize), 
-                                new Point(i * CellSize, j * CellSize - CellSize / 2)
-                            })
-                    )
-                    {
-                        if (__p.X < 10 || __p.Y < 10) continue;
-                        var ll = this.getLineLocation(pb.Image as Bitmap, __p)[0];
-                        if (ll.Key == p.Key && ll.Value == p.Value)
-                        {
-                            bs[i, j] = b;
-                            return;
-                        }
-                    }
+                    o.appendText(((int)bs[i, j]).ToString() + " ");
                 }
+                o.appendText("\n");
             }
+            o.appendText(DateTime.Now.ToString());
+            o.Show();
         }
         public BlockStatus[,] getStatus(System.Windows.Forms.PictureBox pb)
         {
             BlockStatus[,] bs = new BlockStatus[this.Size.Width, this.Size.Height];
             o.clearText();
             var marg = -2;
-            for (int i = 0; i < this.Size.Width; i++)
+            for (int i = 0; i <= this.Size.Width; i++)
             {
-                for (int j = 0; j < this.Size.Height; j++)
+                for (int j = 0; j <= this.Size.Height; j++)
                 {
                     using (Graphics g = pb.CreateGraphics())
                     {
@@ -124,7 +161,11 @@ namespace mltak2
                         {
                             if (p.X < 0 || p.Y < 0) continue;
                             g.FillRectangle((Brush)Brushes.Red, p.X - 2, p.Y - 2, 4, 4);
-                            o.appendText(Math.Floor((pb.Image as Bitmap).GetPixel(p.X, p.Y).A/128.0F).ToString() + " ");
+                            try
+                            {
+                                o.appendText(Math.Floor((pb.Image as Bitmap).GetPixel(p.X, p.Y).A / 128.0F).ToString() + " ");
+                            }
+                            catch (ArgumentOutOfRangeException) { }
                         }
 
                     }
