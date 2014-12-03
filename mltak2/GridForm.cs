@@ -14,15 +14,15 @@ namespace mltak2
     public partial class GridForm : Form
     {
         protected Timer __NearBySearchTimer { get; set; }
+        Grid g { get; set; }
         public GridForm()
         {
             InitializeComponent();
             /**
              * Draw the grid
              */
-            Size gridSize = new Size(7, 7);
+            Size gridSize = new Size(6, 6);
             Size s = Grid.GetSizeOfGrid(gridSize);
-            Grid g = null;
             this.grid.Image = new Bitmap(s.Width + 1, s.Height + 1, this.grid.CreateGraphics());
             using (Graphics gfx = Graphics.FromImage(this.grid.Image))
             {
@@ -33,6 +33,17 @@ namespace mltak2
             /**
              * 
              */
+            this.Load += new EventHandler((sender, e) =>
+            {
+                Timer t = new Timer();
+                t.Interval = 100;
+                t.Tick += new EventHandler((_sender, _e) =>
+                {
+                    t.Stop();
+                    g.BlockBorders(this.grid);
+                });
+                t.Start();
+            });
             this.KeyPreview = true;
             this.KeyDown += new KeyEventHandler((sender, e) =>
             {
@@ -52,54 +63,26 @@ namespace mltak2
                     this.__NearBySearchTimer.Tick += new EventHandler((__sender, __e) =>
                     {
                         var p = (Point)this.__NearBySearchTimer.Tag;
-                        if (this.getNearByLineInfo(this.grid, p).Value.A != 0)
+                        if (g.GetNearByLineInfo(this.grid, p).Value.A != 0)
                             Cursor.Current = Cursors.Hand;
                         else Cursor.Current = Cursors.Default;
                     });
                 }
-                if (this.getNearByLineInfo(this.grid, e.Location).Value.A != 0)
+                if (g.GetNearByLineInfo(this.grid, e.Location).Value.A != 0)
                     Cursor.Current = Cursors.Hand;
                 this.__NearBySearchTimer.Tag = e.Location;
                 this.__NearBySearchTimer.Start();
             });
-            this.grid.MouseDown += new MouseEventHandler((sender, e) =>
-            {
-                var inf = this.getNearByLineInfo(this.grid, e.Location);
-                if (inf.Value.A != 0)
-                {
-                    g.ToggleBlock(this.grid, inf.Key);
-                    this.Invalidate();
-                }
-            });
+            this.grid.MouseDown +=new MouseEventHandler(grid_MouseDown);
         }
-        protected KeyValuePair<Point, Color> getNearByLineInfo(PictureBox grip, Point e, uint margin = 7)
+        public void grid_MouseDown(object sender, MouseEventArgs e)
         {
-            Bitmap b;
-            int x = e.X, y = e.Y;
-            KeyValuePair<Point, Color> color = new KeyValuePair<Point,Color>(new Point(0, 0), new Color());
-            try
+            var inf = g.GetNearByLineInfo(this.grid, e.Location);
+            if (inf.Value.A != 0)
             {
-                b = (Bitmap)grid.Image;
-                color = new KeyValuePair<Point, Color>(new Point(x, y), b.GetPixel(x, y));
-                bool exit = false;
-                if (x == 0) x = (int)margin;
-                if (y == 0) y = (int)margin;
-                for (int i = x - (int)margin; i < x + margin; i++)
-                {
-                    for (int j = y - (int)margin; j < y + margin; j++)
-                    {
-                        if (b.GetPixel(i, j).A != 0)
-                        {
-                            color = new KeyValuePair<Point, Color>(new Point(i, j), b.GetPixel(i, j));
-                            exit = true;
-                            break;
-                        }
-                    }
-                    if (exit) break;
-                }
+                g.ToggleBlock(this.grid, inf.Key);
+                this.Invalidate();
             }
-            catch (ArgumentException exp) { }
-            return color;
         }
     }
 }

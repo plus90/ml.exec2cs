@@ -14,7 +14,7 @@ namespace mltak2
         public Graphics Graphic { get; private set; }
         protected Hashtable Gridlines { get; set; }
         protected BlockStatus[,] __blockStatuses;
-        const int CellSize = 100;
+        public const int CellSize = 100;
         /// <summary>
         /// Construct a grid
         /// </summary>
@@ -28,7 +28,7 @@ namespace mltak2
             __blockStatuses = new BlockStatus[(this.Size.Width), (this.Size.Height)];
             /**
              * Update the block status of borders of grid
-             */ 
+             */
             for (int i = 0; i < this.Size.Width; i++)
             {
                 this.__apply_block_status(i, 0, BlockStatus.NORTH);
@@ -56,14 +56,55 @@ namespace mltak2
             return Grid.GetSizeOfGrid(this.Size);
         }
         /// <summary>
+        /// 
+        /// <param name="bp">The picture box which the changes will be applied to</param>
+        /// </summary>
+        public void BlockBorders(System.Windows.Forms.PictureBox pb)
+        {
+            for (int i = 0; i < this.Size.Width; i++)
+            {
+                this.Block(pb, new Point(0, i * CellSize + CellSize / 2));
+                this.Block(pb, new Point(i * CellSize + CellSize / 2, 0));
+            }
+            for (int i = 0; i < this.Size.Width; i++)
+            {
+                this.Block(pb, new Point(this.Size.Width * CellSize, i * CellSize + CellSize / 2), true);
+                this.Block(pb, new Point(i * CellSize + CellSize / 2, this.Size.Height * CellSize), true);
+            }
+        }
+        /// <summary>
         /// Toggels UI blocks
         /// </summary>
-        /// <param name="pb"></param>
-        /// <param name="p"></param>
-        public void ToggleBlock(System.Windows.Forms.PictureBox pb, Point p)
+        /// <param name="bp">The picture box which the changes will be applied to</param>
+        /// <param name="p">A point in the bitmap to extract the line it has been linked</param>
+        public void ToggleBlock(System.Windows.Forms.PictureBox pb, Point p, bool force = false)
         {
             var bm = (Bitmap)pb.Image;
-            if (p.X == bm.Width - 1|| p.Y == bm.Height - 1) return;
+            if (!force && (p.X == bm.Width - 1 || p.Y == bm.Height - 1)) return;
+            Color c = bm.GetPixel(p.X, p.Y);
+            if (c.A != 255) return;
+            foreach (var line in this.__get_line_location(bm, p))
+            {
+                var sig = String.Format("{0}{1}", line.Key.X / CellSize + line.Value.X / CellSize, (line.Value.Y / CellSize) + (line.Key.Y / CellSize));
+                if (this.Gridlines.Contains(sig))
+                {
+                    this.UnBlock(pb, p, force);
+                }
+                else
+                {
+                    this.Block(pb, p, force);
+                }
+            }
+        }
+        /// <summary>
+        /// Unblocks UI blocks
+        /// </summary>
+        /// <param name="bp">The picture box which the changes will be applied to</param>
+        /// <param name="p">A point in the bitmap to extract the line it has been linked</param>
+        public void UnBlock(System.Windows.Forms.PictureBox pb, Point p, bool force = false)
+        {
+            var bm = (Bitmap)pb.Image;
+            if (!force && (p.X == bm.Width - 1 || p.Y == bm.Height - 1)) return;
             Color c = bm.GetPixel(p.X, p.Y);
             if (c.A != 255) return;
             using (Graphics g = pb.CreateGraphics())
@@ -71,21 +112,41 @@ namespace mltak2
                 foreach (var line in this.__get_line_location(bm, p))
                 {
                     var sig = String.Format("{0}{1}", line.Key.X / CellSize + line.Value.X / CellSize, (line.Value.Y / CellSize) + (line.Key.Y / CellSize));
-                    Pen pen = new Pen(Color.Black, 10);
-                    Color flag = Color.Black;
-                    bool blocked = true;
                     if (this.Gridlines.Contains(sig))
                     {
-                        pen.Color = Color.FromKnownColor(KnownColor.Control);
+                        Pen pen = new Pen(Color.FromKnownColor(KnownColor.Control), 10);
                         g.DrawLine(pen, line.Key, line.Value);
-                        flag = Color.FromArgb(0, 240, 240, 240);
                         pen = new Pen(Color.Black, 1);
+                        g.DrawLine(pen, line.Key, line.Value);
                         this.Gridlines.Remove(sig);
-                        blocked = false;
+                        this.__update_block_status(line, BlockStatus.UNBLOCKED);
                     }
-                    else this.Gridlines.Add(sig, 1);
-                    g.DrawLine(pen, line.Key, line.Value);
-                    this.__update_block_status(line, blocked ? BlockStatus.BLOCKED : BlockStatus.UNBLOCKED);
+                }
+            }
+        }
+        /// <summary>
+        /// Blocks UI blocks
+        /// </summary>
+        /// <param name="bp">The picture box which the changes will be applied to</param>
+        /// <param name="p">A point in the bitmap to extract the line it has been linked</param>
+        public void Block(System.Windows.Forms.PictureBox pb, Point p, bool force = false)
+        {
+            var bm = (Bitmap)pb.Image;
+            if (!force && (p.X == bm.Width - 1 || p.Y == bm.Height - 1)) return;
+            Color c = bm.GetPixel(p.X, p.Y);
+            if (c.A != 255) return;
+            using (Graphics g = pb.CreateGraphics())
+            {
+                foreach (var line in this.__get_line_location(bm, p))
+                {
+                    var sig = String.Format("{0}{1}", line.Key.X / CellSize + line.Value.X / CellSize, (line.Value.Y / CellSize) + (line.Key.Y / CellSize));
+                    if (!this.Gridlines.Contains(sig))
+                    {
+                        Pen pen = new Pen(Color.Black, 10);
+                        this.Gridlines.Add(sig, 1);
+                        g.DrawLine(pen, line.Key, line.Value);
+                        this.__update_block_status(line, BlockStatus.BLOCKED);
+                    }
                 }
             }
         }
@@ -117,6 +178,42 @@ namespace mltak2
         public void Dispose()
         {
             this.Graphic.Dispose();
+        }
+        /// <summary>
+        /// Get the nearby line's info on a grid media
+        /// </summary>
+        /// <param name="grid">The grid media</param>
+        /// <param name="e">The nearby point</param>
+        /// <param name="margin">The investigate margin value</param>
+        /// <returns>The Point's info in the nearest line to the point</returns>
+        public KeyValuePair<Point, Color> GetNearByLineInfo(System.Windows.Forms.PictureBox grid, Point e, uint margin = 7)
+        {
+            Bitmap b;
+            int x = e.X, y = e.Y;
+            KeyValuePair<Point, Color> color = new KeyValuePair<Point, Color>(new Point(0, 0), new Color());
+            try
+            {
+                b = (Bitmap)grid.Image;
+                color = new KeyValuePair<Point, Color>(new Point(x, y), b.GetPixel(x, y));
+                bool exit = false;
+                if (x == 0) x = (int)margin;
+                if (y == 0) y = (int)margin;
+                for (int i = x - (int)margin; i < x; i++)
+                {
+                    for (int j = y - (int)margin; j < y; j++)
+                    {
+                        if (b.GetPixel(i, j).A != 0)
+                        {
+                            color = new KeyValuePair<Point, Color>(new Point(i, j), b.GetPixel(i, j));
+                            exit = true;
+                            break;
+                        }
+                    }
+                    if (exit) break;
+                }
+            }
+            catch (ArgumentException exp) { }
+            return color;
         }
         /// <summary>
         /// Updates a block's status
@@ -159,6 +256,7 @@ namespace mltak2
             Point hl = p, hu = p, vl = p, vu = p;
             for (int i = hl.X; i >= 0 && i >= hl.X - CellSize; i--)
             {
+                if (i >= bm.Height) { hu = new Point(p.X, bm.Height - 1); break; }
                 if (bm.GetPixel(i, p.Y).A == 0) break;
                 var t = 0;
                 if (p.Y > 10)
@@ -190,9 +288,9 @@ namespace mltak2
             {
                 if (bm.GetPixel(p.X, i).A == 0) break;
                 var t = 0;
-                if (p.Y > 10)
+                if (p.X > 10)
                     t += bm.GetPixel(p.X - 10, i).A;
-                if (p.Y < bm.Height - 10)
+                if (p.X < bm.Height - 10)
                     t += bm.GetPixel(p.X + 10, i).A;
                 if (t > 0)
                 {
@@ -205,9 +303,9 @@ namespace mltak2
                 if (i >= bm.Height) { vu = new Point(p.X, bm.Height - 1); break; }
                 if (bm.GetPixel(p.X, i).A == 0) break;
                 var t = 0;
-                if (p.Y > 10)
+                if (p.X > 10)
                     t += bm.GetPixel(p.X - 10, i).A;
-                if (p.Y < bm.Height - 10)
+                if (p.X < bm.Height - 10)
                     t += bm.GetPixel(p.X + 10, i).A;
                 if (t > 0)
                 {
@@ -229,6 +327,7 @@ namespace mltak2
         private void __drawBox(Point p)
         {
             Pen pen = new Pen(Color.Black);
+
             // NORTH
             Graphic.DrawLine(pen, p.X * CellSize, p.Y * CellSize, (p.X + 1) * CellSize, (p.Y) * CellSize);
             // WEST
