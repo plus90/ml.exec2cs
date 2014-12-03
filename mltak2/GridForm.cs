@@ -53,7 +53,7 @@ namespace mltak2
                 {
                     case Keys.Escape: Application.Exit(); break;
                 }
-            }); 
+            });
             this.grid.MouseMove += new MouseEventHandler((sender, e) =>
             {
                 if (this.__NearBySearchTimer != null) this.__NearBySearchTimer.Stop();
@@ -74,7 +74,7 @@ namespace mltak2
                 this.__NearBySearchTimer.Tag = e.Location;
                 this.__NearBySearchTimer.Start();
             });
-            this.grid.MouseDown +=new MouseEventHandler(grid_MouseDown);
+            this.grid.MouseDown += new MouseEventHandler(grid_MouseDown);
             this.toolStripStatus.TextChanged += new EventHandler((sende, e) =>
             {
                 bool internal_change = false;
@@ -93,6 +93,11 @@ namespace mltak2
                 });
                 t.Start();
             });
+            try
+            {
+                loadConfigurationToolStripMenuItem_Click(new object(), new EventArgs());
+            }
+            catch { }
         }
         public void grid_MouseDown(object sender, MouseEventArgs e)
         {
@@ -142,9 +147,9 @@ namespace mltak2
                         t.Stop();
                         g.BlockBorders(this.grid);
                         g.Draw();
-                        __last_valid_grid_block = g.StartPoint;
+                        __last_valid_grid_block = g.abs2grid(g.StartPoint);
                         MarkStartPointGrid_Click(new object(), new EventArgs());
-                        __last_valid_grid_block = g.GoalPoint;
+                        __last_valid_grid_block = g.abs2grid(g.GoalPoint);
                         MarkGoalPointGrid_Click(new object(), new EventArgs());
                     });
                     t.Start();
@@ -170,24 +175,40 @@ namespace mltak2
 
         private void MarkStartPointGrid_Click(object sender, EventArgs e)
         {
-            var p = g.abs2grid(g.grid2abs(__last_valid_grid_block));
             using (var gfx = this.grid.CreateGraphics())
             {
+                var p = g.abs2grid(g.StartPoint);
+                // clear previous flag
+                gfx.FillEllipse(new SolidBrush(Color.FromKnownColor(KnownColor.Control)), p.X - 15, p.Y - 12, 25, 25);
+                g.Write(" ", new Point(p.X - 10, p.Y - 10), gfx, Brushes.White);
+
+                // write a new one
+                p = g.abs2grid(g.grid2abs(__last_valid_grid_block));
                 gfx.FillEllipse(Brushes.Red, p.X - 15, p.Y - 12, 25, 25);
                 g.Write("A", new Point(p.X - 10, p.Y - 10), gfx, Brushes.White);
+
+                // set the new point
+                g.StartPoint = g.grid2abs(p);
             }
-            g.StartPoint = p;
         }
 
         private void MarkGoalPointGrid_Click(object sender, EventArgs e)
         {
-            var p = g.abs2grid(g.grid2abs(__last_valid_grid_block));
             using (var gfx = this.grid.CreateGraphics())
             {
+                var p = g.abs2grid(g.GoalPoint);
+                // clear previous flag
+                gfx.FillEllipse(new SolidBrush(Color.FromKnownColor(KnownColor.Control)), p.X - 15, p.Y - 15, 30, 30);
+                g.Write(" ", new Point(p.X - 10, p.Y - 10), gfx, Brushes.White);
+
+                // write a new one
+                p = g.abs2grid(g.grid2abs(__last_valid_grid_block));
                 gfx.FillEllipse(Brushes.Green, p.X - 15, p.Y - 15, 30, 30);
                 g.Write("G", new Point(p.X - 10, p.Y - 10), gfx, Brushes.White);
+
+                // set the new point
+                g.GoalPoint = g.grid2abs(p);
             }
-            g.GoalPoint = p;
         }
     }
 }
