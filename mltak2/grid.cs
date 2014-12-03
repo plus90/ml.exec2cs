@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using System.Collections;
 
 namespace mltak2
 {
@@ -10,21 +11,28 @@ namespace mltak2
     {
         public Size Size { get; private set; }
         public Graphics Graphic { get; private set; }
+        protected static Hashtable Gridlines { get; set; }
         const int CellSize = 100;
+        /// <summary>
+        /// Construct a grid
+        /// </summary>
+        /// <param name="size"></param>
+        /// <param name="graphic"></param>
         public Grid(Size size, Graphics graphic)
         {
             this.Size = size;
             this.Graphic = graphic;
         }
-        protected static int[] bitmap;
-        protected static void init_bitmap(Size Size)
+        static Grid()
         {
-            var s = Size;
-            bitmap = new int[(s.Height - 1) * s.Width];
+            Gridlines = new Hashtable();
         }
+        /// <summary>
+        /// Draw a grid
+        /// </summary>
+        /// <returns></returns>
         public Size Draw()
         {
-            init_bitmap(this.Size);
             for (int i = 0; i < this.Size.Width; i++)
             {
                 for (int j = 0; j < this.Size.Height; j++)
@@ -34,37 +42,42 @@ namespace mltak2
             }
             return Grid.GetSizeOfGrid(this.Size);
         }
+        /// <summary>
+        /// Toggels UI blocks
+        /// </summary>
+        /// <param name="pb"></param>
+        /// <param name="p"></param>
         public static void ToggleBlock(System.Windows.Forms.PictureBox pb, Point p)
         {
             var bm = (Bitmap)pb.Image;
             Color c = bm.GetPixel(p.X, p.Y);
             if (c.A != 255) return;
-
-            Graphics g = pb.CreateGraphics();
-            foreach (var line in Grid.getLineLocation(bm, p))
+            using (Graphics g = pb.CreateGraphics())
             {
-                int v = 0;
-                System.Windows.Forms.MessageBox.Show(
-                    String.Format("{0} {1}", line.Key.X / CellSize + line.Value.X / CellSize, (line.Value.Y / CellSize) + (line.Key.Y / CellSize)));
-                Pen pen = new Pen(Color.Black, 10);
-                Color flag = Color.Black;
-                if (v != 0)
+                foreach (var line in Grid.getLineLocation(bm, p))
                 {
-                    pen.Color = Color.FromKnownColor(KnownColor.Control);
-                    g.DrawLine(pen, line.Key, line.Value);
-                    flag = Color.FromArgb(0, 240, 240, 240);
-                    pen = new Pen(Color.Black, 1);
-                }
-                g.DrawLine(pen, line.Key, line.Value);
-                for (int i = line.Key.X; i <= line.Value.X; i++)
-                    for (int j = line.Key.Y; j <= line.Value.Y; j++)
+                    var sig = String.Format("{0}{1}", line.Key.X / CellSize + line.Value.X / CellSize, (line.Value.Y / CellSize) + (line.Key.Y / CellSize));
+                    Pen pen = new Pen(Color.Black, 10);
+                    Color flag = Color.Black;
+                    if (Gridlines.Contains(sig))
                     {
-                        ;
+                        pen.Color = Color.FromKnownColor(KnownColor.Control);
+                        g.DrawLine(pen, line.Key, line.Value);
+                        flag = Color.FromArgb(0, 240, 240, 240);
+                        pen = new Pen(Color.Black, 1);
+                        Gridlines.Remove(sig);
                     }
+                    else Gridlines.Add(sig, 1);
+                    g.DrawLine(pen, line.Key, line.Value);
+                }
             }
-            g.Dispose();
-            //pb.Image = new Bitmap(bm.Width, bm.Height, g);
         }
+        /// <summary>
+        /// Get the point relared line's locations
+        /// </summary>
+        /// <param name="bm"></param>
+        /// <param name="p"></param>
+        /// <returns></returns>
         protected static List<KeyValuePair<Point, Point>> getLineLocation(Bitmap bm, Point p)
         {
             Point hl = p, hu = p, vl = p, vu = p;
@@ -133,7 +146,16 @@ namespace mltak2
                 l.Add(new KeyValuePair<Point,Point>(vl, vu));
             return l;
         }
+        /// <summary>
+        /// Get size of grid in bitmap scale
+        /// </summary>
+        /// <param name="Size"></param>
+        /// <returns></returns>
         public static Size GetSizeOfGrid(Size Size) { return new Size(Size.Height * CellSize, Size.Width * CellSize); }
+        /// <summary>
+        /// Draw an empty box
+        /// </summary>
+        /// <param name="p"></param>
         protected void __drawBox(Point p)
         {
             Pen pen = new Pen(Color.Black);
@@ -142,7 +164,9 @@ namespace mltak2
             Graphic.DrawLine(pen, (p.X + 1) * CellSize, p.Y * CellSize, (p.X + 1) * CellSize, (p.Y + 1) * CellSize);
             Graphic.DrawLine(pen, (p.X) * CellSize, (p.Y + 1) * CellSize, (p.X + 1) * CellSize, (p.Y + 1) * CellSize);
         }
-
+        /// <summary>
+        /// Dispose resources
+        /// </summary>
         public void Dispose()
         {
             this.Graphic.Dispose();
