@@ -15,6 +15,16 @@ namespace mltak2
         protected Hashtable Gridlines { get; set; }
         protected BlockStatus[,] __blockStatuses;
         public const int CellSize = 100;
+        private bool __drawFromBlockStatuses = false;
+        private System.Windows.Forms.PictureBox __pictureBox;
+        public Grid(BlockStatus[,] bs, System.Windows.Forms.PictureBox pb)
+            : this(new Size(bs.GetLength(0), bs.GetLength(1)), pb.CreateGraphics())
+        {
+            this.__blockStatuses = bs;
+            this.__drawFromBlockStatuses = true;
+            this.__pictureBox = pb;
+            this.__pictureBox = pb;
+        }
         /// <summary>
         /// Construct a grid
         /// </summary>
@@ -51,6 +61,29 @@ namespace mltak2
                 for (int j = 0; j < this.Size.Height; j++)
                 {
                     this.__drawBox(new Point(i, j));
+                    if (this.__drawFromBlockStatuses)
+                    {
+                        foreach (var block_type in Enum.GetValues(typeof(BlockStatus)))
+                        {
+                            if (this.IsBlocked(i, j, (BlockStatus)block_type))
+                            {
+                                switch ((BlockStatus)block_type)
+                                {
+                                    case BlockStatus.BLOCKED: /* Ingore the general block status */break;
+                                    case BlockStatus.EAST:
+                                        this.Block(this.__pictureBox, new Point((i + 1) * CellSize, j * CellSize + CellSize / 2));
+                                        break;
+                                    case BlockStatus.NORTH:
+                                    case BlockStatus.SOUTH:
+                                    case BlockStatus.UNBLOCKED:
+                                    case BlockStatus.WEST:
+                                        break;
+                                    default:
+                                        throw new InvalidProgramException("Undefined block-status");
+                                }
+                            }
+                        }
+                    }
                 }
             }
             return Grid.GetSizeOfGrid(this.Size);
@@ -64,12 +97,16 @@ namespace mltak2
             for (int i = 0; i < this.Size.Width; i++)
             {
                 this.Block(pb, new Point(0, i * CellSize + CellSize / 2));
+                this.__blockStatuses[0, i] = BlockStatus.NORTH;
                 this.Block(pb, new Point(i * CellSize + CellSize / 2, 0));
+                this.__blockStatuses[i, 0] = BlockStatus.WEST;
             }
             for (int i = 0; i < this.Size.Width; i++)
             {
                 this.Block(pb, new Point(this.Size.Width * CellSize, i * CellSize + CellSize / 2), true);
+                this.__blockStatuses[this.Size.Width - 1, i] = BlockStatus.EAST;
                 this.Block(pb, new Point(i * CellSize + CellSize / 2, this.Size.Height * CellSize), true);
+                this.__blockStatuses[i, this.Size.Height - 1] = BlockStatus.SOUTH;
             }
         }
         /// <summary>

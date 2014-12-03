@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace mltak2
 {
@@ -28,7 +29,7 @@ namespace mltak2
             {
                 g = new Grid(gridSize, gfx);
                 g.Draw();
-                this.Size = new Size(s.Width + 21, s.Height + 40);
+                this.Size = new Size(s.Width + 21, s.Height + 90);
             }
             /**
              * 
@@ -83,6 +84,55 @@ namespace mltak2
                 g.ToggleBlock(this.grid, inf.Key);
                 this.Invalidate();
             }
+        }
+
+        private void saveConfigurationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            {
+                using (System.IO.FileStream fs = new System.IO.FileStream("config.dat", System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.None))
+                {
+                    bf.Serialize(fs, g.GetStatus());
+                }
+            }
+            this.toolStripStatus.Text = "Configuration Saved Sucessfully...";
+        }
+
+        private void loadConfigurationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            {
+                using (System.IO.FileStream fs = new System.IO.FileStream("config.dat", System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.None))
+                {
+                    Grid.BlockStatus[,] bs = (Grid.BlockStatus[,])bf.Deserialize(fs);
+                    this.grid.CreateGraphics().Clear(Color.FromKnownColor(KnownColor.Control));
+                    g = new Grid(bs, this.grid);
+                    Timer t = new Timer();
+                    t.Interval = 100;
+                    t.Tick += new EventHandler((_sender, _e) =>
+                    {
+                        t.Stop();
+                        g.Draw();
+                        g.BlockBorders(this.grid);
+                    });
+                    t.Start();
+                }
+            }
+            this.toolStripStatus.Text = "Configuration Loaded Sucessfully...";
+        }
+
+        private void newConfigurationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            g = new Grid(g.Size, this.grid.CreateGraphics());
+            Timer t = new Timer();
+            t.Interval = 100;
+            t.Tick += new EventHandler((_sender, _e) =>
+            {
+                t.Stop();
+                g.Draw();
+                g.BlockBorders(this.grid);
+            });
+            t.Start();
         }
     }
 }
