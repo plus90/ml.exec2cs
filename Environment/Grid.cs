@@ -10,9 +10,8 @@ namespace Environment
     public class Grid : IDisposable
     {
         [Flags]
-        public enum BlockStatus { UNBLOCKED = 0x0, NORTH = 0x1, EAST = 0x2, SOUTH = 0x4, WEST = 0x8, BLOCKED = 0x10 }
+        public enum BlockStatus { NORTH = 0x1, EAST = 0x2, SOUTH = 0x4, WEST = 0x8, BLOCKED = 0x10, UNBLOCKED = 0x20 }
         public Size Size { get; private set; }
-        public Graphics Graphic { get; private set; }
         protected Hashtable Gridlines { get; set; }
         protected BlockStatus[,] __blockStatuses;
         public const int CellSize = 100;
@@ -36,7 +35,7 @@ namespace Environment
         /// <param name="bs">Target block-status of the grid</param>
         /// <param name="pb">The conatiner's handler</param>
         public Grid(BlockStatus[,] bs, System.Windows.Forms.PictureBox pb)
-            : this(new Size(bs.GetLength(0), bs.GetLength(1)), pb.CreateGraphics())
+            : this(new Size(bs.GetLength(0), bs.GetLength(1)))
         {
             this.__blockStatuses = bs;
             this.__drawFromBlockStatuses = true;
@@ -47,10 +46,9 @@ namespace Environment
         /// </summary>
         /// <param name="size"></param>
         /// <param name="graphic"></param>
-        public Grid(Size size, Graphics graphic)
+        public Grid(Size size)
         {
             this.Size = size;
-            this.Graphic = graphic;
             this.Gridlines = new Hashtable();
             this.GoalPoint = new Point(this.Size.Width - 1, 0);
             this.AgentPoint = new Point(0, this.Size.Height - 1);
@@ -73,13 +71,13 @@ namespace Environment
         /// Draw a grid
         /// </summary>
         /// <returns></returns>
-        public Size Draw()
+        public Size Draw(Graphics graphic, bool auto_dispose = true)
         {
             for (int i = 0; i < this.Size.Width; i++)
             {
                 for (int j = 0; j < this.Size.Height; j++)
                 {
-                    this.__drawBox(new Point(i, j));
+                    this.__drawBox(new Point(i, j), graphic);
                     /**
                      * Drawing related blockes to [i, j] cell based on loaded data
                      */
@@ -123,7 +121,8 @@ namespace Environment
                     }
                 }
             }
-            this.Dispose();
+            if(auto_dispose)
+                this.Dispose();
             return Grid.GetSizeOfGrid(this.Size);
         }
         /// <summary>
@@ -245,14 +244,31 @@ namespace Environment
         /// <returns>Returns true if the cell is blocked by the gived status; Otherwise false</returns>
         public bool IsBlocked(int x, int y, BlockStatus blockStatus = BlockStatus.BLOCKED)
         {
-            return __blockStatuses[x, y].HasFlag(blockStatus);
+            if (__blockStatuses[x, y].HasFlag(blockStatus))
+                return true;
+            switch (blockStatus)
+            {
+                case BlockStatus.NORTH:
+                    return y == 0 || __blockStatuses[x, y - 1].HasFlag(BlockStatus.SOUTH);
+                case BlockStatus.EAST:
+                    return x == this.Size.Width - 1 || __blockStatuses[x + 1, y].HasFlag(BlockStatus.WEST);
+                case BlockStatus.SOUTH:
+                    return y == this.Size.Height -1 || __blockStatuses[x, y + 1].HasFlag(BlockStatus.NORTH);
+                case BlockStatus.WEST:
+                    return x == 0 || __blockStatuses[x - 1, y].HasFlag(BlockStatus.EAST);
+                case BlockStatus.BLOCKED:
+                case BlockStatus.UNBLOCKED:
+                default:
+                    /* If these guys didn't pass the above IF-ELSE then this cell does have them */
+                    return false;
+            }
         }
         /// <summary>
         /// Dispose resources
         /// </summary>
         public void Dispose()
         {
-            this.Graphic.Dispose();
+            //this.Graphic.Dispose();
         }
         /// <summary>
         /// Get the nearby line's info on a grid media
@@ -431,18 +447,18 @@ namespace Environment
         /// Draw an empty box
         /// </summary>
         /// <param name="p"></param>
-        private void __drawBox(Point p)
+        private void __drawBox(Point p, Graphics graphic)
         {
             Pen pen = new Pen(Color.Black);
 
             // NORTH
-            Graphic.DrawLine(pen, p.X * CellSize, p.Y * CellSize, (p.X + 1) * CellSize, (p.Y) * CellSize);
+            graphic.DrawLine(pen, p.X * CellSize, p.Y * CellSize, (p.X + 1) * CellSize, (p.Y) * CellSize);
             // WEST
-            Graphic.DrawLine(pen, p.X * CellSize, p.Y * CellSize, p.X * CellSize, (p.Y + 1) * CellSize);
+            graphic.DrawLine(pen, p.X * CellSize, p.Y * CellSize, p.X * CellSize, (p.Y + 1) * CellSize);
             // EAST
-            Graphic.DrawLine(pen, (p.X + 1) * CellSize, p.Y * CellSize, (p.X + 1) * CellSize, (p.Y + 1) * CellSize);
+            graphic.DrawLine(pen, (p.X + 1) * CellSize, p.Y * CellSize, (p.X + 1) * CellSize, (p.Y + 1) * CellSize);
             // SOUTH
-            Graphic.DrawLine(pen, (p.X) * CellSize, (p.Y + 1) * CellSize, (p.X + 1) * CellSize, (p.Y + 1) * CellSize);
+            graphic.DrawLine(pen, (p.X) * CellSize, (p.Y + 1) * CellSize, (p.X + 1) * CellSize, (p.Y + 1) * CellSize);
         }
     }
 }
