@@ -272,10 +272,15 @@ namespace mltak2
                     totall_step_counter += ql.StepCounter;
                 }
                 this.toolStripStatus.Text = "The model has learned...";
-                output o = new output();
+                /**
+                 * Draw the result POLICY!!!
+                 */ 
                 StringBuilder sb = new StringBuilder();
                 Hashtable hs = new Hashtable();
                 optimalPath.Clear();
+                /**
+                 * Normalize the POLICY
+                 */ 
                 foreach (KeyValuePair<Point, GridHelper.Directions> s in ql.QSA.Keys)
                 {
                     if (hs.Contains(s.Key))
@@ -295,6 +300,9 @@ namespace mltak2
                     else optimalPath.Add(s.Key, new KeyValuePair<float, GridHelper.Directions>((float)ql.QSA[s], s.Value));
                 }
                 var margin = 23;
+                /**
+                 * Draw the triangles and POLICY values upon them
+                 */
                 using (var gfx = this.grid.CreateGraphics())
                 {
                     foreach (Point cell in hs.Keys)
@@ -322,7 +330,7 @@ namespace mltak2
                                     this.g.Write(dir.Value.ToString("F1"), new Point(p.X - 2 * margin, p.Y - margin / 2), gfx, Brushes.DarkBlue, new Font("Arial", 10, FontStyle.Bold));
                                     break;
                                 case GridHelper.Directions.HOLD:
-                                    this.g.Write(dir.Value.ToString("F1"), new Point(p.X - 2 * margin, p.Y - 2 * margin), gfx, Brushes.Brown, new Font("Arial", 10, FontStyle.Bold));
+                                    this.g.Write(dir.Value.ToString("F1"), new Point(p.X - 2 * margin, p.Y - 2 * margin), gfx, Brushes.DarkBlue, new Font("Arial", 10, FontStyle.Bold));
                                     break;
                                 default:
                                     break;
@@ -331,6 +339,9 @@ namespace mltak2
                     }
                     hs.Clear();
                     hs = new Hashtable();
+                    /**
+                     * Normalize the visited states count
+                     */ 
                     foreach (KeyValuePair<Point, GridHelper.Directions> cell in ql.VisitedSA.Keys)
                     {
                         long count = (long)ql.VisitedSA[cell];
@@ -339,6 +350,9 @@ namespace mltak2
                         else
                             hs.Add(cell.Key, count);
                     }
+                    /**
+                     * Plot the visited states
+                     */ 
                     foreach (Point cell in hs.Keys)
                     {
                         var p = g.abs2grid(cell);
@@ -366,9 +380,6 @@ namespace mltak2
                 while (this.g.AgentPoint != this.g.GoalPoint)
                 {
                     var s = (KeyValuePair<float, GridHelper.Directions>)this.optimalPath[this.g.AgentPoint];
-                    if (s.Value == GridHelper.Directions.WEST)
-                    {
-                    }
                     var m = gh.Move(this.g.AgentPoint, s.Value);
                     __last_valid_grid_block = g.abs2grid(m.NewPoint);
                     MarkStartPointGrid_Click(sender, e);

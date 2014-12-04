@@ -76,8 +76,6 @@ namespace Environment
         {
             if (this.BoundedGrid.IsBlocked(point.X, point.Y, Grid.BlockStatus.BLOCKED))
                 return false;
-            if (this.BoundedGrid.IsBlocked(point.X, point.Y, Grid.BlockStatus.UNBLOCKED))
-                return true;
             switch (direction)
             {
                 case Directions.NORTH: return !this.BoundedGrid.IsBlocked(point.X, point.Y, Grid.BlockStatus.NORTH);
@@ -85,7 +83,7 @@ namespace Environment
                 case Directions.SOUTH: return !this.BoundedGrid.IsBlocked(point.X, point.Y, Grid.BlockStatus.SOUTH);
                 case Directions.WEST: return !this.BoundedGrid.IsBlocked(point.X, point.Y, Grid.BlockStatus.WEST);
             }
-            return false;
+            return true;
         }
         /// <summary>
         /// Returns a list of available move at a point
