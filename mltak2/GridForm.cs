@@ -246,7 +246,8 @@ namespace mltak2
         {
             new Configurations().Show();
         }
-        private void trainToolStripMenuItem_Click(object sender, EventArgs e)
+        Hashtable optimalPath = new Hashtable();
+        private void trainQLearningToolStripMenuItem_Click(object sender, EventArgs e)
         {
             System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(() =>
             {
@@ -265,15 +266,16 @@ namespace mltak2
                         new Func<Grid, long, bool>((g, step_counter) =>
                         {
                             if (step_counter % 40 == 0)
-                                this.toolStripStatus.Text = String.Format("{0}% Of learning process passed....", (step_counter + totall_step_counter) * (i + 1) * 10 / (max_q_table_size * 40 * max_iter));
+                                this.toolStripStatus.Text = String.Format("{0}% Of learning process passed....", (step_counter + totall_step_counter + i + 1) * 100 / (max_q_table_size * 40 * max_iter));
                             return 40 * max_q_table_size <= step_counter;
                         }));
                     totall_step_counter += ql.StepCounter;
                 }
-                this.toolStripStatus.Text = "The model is learned...";
+                this.toolStripStatus.Text = "The model has learned...";
                 output o = new output();
                 StringBuilder sb = new StringBuilder();
                 Hashtable hs = new Hashtable();
+                optimalPath.Clear();
                 foreach (KeyValuePair<Point, GridHelper.Directions> s in ql.QSA.Keys)
                 {
                     if (hs.Contains(s.Key))
@@ -285,6 +287,12 @@ namespace mltak2
                     {
                         hs.Add(s.Key, new List<KeyValuePair<GridHelper.Directions, float>>() { new KeyValuePair<GridHelper.Directions, float>(s.Value, (float)ql.QSA[s]) });
                     }
+                    if (optimalPath.Contains(s.Key))
+                    {
+                        if ((float)ql.QSA[s] > ((KeyValuePair<float, GridHelper.Directions>)optimalPath[s.Key]).Key)
+                            optimalPath[s.Key] = new KeyValuePair<float, GridHelper.Directions>((float)ql.QSA[s], s.Value);
+                    }
+                    else optimalPath.Add(s.Key, new KeyValuePair<float, GridHelper.Directions>((float)ql.QSA[s], s.Value));
                 }
                 var margin = 23;
                 using (var gfx = this.grid.CreateGraphics())
@@ -337,9 +345,37 @@ namespace mltak2
                         this.g.Write("#" + hs[cell].ToString(), new Point(p.X + 2 * margin / 3, p.Y - 2 * margin), gfx, Brushes.Brown, new Font("Arial", 10, FontStyle.Bold));
                     }
                 }
+                this.exameToolStripMenuItem.GetCurrentParent().Invoke(new Action(() =>
+                {
+                    this.exameToolStripMenuItem.Enabled = true;
+                }));
             }));
             t.Start();
             this.toolStripStatus.Text = "Start learning...";
+        }
+
+        private void exameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(() =>
+            {
+                if (this.optimalPath == null || this.optimalPath.Count == 0)
+                {
+                    MessageBox.Show("There no stored optimal values...");
+                }
+                var gh = new GridHelper(this.g);
+                while (this.g.AgentPoint != this.g.GoalPoint)
+                {
+                    var s = (KeyValuePair<float, GridHelper.Directions>)this.optimalPath[this.g.AgentPoint];
+                    var m = gh.Move(this.g.AgentPoint, s.Value);
+                    __last_valid_grid_block = g.abs2grid(m.NewPoint);
+                    MarkStartPointGrid_Click(sender, e);
+                    this.g.AgentPoint = m.NewPoint;
+                    Application.DoEvents();
+                    System.Threading.Thread.Sleep(500);
+                }
+                MessageBox.Show("Has reached the goal...", "Horray!!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk, MessageBoxDefaultButton.Button1);
+            }));
+            t.Start();
         }
     }
 }
