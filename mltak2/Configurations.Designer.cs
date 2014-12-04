@@ -110,6 +110,8 @@
             this.gridWidth.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.gridWidth.FormattingEnabled = true;
             this.gridWidth.Items.AddRange(new object[] {
+            "2",
+            "3",
             "4",
             "5",
             "6",

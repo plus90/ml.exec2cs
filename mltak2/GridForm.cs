@@ -94,7 +94,15 @@ namespace mltak2
                 t.Start();
             });
             if(System.IO.File.Exists("config.dat"))
-                loadConfigurationToolStripMenuItem_Click(new object(), new EventArgs());
+                try
+                {
+                    loadConfigurationToolStripMenuItem_Click(new object(), new EventArgs());
+                }
+                catch
+                {
+                    MessageBox.Show("Unable to load the saved configurations");
+                    newConfigurationToolStripMenuItem_Click(new object(), new EventArgs());
+                }
             else
                 newConfigurationToolStripMenuItem_Click(new object(), new EventArgs());
         }
@@ -166,6 +174,7 @@ namespace mltak2
                 }
             }
             this.toolStripStatus.Text = "Configuration Loaded Sucessfully...";
+            //trainToolStripMenuItem_Click(sender, e);
         }
 
         private void newConfigurationToolStripMenuItem_Click(object sender, EventArgs e)
@@ -230,6 +239,18 @@ namespace mltak2
         private void configurationsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             new Configurations().Show() ;
+        }
+
+        private void trainToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new ReinforcementLearning.QLearning(
+                this.g,
+                new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>()),
+                0.9F,
+                0.2F).Train(new Func<Grid, bool>((g) =>
+                {
+                    return false;
+                }));
         }
     }
 }

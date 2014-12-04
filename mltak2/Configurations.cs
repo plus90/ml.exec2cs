@@ -14,7 +14,7 @@ namespace mltak2
         public Configurations()
         {
             InitializeComponent();
-            this.gridWidth.SelectedIndex = Properties.Settings.Default.GridSize.Width - 4;
+            this.gridWidth.SelectedIndex = Properties.Settings.Default.GridSize.Width - 2;
             this.gamma.Text = Properties.Settings.Default.Gamma.ToString();
             this.KeyPreview = true;
             this.KeyDown += new KeyEventHandler((sender, e) =>
@@ -32,7 +32,7 @@ namespace mltak2
 
         public void SetGridSize(Size size)
         {
-            if (size.Height < 4 || size.Height > 10 || size.Width < 4 || size.Width > 10)
+            if (size.Height < 2 || size.Height > 10 || size.Width < 2 || size.Width > 10)
                 throw new ArgumentOutOfRangeException("The size is not in ranges of { [4..10], [4..10] }");
             Properties.Settings.Default.GridSize = size;
             Properties.Settings.Default.Save();
@@ -50,10 +50,15 @@ namespace mltak2
         {
             try
             {
-                this.SetGridSize(new Size(int.Parse(this.gridWidth.SelectedItem.ToString()), int.Parse(this.gridWidth.SelectedItem.ToString())));
+                var s = new Size(int.Parse(this.gridWidth.SelectedItem.ToString()), int.Parse(this.gridWidth.SelectedItem.ToString()));
                 this.SetGammaValue(float.Parse(this.gamma.Text));
-                if (MessageBox.Show("Application is going to restart in order to apply the new configurations!", "Notice...", MessageBoxButtons.OKCancel, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.OK)
-                    Application.Restart();
+                if (s != Properties.Settings.Default.GridSize)
+                {
+                    this.SetGridSize(s);
+                    System.IO.File.Delete("config.dat");
+                    if (MessageBox.Show("Application is going to restart in order to apply the new configurations!", "Notice...", MessageBoxButtons.OKCancel, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.OK)
+                        Application.Restart();
+                }
             }
             catch (ArgumentOutOfRangeException aore)
             {
