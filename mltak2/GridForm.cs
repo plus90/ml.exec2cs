@@ -118,6 +118,11 @@ namespace mltak2
 
         private void saveConfigurationToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (System.IO.File.Exists("config.dat") && MessageBox.Show("Are you sure you want to overwrite the previously save configuration data?", "Attention!!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.No)
+            {
+                this.toolStripStatus.Text = "Operation Abort...";
+                return;
+            }
             BinaryFormatter bf = new BinaryFormatter();
             {
                 using (System.IO.FileStream fs = new System.IO.FileStream("config.dat", System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.None))
@@ -132,6 +137,12 @@ namespace mltak2
 
         private void loadConfigurationToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (!System.IO.File.Exists("config.dat"))
+            {
+                MessageBox.Show("No configuration file found!");
+                this.toolStripStatus.Text = "Operation Abort...";
+                return;
+            }
             BinaryFormatter bf = new BinaryFormatter();
             {
                 using (System.IO.FileStream fs = new System.IO.FileStream("config.dat", System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.None))
