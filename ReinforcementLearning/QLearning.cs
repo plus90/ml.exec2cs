@@ -57,10 +57,8 @@ namespace ReinforcementLearning
                 this.__visit(s.OldPoint, a);
                 // get the new-state's reward
                 var r = this.__get_reward(s.NewPoint);
-                // choose a' from s'
-                Action aprim = this.__choose_action();
-                // update the Q-Value of current with [s, a, s', r] values
-                this.__update_q_value(s.OldPoint, a, s.NewPoint, r, aprim);
+                // update the Q-Value of current with [s, a, s'] values
+                this.__update_q_value(s.OldPoint, a, r, s.NewPoint);
                 // assign the next state
                 state = s.NewPoint;
                 // examine the learning loop
@@ -75,10 +73,10 @@ namespace ReinforcementLearning
         /// </summary>
         /// <param name="st">The state at `t`</param>
         /// <param name="a">The action at `t`</param>
-        /// <param name="stplus">The state at `t+1`</param>
         /// <param name="r">The awarded reward at `t+1`</param>
+        /// <param name="stplus">The state at `t+1`</param>
         /// <returns>The updated Q-Value</returns>
-        protected override QVal __update_q_value(State st, Action a, State stplus, Reward r, params object[] o)
+        protected override QVal __update_q_value(State st, Action a, Reward r, State stplus, params object[] o)
         {
             var qt = this.__get_q_value(st, a);
             QVal v = QVal.MinValue;
