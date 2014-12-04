@@ -252,7 +252,7 @@ namespace mltak2
             System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(() =>
             {
                 var max_q_table_size = Enum.GetValues(typeof(GridHelper.Directions)).Length * this.g.Size.Height * this.g.Size.Width;
-                const int max_iter = 1;
+                const int max_iter = 5;
                 long totall_step_counter = 0;
                 ReinforcementLearning.QLearning ql = null;
                 for (int i = 0; i < max_iter; i++)
@@ -263,11 +263,11 @@ namespace mltak2
                          0.9F,
                          0.2F, ql == null ? null : ql.QSA);
                     ql.Train(
-                        new Func<Grid, long, bool>((g, step_counter) =>
+                        new Func<Grid, Point, long, bool>((g, s, step_counter) =>
                         {
-                            if (step_counter % 40 == 0)
+                            if (step_counter % 10 == 0)
                                 this.toolStripStatus.Text = String.Format("{0}% Of learning process passed....", (step_counter + totall_step_counter + i + 1) * 100 / (max_q_table_size * 40 * max_iter));
-                            return 40 * max_q_table_size <= step_counter;
+                            return 40 * max_q_table_size <= step_counter ;//|| s == g.GoalPoint;
                         }));
                     totall_step_counter += ql.StepCounter;
                 }
@@ -366,6 +366,9 @@ namespace mltak2
                 while (this.g.AgentPoint != this.g.GoalPoint)
                 {
                     var s = (KeyValuePair<float, GridHelper.Directions>)this.optimalPath[this.g.AgentPoint];
+                    if (s.Value == GridHelper.Directions.WEST)
+                    {
+                    }
                     var m = gh.Move(this.g.AgentPoint, s.Value);
                     __last_valid_grid_block = g.abs2grid(m.NewPoint);
                     MarkStartPointGrid_Click(sender, e);

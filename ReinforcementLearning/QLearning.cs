@@ -47,17 +47,17 @@ namespace ReinforcementLearning
                     this.RandGen = new Random(System.Environment.TickCount + e.SignalTime.Millisecond);
                 GC.Collect();
             });
-            this.RefreshTimer.Start();
         }
         ~QLearning()
         {
             this.RefreshTimer.Stop();
             this.RefreshTimer.Dispose();
         }
-        public void Train(Func<Grid, long, bool> termination_validtor = null)
+        public void Train(Func<Grid, State, long, bool> termination_validtor = null)
         {
+            this.RefreshTimer.Start();
             if (termination_validtor == null)
-                termination_validtor = new Func<Environment.Grid, long, bool>(this.__should_terminate);
+                termination_validtor = new Func<Environment.Grid, State, long, bool>(this.__should_terminate);
             var gh = new GridHelper(this.Grid);
             Action a = Action.HOLD;
             State state = this.Grid.AgentPoint;
@@ -72,12 +72,13 @@ namespace ReinforcementLearning
                 this.__update_q_value(s.OldPoint, a, s.NewPoint, r);
                 // go to the new point
                 state = s.NewPoint;
-            } while (!termination_validtor(this.Grid, this.StepCounter) && ++this.StepCounter <= long.MaxValue);
+            } while (!termination_validtor(this.Grid, state, this.StepCounter) && ++this.StepCounter <= long.MaxValue);
+            this.RefreshTimer.Stop();
         }
         /// <summary>
         /// Check if should terminate the training loop
         /// </summary>
-        protected bool __should_terminate(Grid grid, long step_counter) { return grid.AgentPoint == grid.GoalPoint; }
+        protected bool __should_terminate(Grid grid, State s, long step_counter) { return s == grid.GoalPoint; }
         /// <summary>
         /// Get reward based on current state of grid
         /// </summary>

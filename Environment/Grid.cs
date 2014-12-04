@@ -53,6 +53,14 @@ namespace Environment
             this.GoalPoint = new Point(this.Size.Width - 1, 0);
             this.AgentPoint = new Point(0, this.Size.Height - 1);
             __blockStatuses = new BlockStatus[(this.Size.Width), (this.Size.Height)];
+            // Fill the block status
+            for (int i = 0; i < this.Size.Width; i++)
+            {
+                for (int j = 0; j < this.Size.Height; j++)
+                {
+                    __blockStatuses[i, j] = BlockStatus.UNBLOCKED;
+                }
+            }
             /**
              * Update the block status of borders of grid
              */
@@ -366,7 +374,10 @@ namespace Environment
             if (blockStatus == BlockStatus.UNBLOCKED)
                 __blockStatuses[x, y] = blockStatus;
             else
+            {
+                __blockStatuses[x, y] &= ~BlockStatus.UNBLOCKED;
                 __blockStatuses[x, y] = __blockStatuses[x, y] | blockStatus;
+            }
         }
         /// <summary>
         /// Get the point relared line's locations

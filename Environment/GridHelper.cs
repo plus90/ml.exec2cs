@@ -102,6 +102,48 @@ namespace Environment
             }
             return am;
         }
+        protected Point __getDirectionPoint(Point from, Directions direction)
+        {
+            switch (direction)
+            {
+                case Directions.NORTH:
+                    if (from.Y <= 0)
+                        return from;
+                    return new Point(from.X, from.Y - 1);
+                case Directions.EAST:
+                    if (from.X >= this.BoundedGrid.Size.Width - 1)
+                        return from;
+                    return new Point(from.X + 1, from.Y);
+                case Directions.SOUTH:
+                    if (from.Y >= this.BoundedGrid.Size.Height - 1)
+                        return from;
+                    return new Point(from.X, from.Y + 1);
+                case Directions.WEST:
+                    if (from.X <= 0)
+                        return from;
+                    return new Point(from.X - 1, from.Y);
+                case Directions.HOLD:
+                    return from;
+                default:
+                    throw new ArgumentException("Unsupported direction");
+            }
+        }
+        protected Directions[] __getCrossDirection(Directions direction)
+        {
+            switch (direction)
+            {
+                case Directions.SOUTH:
+                case Directions.NORTH:
+                    return new Directions[] { Directions.EAST, Directions.WEST };
+                case Directions.EAST:
+                case Directions.WEST:
+                    return new Directions[] { Directions.SOUTH, Directions.NORTH };
+                case Directions.HOLD:
+                    return new Directions[] { };
+                default:
+                    throw new ArgumentException("Unsupported direction");
+            }
+        }
         /// <summary>
         /// Get destination point of a direction, specifically coded based upon the exercise instruction; See remarks for more details.
         /// </summary>
@@ -119,74 +161,74 @@ namespace Environment
         {
             switch (direction)
             {
+                //case Directions.NORTH:
+                //    lock (this.propExaminer)
+                //    {
+                //        if (this.propExaminer.NextDouble() <= MovementAccuracy)
+                //        {
+                //            if (from.Y == 0 || !this.CanMove(from, direction))
+                //                return from;
+                //            return new Point(from.X, from.Y - 1);
+                //        }
+                //        Point[] cross_moves = new Point[] { new Point(from.X - 1, from.Y), new Point(from.X + 1, from.Y) };
+                //        var dp = cross_moves[this.propExaminer.Next(0, cross_moves.Length - 1)];
+                //        if (dp.X < 0 || dp.X >= this.BoundedGrid.Size.Width)
+                //            return from;
+                //        if (this.CanMove(dp, direction))
+                //            return dp;
+                //        return from;
+                //    }
                 case Directions.NORTH:
-                    lock (this.propExaminer)
-                    {
-                        if (this.propExaminer.NextDouble() <= MovementAccuracy)
-                        {
-                            if (from.Y == 0 || !this.CanMove(from, direction))
-                                return from;
-                            return new Point(from.X, from.Y - 1);
-                        }
-                        Point[] cross_moves = new Point[] { new Point(from.X - 1, from.Y), new Point(from.X + 1, from.Y) };
-                        var dp = cross_moves[this.propExaminer.Next(0, cross_moves.Length - 1)];
-                        if (dp.X < 0 || dp.X >= this.BoundedGrid.Size.Width)
-                            return from;
-                        if (this.CanMove(dp, direction))
-                            return dp;
-                        return from;
-                    }
                 case Directions.EAST:
-                    lock (this.propExaminer)
-                    {
-                        if (this.propExaminer.NextDouble() <= MovementAccuracy)
-                        {
-                            if (from.X >= this.BoundedGrid.Size.Width - 1 || !this.CanMove(from, direction))
-                                return from;
-                            return new Point(from.X + 1, from.Y);
-                        }
-                        Point[] cross_moves = new Point[] { new Point(from.X, from.Y - 1), new Point(from.X, from.Y + 1) };
-                        var dp = cross_moves[this.propExaminer.Next(0, cross_moves.Length - 1)];
-                        if (dp.Y < 0 || dp.Y >= this.BoundedGrid.Size.Height)
-                            return from;
-                        if (this.CanMove(dp, direction))
-                            return dp;
-                        return from;
-                    }
                 case Directions.SOUTH:
-                    lock (this.propExaminer)
-                    {
-                        if (this.propExaminer.NextDouble() <= MovementAccuracy)
-                        {
-                            if (from.Y >= this.BoundedGrid.Size.Width - 1 || !this.CanMove(from, direction))
-                                return from;
-                            return new Point(from.X, from.Y + 1);
-                        }
-                        Point[] cross_moves = new Point[] { new Point(from.X - 1, from.Y), new Point(from.X + 1, from.Y) };
-                        var dp = cross_moves[this.propExaminer.Next(0, cross_moves.Length - 1)];
-                        if (dp.X < 0 || dp.X >= this.BoundedGrid.Size.Width)
-                            return from;
-                        if (this.CanMove(dp, direction))
-                            return dp;
-                        return from;
-                    }
                 case Directions.WEST:
                     lock (this.propExaminer)
                     {
                         if (this.propExaminer.NextDouble() <= MovementAccuracy)
                         {
-                            if (from.X <= 0 || !this.CanMove(from, direction))
+                            if (!this.CanMove(from, direction))
                                 return from;
-                            return new Point(from.X - 1, from.Y);
+                            return this.__getDirectionPoint(from, direction);
                         }
-                        Point[] cross_moves = new Point[] { new Point(from.X, from.Y - 1), new Point(from.X, from.Y + 1) };
-                        var dp = cross_moves[this.propExaminer.Next(0, cross_moves.Length - 1)];
-                        if (dp.Y < 0 || dp.Y >= this.BoundedGrid.Size.Height)
-                            return from;
-                        if(this.CanMove(dp, direction))
-                            return dp;
+                        var choosen_cross_direction = this.__getCrossDirection(direction)[this.propExaminer.Next(0, 1)];
+                        if (this.CanMove(from, choosen_cross_direction))
+                            return this.__getDirectionPoint(from, choosen_cross_direction);
                         return from;
                     }
+                //case Directions.SOUTH:
+                //    lock (this.propExaminer)
+                //    {
+                //        if (this.propExaminer.NextDouble() <= MovementAccuracy)
+                //        {
+                //            if (!this.CanMove(from, direction))
+                //                return from;
+                //            return new Point(from.X, from.Y + 1);
+                //        }
+                //        Point[] cross_moves = new Point[] { new Point(from.X - 1, from.Y), new Point(from.X + 1, from.Y) };
+                //        var dp = cross_moves[this.propExaminer.Next(0, cross_moves.Length - 1)];
+                //        if (dp.X < 0 || dp.X >= this.BoundedGrid.Size.Width)
+                //            return from;
+                //        if (this.CanMove(dp, direction))
+                //            return dp;
+                //        return from;
+                //    }
+                //case Directions.WEST:
+                //    lock (this.propExaminer)
+                //    {
+                //        if (this.propExaminer.NextDouble() <= MovementAccuracy)
+                //        {
+                //            if (from.X <= 0 || !this.CanMove(from, direction))
+                //                return from;
+                //            return new Point(from.X - 1, from.Y);
+                //        }
+                //        Point[] cross_moves = new Point[] { new Point(from.X, from.Y - 1), new Point(from.X, from.Y + 1) };
+                //        var dp = cross_moves[this.propExaminer.Next(0, cross_moves.Length - 1)];
+                //        if (dp.Y < 0 || dp.Y >= this.BoundedGrid.Size.Height)
+                //            return from;
+                //        if(this.CanMove(dp, direction))
+                //            return dp;
+                //        return from;
+                //    }
                 case Directions.HOLD:
                     return from;
                 default:
@@ -199,6 +241,9 @@ namespace Environment
         /// <param name="point">The target point to move</param>
         /// <param name="direction">The desired direction</param>
         /// <returns>The movement status instance</returns>
-        public Status Move(Point point, Directions direction) { return new Status(__getPoint(point, direction), point); }
+        public Status Move(Point point, Directions direction)
+        {
+            return new Status(__getPoint(point, direction), point);
+        }
     }
 }
