@@ -130,7 +130,7 @@
             this.qLearningToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q)));
             this.qLearningToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
             this.qLearningToolStripMenuItem.Text = "QLearning";
-            this.qLearningToolStripMenuItem.Click += new System.EventHandler(this.learnQLearningToolStripMenuItem_Click);
+            this.qLearningToolStripMenuItem.Click += new System.EventHandler(this.learnGridToolStripMenuItem_Click);
             // 
             // sARSAToolStripMenuItem
             // 
