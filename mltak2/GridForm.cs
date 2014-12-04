@@ -366,16 +366,16 @@ namespace mltak2
                         this.g.Write("#" + hs[cell].ToString(), new Point(p.X + 2 * margin / 3, p.Y - 2 * margin), gfx, Brushes.Brown, new Font("Arial", 10, FontStyle.Bold));
                     }
                 }
-                this.exameToolStripMenuItem.GetCurrentParent().Invoke(new Action(() =>
+                this.examToolStripMenuItem.GetCurrentParent().Invoke(new Action(() =>
                 {
-                    this.exameToolStripMenuItem.Enabled = true;
+                    this.examToolStripMenuItem.Enabled = true;
                 }));
             }));
             t.Start();
             this.toolStripStatus.Text = "Start learning...";
         }
 
-        private void exameToolStripMenuItem_Click(object sender, EventArgs e)
+        private void examToolStripMenuItem_Click(object sender, EventArgs e)
         {
             System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(() =>
             {

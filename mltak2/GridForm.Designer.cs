@@ -39,7 +39,7 @@
             this.learnToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.qLearningToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sARSAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.examToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.toolStripStatus = new System.Windows.Forms.ToolStripLabel();
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -66,7 +66,7 @@
             this.fileToolStripMenuItem,
             this.configurationsToolStripMenuItem,
             this.learnToolStripMenuItem,
-            this.exameToolStripMenuItem});
+            this.examToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(284, 24);
@@ -139,13 +139,13 @@
             this.sARSAToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
             this.sARSAToolStripMenuItem.Text = "SARSA";
             // 
-            // exameToolStripMenuItem
+            // examToolStripMenuItem
             // 
-            this.exameToolStripMenuItem.Enabled = false;
-            this.exameToolStripMenuItem.Name = "exameToolStripMenuItem";
-            this.exameToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
-            this.exameToolStripMenuItem.Text = "&Exame";
-            this.exameToolStripMenuItem.Click += new System.EventHandler(this.exameToolStripMenuItem_Click);
+            this.examToolStripMenuItem.Enabled = false;
+            this.examToolStripMenuItem.Name = "examToolStripMenuItem";
+            this.examToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
+            this.examToolStripMenuItem.Text = "&Exam";
+            this.examToolStripMenuItem.Click += new System.EventHandler(this.examToolStripMenuItem_Click);
             // 
             // toolStrip
             // 
@@ -226,7 +226,7 @@
         private System.Windows.Forms.ToolStripMenuItem learnToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem qLearningToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem sARSAToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exameToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem examToolStripMenuItem;
     }
 }
 
