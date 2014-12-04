@@ -308,6 +308,21 @@ namespace mltak2
                             }
                         }
                     }
+                    hs.Clear();
+                    hs = new Hashtable();
+                    foreach (KeyValuePair<Point, GridHelper.Directions> cell in ql.VisitedSA.Keys)
+                    {
+                        long count = (long)ql.VisitedSA[cell];
+                        if (hs.Contains(cell.Key))
+                            hs[cell.Key] = (long)hs[cell.Key] + count;
+                        else
+                            hs.Add(cell.Key, count);
+                    }
+                    foreach (Point cell in hs.Keys)
+                    {
+                        var p = g.abs2grid(cell);
+                        this.g.Write("#"+hs[cell].ToString(), new Point(p.X + 2 * margin /3, p.Y - 2 * margin), gfx, Brushes.Brown, new Font("Arial", 10, FontStyle.Bold));
+                    }
                 }
             }));
             t.Start();

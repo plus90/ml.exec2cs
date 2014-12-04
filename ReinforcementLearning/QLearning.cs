@@ -15,6 +15,7 @@ namespace ReinforcementLearning
     {
         protected Grid Grid { get; set; }
         public Hashtable QSA { get; protected set; }
+        public Hashtable VisitedSA { get; protected set; }
         protected Point PreviousState { get; set; }
         protected Random RandGen { get; set; }
         protected System.Timers.Timer RefreshTimer { get; set; }
@@ -31,6 +32,7 @@ namespace ReinforcementLearning
             this.Gamma = gamma;
             this.StepCounter = 0;
             this.QSA = new Hashtable();
+            this.VisitedSA = new Hashtable();
             this.RandGen = new Random(System.Environment.TickCount);
             this.RefreshTimer = new System.Timers.Timer(400);
             this.RefreshTimer.Elapsed += new System.Timers.ElapsedEventHandler((sender, e) =>
@@ -62,6 +64,7 @@ namespace ReinforcementLearning
                 this.__update_q_value(this.Grid.AgentPoint, a, s.NewPoint, r);
                 // go to the new point
                 this.Grid.AgentPoint = s.NewPoint;
+                this.__visit(s.OldPoint, a);
             } while (!termination_validtor(this.Grid, this.StepCounter) && ++this.StepCounter <= long.MaxValue);
         }
         /// <summary>
@@ -99,6 +102,20 @@ namespace ReinforcementLearning
                 this.QSA.Add(sig, v);
             this.QSA[sig] = v;
             return v;
+        }
+        /// <summary>
+        /// Increase the visit rate of a State-Action if any exists or initializes it.
+        /// </summary>
+        /// <param name="s">The state of the agent</param>
+        /// <param name="a">The action of the agent</param>
+        /// <returns>The# of current State-Action is visited, counting this time.</returns>
+        protected long __visit(State s, Action a)
+        {
+            var sig = new KeyValuePair<State, Action>(s, a);
+            if (!this.VisitedSA.Contains(sig))
+                this.VisitedSA.Add(sig, (long)0);
+            this.VisitedSA[sig] = (long)this.VisitedSA[sig] + 1;
+            return (long)this.VisitedSA[sig];
         }
         /// <summary>
         /// Updates the Q-Value
