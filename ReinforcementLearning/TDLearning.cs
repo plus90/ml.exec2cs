@@ -181,7 +181,7 @@ namespace ReinforcementLearning
         /// <param name="stplus">The state at `t+1`</param>
         /// <param name="r">The awarded reward at `t+1`</param>
         /// <returns>The updated Q-Value</returns>
-        protected abstract QVal __update_q_value(State st, Action a, State stplus, Reward r, params object[] o);
+        protected abstract QVal __update_q_value(State st, Action a, Reward r, State stplus, params object[] o);
         /// <summary>
         /// Learn the grid
         /// </summary>
