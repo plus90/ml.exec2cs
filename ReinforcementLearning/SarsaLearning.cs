@@ -54,8 +54,10 @@ namespace ReinforcementLearning
                 this.__visit(s.OldPoint, a);
                 // get the new-state's reward
                 var r = this.__get_reward(s.NewPoint);
+                // choose a' from s'
+                Action aprim = this.__choose_action();
                 // update the Q-Value of current with [s, a, s', r] values
-                this.__update_q_value(s.OldPoint, a, s.NewPoint, r);
+                this.__update_q_value(s.OldPoint, a, r, s.NewPoint, aprim);
                 // assign the next state
                 state = s.NewPoint;
                 // examine the learning loop
@@ -70,15 +72,16 @@ namespace ReinforcementLearning
         /// </summary>
         /// <param name="st">The state at `t`</param>
         /// <param name="a">The action at `t`</param>
-        /// <param name="stplus">The state at `t+1`</param>
         /// <param name="r">The awarded reward at `t+1`</param>
+        /// <param name="stplus">The state at `t+1`</param>
+        /// <param name="aplus">The action at `t+1`</param>
         /// <returns>The updated Q-Value</returns>
-        protected override QVal __update_q_value(State st, Action a, State stplus, Reward r, params object[] o)
+        protected override QVal __update_q_value(State st, Action a, Reward r, State stplus, params object[] aplus)
         {
-            if (o.Length == 0 || (o[0] is Action))
+            if (aplus.Length == 0 || (aplus[0] is Action))
                 throw new ArgumentException("Expecting an action as last comment", "o");
             var qt = this.__get_q_value(st, a);
-            var v = this.__get_q_value(stplus, (Action)o[0]);
+            var v = this.__get_q_value(stplus, (Action)aplus[0]);
             qt = (1 - this.Alpha) * qt + this.Alpha * (r + this.Gamma * v);
             this.__set_q_value(st, a, qt);
             return qt;
