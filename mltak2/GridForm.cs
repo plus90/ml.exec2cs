@@ -243,13 +243,14 @@ namespace mltak2
 
         private void trainToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            var max_q_table_size = Enum.GetValues(typeof(GridHelper.Directions)).Length * this.g.Size.Height * this.g.Size.Width;
             new ReinforcementLearning.QLearning(
                 this.g,
                 new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>()),
                 0.9F,
-                0.2F).Train(new Func<Grid, bool>((g) =>
+                0.2F).Train(new Func<Grid, long, bool>((g, step_counter) =>
                 {
-                    return false;
+                    return 40 * max_q_table_size <= step_counter; 
                 }));
         }
     }

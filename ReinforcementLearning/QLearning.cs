@@ -22,12 +22,14 @@ namespace ReinforcementLearning
         protected GridHelper.Directions PreviousAction { get; set; }
         protected readonly float Alpha;
         protected readonly float Gamma;
+        public long StepCounter { get; protected set; }
         public QLearning(Grid grid, List<Action> A, float gamma, float alpha)
         {
             this.Grid = grid;
             this.Actions = A;
             this.Alpha = alpha;
             this.Gamma = gamma;
+            this.StepCounter = 0;
             this.QSA = new Hashtable();
             this.RandGen = new Random(System.Environment.TickCount);
             this.RefreshTimer = new System.Timers.Timer(400);
@@ -44,10 +46,10 @@ namespace ReinforcementLearning
             this.RefreshTimer.Stop();
             this.RefreshTimer.Dispose();
         }
-        public void Train(Func<Grid, bool> termination_validtor = null)
+        public void Train(Func<Grid, long, bool> termination_validtor = null)
         {
             if (termination_validtor == null)
-                termination_validtor = new Func<Environment.Grid, bool>(this.__should_terminate);
+                termination_validtor = new Func<Environment.Grid, long, bool>(this.__should_terminate);
             var gh = new GridHelper(this.Grid);
             Action a = Action.HOLD;
             do
@@ -60,12 +62,13 @@ namespace ReinforcementLearning
                 this.__update_q_value(this.Grid.AgentPoint, a, s.NewPoint, r);
                 // go to the new point
                 this.Grid.AgentPoint = s.NewPoint;
-            } while (!termination_validtor(this.Grid));
+                this.StepCounter++;
+            } while (!termination_validtor(this.Grid, this.StepCounter));
         }
         /// <summary>
         /// Check if should terminate the training loop
         /// </summary>
-        protected bool __should_terminate(Grid grid) { return grid.AgentPoint == grid.GoalPoint; }
+        protected bool __should_terminate(Grid grid, long step_counter) { return grid.AgentPoint == grid.GoalPoint; }
         /// <summary>
         /// Get reward based on current state of grid
         /// </summary>
