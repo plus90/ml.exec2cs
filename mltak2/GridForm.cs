@@ -18,6 +18,7 @@ namespace mltak2
         protected Timer __NearBySearchTimer { get; set; }
         Grid g { get; set; }
         Point __last_valid_grid_block;
+        Hashtable optimalPath = new Hashtable();
         public GridForm()
         {
             InitializeComponent();
@@ -246,8 +247,7 @@ namespace mltak2
         {
             new Configurations().Show();
         }
-        Hashtable optimalPath = new Hashtable();
-        private void trainQLearningToolStripMenuItem_Click(object sender, EventArgs e)
+        private void learnQLearningToolStripMenuItem_Click(object sender, EventArgs e)
         {
             System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(() =>
             {
@@ -261,8 +261,8 @@ namespace mltak2
                          this.g,
                          new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>()),
                          0.9F,
-                         0.2F, ql == null ? null : ql.QSA);
-                    ql.Train(
+                         0.2F, ql == null ? null : ql.QTable);
+                    ql.Learn(
                         new Func<Grid, Point, long, bool>((g, s, step_counter) =>
                         {
                             if (step_counter % 10 == 0)
@@ -274,30 +274,30 @@ namespace mltak2
                 this.toolStripStatus.Text = "The model has learned...";
                 /**
                  * Draw the result POLICY!!!
-                 */ 
+                 */
                 StringBuilder sb = new StringBuilder();
                 Hashtable hs = new Hashtable();
                 optimalPath.Clear();
                 /**
                  * Normalize the POLICY
-                 */ 
-                foreach (KeyValuePair<Point, GridHelper.Directions> s in ql.QSA.Keys)
+                 */
+                foreach (KeyValuePair<Point, GridHelper.Directions> s in ql.QTable.Keys)
                 {
                     if (hs.Contains(s.Key))
                     {
                         var a = hs[s.Key] as List<KeyValuePair<GridHelper.Directions, float>>;
-                        a.Add(new KeyValuePair<GridHelper.Directions, float>(s.Value, (float)ql.QSA[s]));
+                        a.Add(new KeyValuePair<GridHelper.Directions, float>(s.Value, (float)ql.QTable[s]));
                     }
                     else
                     {
-                        hs.Add(s.Key, new List<KeyValuePair<GridHelper.Directions, float>>() { new KeyValuePair<GridHelper.Directions, float>(s.Value, (float)ql.QSA[s]) });
+                        hs.Add(s.Key, new List<KeyValuePair<GridHelper.Directions, float>>() { new KeyValuePair<GridHelper.Directions, float>(s.Value, (float)ql.QTable[s]) });
                     }
                     if (optimalPath.Contains(s.Key))
                     {
-                        if ((float)ql.QSA[s] > ((KeyValuePair<float, GridHelper.Directions>)optimalPath[s.Key]).Key)
-                            optimalPath[s.Key] = new KeyValuePair<float, GridHelper.Directions>((float)ql.QSA[s], s.Value);
+                        if ((float)ql.QTable[s] > ((KeyValuePair<float, GridHelper.Directions>)optimalPath[s.Key]).Key)
+                            optimalPath[s.Key] = new KeyValuePair<float, GridHelper.Directions>((float)ql.QTable[s], s.Value);
                     }
-                    else optimalPath.Add(s.Key, new KeyValuePair<float, GridHelper.Directions>((float)ql.QSA[s], s.Value));
+                    else optimalPath.Add(s.Key, new KeyValuePair<float, GridHelper.Directions>((float)ql.QTable[s], s.Value));
                 }
                 var margin = 23;
                 /**
@@ -341,10 +341,10 @@ namespace mltak2
                     hs = new Hashtable();
                     /**
                      * Normalize the visited states count
-                     */ 
-                    foreach (KeyValuePair<Point, GridHelper.Directions> cell in ql.VisitedSA.Keys)
+                     */
+                    foreach (KeyValuePair<Point, GridHelper.Directions> cell in ql.VisitedStates.Keys)
                     {
-                        long count = (long)ql.VisitedSA[cell];
+                        long count = (long)ql.VisitedStates[cell];
                         if (hs.Contains(cell.Key))
                             hs[cell.Key] = (long)hs[cell.Key] + count;
                         else
@@ -352,7 +352,7 @@ namespace mltak2
                     }
                     /**
                      * Plot the visited states
-                     */ 
+                     */
                     foreach (Point cell in hs.Keys)
                     {
                         var p = g.abs2grid(cell);

@@ -36,15 +36,15 @@
             this.saveConfigurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadConfigurationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configurationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.trainToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.learnToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.qLearningToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sARSAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.toolStripStatus = new System.Windows.Forms.ToolStripLabel();
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.MarkStartPointGrid = new System.Windows.Forms.ToolStripMenuItem();
             this.MarkGoalPointGrid = new System.Windows.Forms.ToolStripMenuItem();
-            this.sARSAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.toolStrip.SuspendLayout();
@@ -65,7 +65,7 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.configurationsToolStripMenuItem,
-            this.trainToolStripMenuItem,
+            this.learnToolStripMenuItem,
             this.exameToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -115,14 +115,14 @@
             this.configurationsToolStripMenuItem.Text = "&Configurations";
             this.configurationsToolStripMenuItem.Click += new System.EventHandler(this.configurationsToolStripMenuItem_Click);
             // 
-            // trainToolStripMenuItem
+            // learnToolStripMenuItem
             // 
-            this.trainToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.learnToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.qLearningToolStripMenuItem,
             this.sARSAToolStripMenuItem});
-            this.trainToolStripMenuItem.Name = "trainToolStripMenuItem";
-            this.trainToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
-            this.trainToolStripMenuItem.Text = "&Train";
+            this.learnToolStripMenuItem.Name = "learnToolStripMenuItem";
+            this.learnToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+            this.learnToolStripMenuItem.Text = "&Learn";
             // 
             // qLearningToolStripMenuItem
             // 
@@ -130,7 +130,22 @@
             this.qLearningToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q)));
             this.qLearningToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
             this.qLearningToolStripMenuItem.Text = "QLearning";
-            this.qLearningToolStripMenuItem.Click += new System.EventHandler(this.trainQLearningToolStripMenuItem_Click);
+            this.qLearningToolStripMenuItem.Click += new System.EventHandler(this.learnQLearningToolStripMenuItem_Click);
+            // 
+            // sARSAToolStripMenuItem
+            // 
+            this.sARSAToolStripMenuItem.Name = "sARSAToolStripMenuItem";
+            this.sARSAToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
+            this.sARSAToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.sARSAToolStripMenuItem.Text = "SARSA";
+            // 
+            // exameToolStripMenuItem
+            // 
+            this.exameToolStripMenuItem.Enabled = false;
+            this.exameToolStripMenuItem.Name = "exameToolStripMenuItem";
+            this.exameToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
+            this.exameToolStripMenuItem.Text = "&Exame";
+            this.exameToolStripMenuItem.Click += new System.EventHandler(this.exameToolStripMenuItem_Click);
             // 
             // toolStrip
             // 
@@ -170,21 +185,6 @@
             this.MarkGoalPointGrid.Text = "Mark as &Goal";
             this.MarkGoalPointGrid.Click += new System.EventHandler(this.MarkGoalPointGrid_Click);
             // 
-            // sARSAToolStripMenuItem
-            // 
-            this.sARSAToolStripMenuItem.Name = "sARSAToolStripMenuItem";
-            this.sARSAToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.sARSAToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
-            this.sARSAToolStripMenuItem.Text = "SARSA";
-            // 
-            // exameToolStripMenuItem
-            // 
-            this.exameToolStripMenuItem.Enabled = false;
-            this.exameToolStripMenuItem.Name = "exameToolStripMenuItem";
-            this.exameToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
-            this.exameToolStripMenuItem.Text = "&Exame";
-            this.exameToolStripMenuItem.Click += new System.EventHandler(this.exameToolStripMenuItem_Click);
-            // 
             // GridForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -223,7 +223,7 @@
         private System.Windows.Forms.ToolStripMenuItem MarkStartPointGrid;
         private System.Windows.Forms.ToolStripMenuItem MarkGoalPointGrid;
         private System.Windows.Forms.ToolStripMenuItem configurationsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem trainToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem learnToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem qLearningToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem sARSAToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exameToolStripMenuItem;
