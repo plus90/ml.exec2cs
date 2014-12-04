@@ -75,15 +75,10 @@ namespace ReinforcementLearning
         /// <returns>The updated Q-Value</returns>
         protected override QVal __update_q_value(State st, Action a, State stplus, Reward r, params object[] o)
         {
+            if (o.Length == 0 || (o[0] is Action))
+                throw new ArgumentException("Expecting an action as last comment", "o");
             var qt = this.__get_q_value(st, a);
-            QVal v = QVal.MinValue;
-            var gh = new GridHelper(this.Grid);
-            foreach (var __a in this.Actions)
-            {
-                var __q = this.__get_q_value(stplus, __a);
-                if (v < __q)
-                    v = __q;
-            }
+            var v = this.__get_q_value(stplus, (Action)o[0]);
             qt = (1 - this.Alpha) * qt + this.Alpha * (r + this.Gamma * v);
             this.__set_q_value(st, a, qt);
             return qt;
