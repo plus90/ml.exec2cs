@@ -52,7 +52,7 @@ namespace mltak2
             {
                 switch (e.KeyCode)
                 {
-                    case Keys.Escape: Application.Exit(); break;
+                    case Keys.Escape: System.Diagnostics.Process.GetCurrentProcess().Kill(); break;
                 }
             });
             this.grid.MouseMove += new MouseEventHandler((sender, e) =>
@@ -84,15 +84,19 @@ namespace mltak2
                     internal_change = false;
                     return;
                 }
+                if (this.toolStripStatus.Tag != null)
+                    (this.toolStripStatus.Tag as Timer).Stop();
                 Timer t = new Timer();
                 t.Interval = 4000;
                 t.Tick += new EventHandler((_s, _e) =>
                 {
                     t.Stop();
                     internal_change = true;
+                    this.toolStripStatus.Tag = null;
                     this.toolStripStatus.Text = "";
                 });
                 t.Start();
+                this.toolStripStatus.Tag = t;
             });
             if(System.IO.File.Exists("config.dat"))
                 try
@@ -241,13 +245,14 @@ namespace mltak2
         {
             new Configurations().Show() ;
         }
-
         private void trainToolStripMenuItem_Click(object sender, EventArgs e)
         {
             System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(() =>
             {
                 var max_q_table_size = Enum.GetValues(typeof(GridHelper.Directions)).Length * this.g.Size.Height * this.g.Size.Width;
-                for (int i = 0; i < 10; i++)
+                const int max_iter = 1;
+                long totall_step_counter = 0;
+                for (int i = 0; i < max_iter; i++)
                 {
                     var ql = new ReinforcementLearning.QLearning(
                          this.g,
@@ -257,8 +262,11 @@ namespace mltak2
                     ql.Train(
                         new Func<Grid, long, bool>((g, step_counter) =>
                         {
+                            if (step_counter % 40 == 0)
+                                this.toolStripStatus.Text = String.Format("{0}% Of learning process passed....", (step_counter + totall_step_counter) * (i + 1 ) * 10 / (max_q_table_size * 40 * max_iter));
                             return 40 * max_q_table_size <= step_counter;
                         }));
+                    totall_step_counter += ql.StepCounter;
                 }
                 this.toolStripStatus.Text = "The model is learned...";
                 output o = new output();
