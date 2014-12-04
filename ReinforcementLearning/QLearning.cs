@@ -14,8 +14,8 @@ namespace ReinforcementLearning
     public class QLearning
     {
         protected Grid Grid { get; set; }
-        public static Hashtable QSA { get; protected set; }
-        public static Hashtable VisitedSA { get; protected set; }
+        public Hashtable QSA { get; protected set; }
+        public Hashtable VisitedSA { get; protected set; }
         protected Point PreviousState { get; set; }
         protected Random RandGen { get; set; }
         protected System.Timers.Timer RefreshTimer { get; set; }
@@ -24,10 +24,11 @@ namespace ReinforcementLearning
         protected readonly float Alpha;
         protected readonly float Gamma;
         public long StepCounter { get; protected set; }
-        static QLearning()
+        public QLearning(Grid grid, List<Action> A, float gamma, float alpha, Hashtable QSA)
+            : this(grid, A, gamma, alpha)
         {
-            QLearning.QSA = new Hashtable();
-            QLearning.VisitedSA = new Hashtable();
+            if (QSA != null)
+                this.QSA = QSA;
         }
         public QLearning(Grid grid, List<Action> A, float gamma, float alpha)
         {
@@ -36,6 +37,8 @@ namespace ReinforcementLearning
             this.Alpha = alpha;
             this.Gamma = gamma;
             this.StepCounter = 0;
+            this.QSA = new Hashtable();
+            this.VisitedSA = new Hashtable();
             this.RandGen = new Random(System.Environment.TickCount);
             this.RefreshTimer = new System.Timers.Timer(400);
             this.RefreshTimer.Elapsed += new System.Timers.ElapsedEventHandler((sender, e) =>
@@ -89,9 +92,9 @@ namespace ReinforcementLearning
         protected QVal __get_q_value(State s, Action a)
         {
             var sig = new KeyValuePair<State, Action>(s, a);
-            if (!QLearning.QSA.Contains(sig))
-                QLearning.QSA.Add(sig, 0.0F);
-            return (QVal)QLearning.QSA[sig];
+            if (!this.QSA.Contains(sig))
+                this.QSA.Add(sig, 0.0F);
+            return (QVal)this.QSA[sig];
         }
         /// <summary>
         /// Sets the Q-Value of a State-Action if any exists or initializes it.
@@ -102,9 +105,9 @@ namespace ReinforcementLearning
         protected QVal __set_q_value(State s, Action a, QVal v)
         {
             var sig = new KeyValuePair<State, Action>(s, a);
-            if (!QLearning.QSA.Contains(sig))
-                QLearning.QSA.Add(sig, v);
-            QLearning.QSA[sig] = v;
+            if (!this.QSA.Contains(sig))
+                this.QSA.Add(sig, v);
+            this.QSA[sig] = v;
             return v;
         }
         /// <summary>
@@ -116,10 +119,10 @@ namespace ReinforcementLearning
         protected long __visit(State s, Action a)
         {
             var sig = new KeyValuePair<State, Action>(s, a);
-            if (!QLearning.VisitedSA.Contains(sig))
-                QLearning.VisitedSA.Add(sig, (long)0);
-            QLearning.VisitedSA[sig] = (long)QLearning.VisitedSA[sig] + 1;
-            return (long)QLearning.VisitedSA[sig];
+            if (!this.VisitedSA.Contains(sig))
+                this.VisitedSA.Add(sig, (long)0);
+            this.VisitedSA[sig] = (long)this.VisitedSA[sig] + 1;
+            return (long)this.VisitedSA[sig];
         }
         /// <summary>
         /// Updates the Q-Value

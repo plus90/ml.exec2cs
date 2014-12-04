@@ -253,13 +253,14 @@ namespace mltak2
                 var max_q_table_size = Enum.GetValues(typeof(GridHelper.Directions)).Length * this.g.Size.Height * this.g.Size.Width;
                 const int max_iter = 1;
                 long totall_step_counter = 0;
+                ReinforcementLearning.QLearning ql = null;
                 for (int i = 0; i < max_iter; i++)
                 {
-                    var ql = new ReinforcementLearning.QLearning(
+                    ql = new ReinforcementLearning.QLearning(
                          this.g,
                          new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>()),
                          0.9F,
-                         0.2F);
+                         0.2F, ql == null ? null : ql.QSA);
                     ql.Train(
                         new Func<Grid, long, bool>((g, step_counter) =>
                         {
@@ -273,16 +274,16 @@ namespace mltak2
                 output o = new output();
                 StringBuilder sb = new StringBuilder();
                 Hashtable hs = new Hashtable();
-                foreach (KeyValuePair<Point, GridHelper.Directions> s in ReinforcementLearning.QLearning.QSA.Keys)
+                foreach (KeyValuePair<Point, GridHelper.Directions> s in ql.QSA.Keys)
                 {
                     if (hs.Contains(s.Key))
                     {
                         var a = hs[s.Key] as List<KeyValuePair<GridHelper.Directions, float>>;
-                        a.Add(new KeyValuePair<GridHelper.Directions, float>(s.Value, (float)ReinforcementLearning.QLearning.QSA[s]));
+                        a.Add(new KeyValuePair<GridHelper.Directions, float>(s.Value, (float)ql.QSA[s]));
                     }
                     else
                     {
-                        hs.Add(s.Key, new List<KeyValuePair<GridHelper.Directions, float>>() { new KeyValuePair<GridHelper.Directions, float>(s.Value, (float)ReinforcementLearning.QLearning.QSA[s]) });
+                        hs.Add(s.Key, new List<KeyValuePair<GridHelper.Directions, float>>() { new KeyValuePair<GridHelper.Directions, float>(s.Value, (float)ql.QSA[s]) });
                     }
                 }
                 var margin = 23;
@@ -322,9 +323,9 @@ namespace mltak2
                     }
                     hs.Clear();
                     hs = new Hashtable();
-                    foreach (KeyValuePair<Point, GridHelper.Directions> cell in ReinforcementLearning.QLearning.VisitedSA.Keys)
+                    foreach (KeyValuePair<Point, GridHelper.Directions> cell in ql.VisitedSA.Keys)
                     {
-                        long count = (long)ReinforcementLearning.QLearning.VisitedSA[cell];
+                        long count = (long)ql.VisitedSA[cell];
                         if (hs.Contains(cell.Key))
                             hs[cell.Key] = (long)hs[cell.Key] + count;
                         else
