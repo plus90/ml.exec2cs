@@ -296,12 +296,13 @@ namespace Environment
         /// <param name="text">The target text</param>
         /// <param name="point">The location in the grid(The Actual Location)</param>
         /// <param name="graphics">The grid's graphics</param>
-        public void Write(String text, Point point, Graphics graphics, Brush brush)
+        public void Write(String text, Point point, Graphics graphics, Brush brush, Font font = null)
         {
-            using (Font myFont = new Font("Arial", 14))
-            {
-                graphics.DrawString(text, myFont, brush, point);
-            }
+            bool was_null = (font == null);
+            if (font == null)
+                font = new Font(FontFamily.GenericMonospace, 14);
+            graphics.DrawString(text, font, brush, point);
+            if (was_null) font.Dispose();
         }
         /// <summary>
         /// Converts an abstract point to its actual and cell-centered grid point

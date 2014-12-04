@@ -10,6 +10,7 @@ using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
 using System.Runtime.Serialization.Formatters.Binary;
 using Environment;
+using System.Collections;
 namespace mltak2
 {
     public partial class GridForm : Form
@@ -243,15 +244,74 @@ namespace mltak2
 
         private void trainToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var max_q_table_size = Enum.GetValues(typeof(GridHelper.Directions)).Length * this.g.Size.Height * this.g.Size.Width;
-            new ReinforcementLearning.QLearning(
-                this.g,
-                new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>()),
-                0.9F,
-                0.2F).Train(new Func<Grid, long, bool>((g, step_counter) =>
+            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(() =>
+            {
+                var max_q_table_size = Enum.GetValues(typeof(GridHelper.Directions)).Length * this.g.Size.Height * this.g.Size.Width;
+                var ql = new ReinforcementLearning.QLearning(
+                     this.g,
+                     new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>()),
+                     0.9F,
+                     0.2F);
+                ql.Train(
+                    new Func<Grid, long, bool>((g, step_counter) =>
+                    {
+                        return 40 * max_q_table_size <= step_counter;
+                    }));
+                this.toolStripStatus.Text = "The model is learned...";
+                output o = new output();
+                StringBuilder sb = new StringBuilder();
+                Hashtable hs = new Hashtable();
+                foreach (KeyValuePair<Point, GridHelper.Directions> s in ql.QSA.Keys)
                 {
-                    return 40 * max_q_table_size <= step_counter; 
-                }));
+                    if (hs.Contains(s.Key))
+                    {
+                        var a = hs[s.Key] as List<KeyValuePair<GridHelper.Directions, float>>;
+                        a.Add(new KeyValuePair<GridHelper.Directions, float>(s.Value, (float)ql.QSA[s]));
+                    }
+                    else
+                    {
+                        hs.Add(s.Key, new List<KeyValuePair<GridHelper.Directions, float>>() { new KeyValuePair<GridHelper.Directions, float>(s.Value, (float)ql.QSA[s]) });
+                    }
+                }
+                var margin = 23;
+                using (var gfx = this.grid.CreateGraphics())
+                {
+                    foreach (Point cell in hs.Keys)
+                    {
+                        foreach (KeyValuePair<GridHelper.Directions, float> dir in hs[cell] as List<KeyValuePair<GridHelper.Directions, float>>)
+                        {
+
+                            var p = g.abs2grid(cell);
+                            switch (dir.Key)
+                            {
+                                case GridHelper.Directions.NORTH:
+                                    gfx.FillPolygon(Brushes.LightBlue, new Point[] { new Point(p.X - margin, p.Y - margin), new Point(p.X + margin, p.Y - margin), new Point(p.X, p.Y - 2 * margin) });
+                                    this.g.Write(dir.Value.ToString("F1"), new Point(p.X - margin + 7, p.Y - 2 * margin + 7), gfx, Brushes.DarkBlue, new Font("Arial", 10, FontStyle.Bold));
+                                    break;
+                                case GridHelper.Directions.EAST:
+                                    gfx.FillPolygon(Brushes.LightBlue, new Point[] { new Point(p.X + margin, p.Y - margin), new Point(p.X + margin, p.Y + margin), new Point(p.X + 2 * margin, p.Y) });
+                                    this.g.Write(dir.Value.ToString("F1"), new Point(p.X + margin, p.Y - margin / 2), gfx, Brushes.DarkBlue, new Font("Arial", 10, FontStyle.Bold));
+                                    break;
+                                case GridHelper.Directions.SOUTH:
+                                    gfx.FillPolygon(Brushes.LightBlue, new Point[] { new Point(p.X - margin, p.Y + margin), new Point(p.X + margin, p.Y + margin), new Point(p.X, p.Y + 2 * margin) });
+                                    this.g.Write(dir.Value.ToString("F1"), new Point(p.X - margin + 10, p.Y + margin), gfx, Brushes.DarkBlue, new Font("Arial", 10, FontStyle.Bold));
+                                    break;
+                                case GridHelper.Directions.WEST:
+                                    gfx.FillPolygon(Brushes.LightBlue, new Point[] { new Point(p.X - margin, p.Y - margin), new Point(p.X - margin, p.Y + margin), new Point(p.X - 2 * margin, p.Y) });
+                                    this.g.Write(dir.Value.ToString("F1"), new Point(p.X - 2 * margin, p.Y - margin / 2), gfx, Brushes.DarkBlue, new Font("Arial", 10, FontStyle.Bold));
+                                    break;
+                                case GridHelper.Directions.HOLD:
+                                    this.g.Write(dir.Value.ToString("F1"), new Point(p.X - 2 * margin, p.Y - 2 * margin), gfx, Brushes.Brown, new Font("Arial", 10, FontStyle.Bold));
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }));
+            t.Start();
+            this.toolStripStatus.Text = "Start learning...";
         }
     }
 }

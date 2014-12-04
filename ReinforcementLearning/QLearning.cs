@@ -14,7 +14,7 @@ namespace ReinforcementLearning
     public class QLearning
     {
         protected Grid Grid { get; set; }
-        protected Hashtable QSA { get; set; }
+        public Hashtable QSA { get; protected set; }
         protected Point PreviousState { get; set; }
         protected Random RandGen { get; set; }
         protected System.Timers.Timer RefreshTimer { get; set; }
@@ -62,8 +62,7 @@ namespace ReinforcementLearning
                 this.__update_q_value(this.Grid.AgentPoint, a, s.NewPoint, r);
                 // go to the new point
                 this.Grid.AgentPoint = s.NewPoint;
-                this.StepCounter++;
-            } while (!termination_validtor(this.Grid, this.StepCounter));
+            } while (!termination_validtor(this.Grid, this.StepCounter) && ++this.StepCounter <= long.MaxValue);
         }
         /// <summary>
         /// Check if should terminate the training loop
