@@ -255,6 +255,8 @@ namespace mltak2
         }
         private void learnGridToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (!this.learnToolStripMenuItem.Enabled) return;
+            this.learnToolStripMenuItem.Enabled = false;
             System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(() =>
             {
                 var max_q_table_size = Enum.GetValues(typeof(GridHelper.Directions)).Length * this.g.Size.Height * this.g.Size.Width;
@@ -270,7 +272,7 @@ namespace mltak2
                              Properties.Settings.Default.Gamma,
                              Properties.Settings.Default.Alpha,
                              ql == null ? null : ql.QTable);
-                    else if (sender == this.sARSAToolStripMenuItem)
+                    else if (sender == this.SARSAToolStripMenuItem)
                         ql = new ReinforcementLearning.SarsaLearning(
                              this.g,
                              new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>()),
@@ -286,16 +288,17 @@ namespace mltak2
                         new Func<Grid, Point, long, bool>((g, s, step_counter) =>
                         {
                             if (step_counter % 10 == 0)
-                                this.toolStripStatus.Text = String.Format("{0}% Of learning process passed....", (step_counter + totall_step_counter + i + 1) * 100 / (max_q_table_size * 40 * max_iter));
+                                this.toolStripStatus.Text = String.Format("{0}% Of {1}-Learning process passed....", (step_counter + totall_step_counter + i + 1) * 100 / (max_q_table_size * 40 * max_iter), sender == this.qLearningToolStripMenuItem ? "Q" : "SARSA");
                             return 40 * max_q_table_size <= step_counter;// || s == g.GoalPoint;
                         }));
                     totall_step_counter += ql.StepCounter;
                 }
-                this.toolStripStatus.Text = "The model has learned...";
+                this.toolStripStatus.Text = String.Format("The model has learned by {0}-Learning...", sender == this.qLearningToolStripMenuItem ? "Q" : "SARSA");
                 this.plotPolicy(ql);
                 this.examToolStripMenuItem.GetCurrentParent().Invoke(new Action(() =>
                 {
                     this.examToolStripMenuItem.Enabled = true;
+                    this.learnToolStripMenuItem.Enabled = true;
                 }));
             }));
             t.Start();
@@ -392,7 +395,37 @@ namespace mltak2
                 }
             }
         }
-
+        private void DrawDirection(Point point, GridHelper.Directions direction)
+        {
+            using (var gfx = this.grid.CreateGraphics())
+            {
+                var p = g.abs2grid(point);
+                var pen = new Pen(Color.Black, 4);
+                var margin = 10;
+                switch (direction)
+                {
+                    case GridHelper.Directions.NORTH:
+                        gfx.DrawLine(pen, new Point(p.X, p.Y - margin), new Point(p.X, p.Y + margin));
+                        gfx.FillPolygon(new SolidBrush(pen.Color), new Point[] { new Point(p.X - margin + 5, p.Y - margin + 5), new Point(p.X + margin - 5, p.Y - margin + 5), new Point(p.X, p.Y - 2 * margin) });
+                        break;
+                    case GridHelper.Directions.EAST:
+                        gfx.DrawLine(pen, new Point(p.X - margin - 5, p.Y), new Point(p.X + margin - 5, p.Y));
+                        gfx.FillPolygon(new SolidBrush(pen.Color), new Point[] { new Point(p.X + margin - 5, p.Y - margin + 5), new Point(p.X + margin - 5, p.Y + margin - 5), new Point(p.X + 2 * (margin), p.Y) });
+                        break;
+                    case GridHelper.Directions.SOUTH:
+                        gfx.DrawLine(pen, new Point(p.X, p.Y - margin - 5), new Point(p.X, p.Y + margin));
+                        gfx.FillPolygon(new SolidBrush(Color.Black), new Point[] { new Point(p.X - margin + 5, p.Y + margin - 5), new Point(p.X + margin - 5, p.Y + margin - 5), new Point(p.X, p.Y + 2 * margin) });
+                        break;
+                    case GridHelper.Directions.WEST:
+                        gfx.DrawLine(pen, new Point(p.X - margin + 5, p.Y), new Point(p.X + margin + 5, p.Y));
+                        gfx.FillPolygon(new SolidBrush(pen.Color), new Point[] { new Point(p.X - margin + 5, p.Y - margin + 5), new Point(p.X - margin + 5, p.Y + margin - 5), new Point(p.X - 2 * margin, p.Y) });
+                        break;
+                    case GridHelper.Directions.HOLD:
+                        gfx.FillEllipse(new SolidBrush(Color.Black), p.X - 5, p.Y - 5, 10, 10);
+                        break;
+                }
+            }
+        }
         private void examToolStripMenuItem_Click(object sender, EventArgs e)
         {
             System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(() =>
@@ -408,6 +441,7 @@ namespace mltak2
                     var m = gh.Move(this.g.AgentPoint, s.Value);
                     MarkStartGoalPoints(m.NewPoint, g.GoalPoint);
                     this.g.AgentPoint = m.NewPoint;
+                    this.DrawDirection(m.OldPoint, s.Value);
                     Application.DoEvents();
                     System.Threading.Thread.Sleep(500);
                 }
