@@ -199,6 +199,6 @@ namespace Environment
         /// <param name="point">The target point to move</param>
         /// <param name="direction">The desired direction</param>
         /// <returns>The movement status instance</returns>
-        public Status Move(Point point, Directions direction) { return new Status(__getPoint(this.BoundedGrid.AgentPoint, direction), this.BoundedGrid.AgentPoint); }
+        public Status Move(Point point, Directions direction) { return new Status(__getPoint(point, direction), point); }
     }
 }

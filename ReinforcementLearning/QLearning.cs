@@ -14,8 +14,8 @@ namespace ReinforcementLearning
     public class QLearning
     {
         protected Grid Grid { get; set; }
-        public Hashtable QSA { get; protected set; }
-        public Hashtable VisitedSA { get; protected set; }
+        public static Hashtable QSA { get; protected set; }
+        public static Hashtable VisitedSA { get; protected set; }
         protected Point PreviousState { get; set; }
         protected Random RandGen { get; set; }
         protected System.Timers.Timer RefreshTimer { get; set; }
@@ -24,6 +24,11 @@ namespace ReinforcementLearning
         protected readonly float Alpha;
         protected readonly float Gamma;
         public long StepCounter { get; protected set; }
+        static QLearning()
+        {
+            QLearning.QSA = new Hashtable();
+            QLearning.VisitedSA = new Hashtable();
+        }
         public QLearning(Grid grid, List<Action> A, float gamma, float alpha)
         {
             this.Grid = grid;
@@ -31,8 +36,6 @@ namespace ReinforcementLearning
             this.Alpha = alpha;
             this.Gamma = gamma;
             this.StepCounter = 0;
-            this.QSA = new Hashtable();
-            this.VisitedSA = new Hashtable();
             this.RandGen = new Random(System.Environment.TickCount);
             this.RefreshTimer = new System.Timers.Timer(400);
             this.RefreshTimer.Elapsed += new System.Timers.ElapsedEventHandler((sender, e) =>
@@ -60,11 +63,11 @@ namespace ReinforcementLearning
                 lock (this.RandGen)
                     a = this.Actions[this.RandGen.Next(0, this.Actions.Count)];
                 var s = gh.Move(this.Grid.AgentPoint, a);
+                this.__visit(s.OldPoint, a);
                 var r = this.__get_reward(s.NewPoint);
-                this.__update_q_value(this.Grid.AgentPoint, a, s.NewPoint, r);
+                this.__update_q_value(s.OldPoint, a, s.NewPoint, r);
                 // go to the new point
                 this.Grid.AgentPoint = s.NewPoint;
-                this.__visit(s.OldPoint, a);
             } while (!termination_validtor(this.Grid, this.StepCounter) && ++this.StepCounter <= long.MaxValue);
         }
         /// <summary>
@@ -85,9 +88,9 @@ namespace ReinforcementLearning
         protected QVal __get_q_value(State s, Action a)
         {
             var sig = new KeyValuePair<State, Action>(s, a);
-            if (!this.QSA.Contains(sig))
-                this.QSA.Add(sig, 0.0F);
-            return (QVal)this.QSA[sig];
+            if (!QLearning.QSA.Contains(sig))
+                QLearning.QSA.Add(sig, 0.0F);
+            return (QVal)QLearning.QSA[sig];
         }
         /// <summary>
         /// Sets the Q-Value of a State-Action if any exists or initializes it.
@@ -98,9 +101,9 @@ namespace ReinforcementLearning
         protected QVal __set_q_value(State s, Action a, QVal v)
         {
             var sig = new KeyValuePair<State, Action>(s, a);
-            if (!this.QSA.Contains(sig))
-                this.QSA.Add(sig, v);
-            this.QSA[sig] = v;
+            if (!QLearning.QSA.Contains(sig))
+                QLearning.QSA.Add(sig, v);
+            QLearning.QSA[sig] = v;
             return v;
         }
         /// <summary>
@@ -112,10 +115,10 @@ namespace ReinforcementLearning
         protected long __visit(State s, Action a)
         {
             var sig = new KeyValuePair<State, Action>(s, a);
-            if (!this.VisitedSA.Contains(sig))
-                this.VisitedSA.Add(sig, (long)0);
-            this.VisitedSA[sig] = (long)this.VisitedSA[sig] + 1;
-            return (long)this.VisitedSA[sig];
+            if (!QLearning.VisitedSA.Contains(sig))
+                QLearning.VisitedSA.Add(sig, (long)0);
+            QLearning.VisitedSA[sig] = (long)QLearning.VisitedSA[sig] + 1;
+            return (long)QLearning.VisitedSA[sig];
         }
         /// <summary>
         /// Updates the Q-Value
@@ -131,7 +134,8 @@ namespace ReinforcementLearning
             var gh = new GridHelper(this.Grid);
             foreach (var __a in this.Actions)
             {
-                var __r = this.__get_reward(gh.Move(stplus,__a).NewPoint);
+                var s = gh.Move(stplus,__a);
+                var __r = this.__get_reward(s.NewPoint);
                 if (v < __r)
                     v = __r;
             }

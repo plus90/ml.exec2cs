@@ -247,30 +247,33 @@ namespace mltak2
             System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(() =>
             {
                 var max_q_table_size = Enum.GetValues(typeof(GridHelper.Directions)).Length * this.g.Size.Height * this.g.Size.Width;
-                var ql = new ReinforcementLearning.QLearning(
-                     this.g,
-                     new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>()),
-                     0.9F,
-                     0.2F);
-                ql.Train(
-                    new Func<Grid, long, bool>((g, step_counter) =>
-                    {
-                        return 40 * max_q_table_size <= step_counter;
-                    }));
+                for (int i = 0; i < 10; i++)
+                {
+                    var ql = new ReinforcementLearning.QLearning(
+                         this.g,
+                         new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>()),
+                         0.9F,
+                         0.2F);
+                    ql.Train(
+                        new Func<Grid, long, bool>((g, step_counter) =>
+                        {
+                            return 40 * max_q_table_size <= step_counter;
+                        }));
+                }
                 this.toolStripStatus.Text = "The model is learned...";
                 output o = new output();
                 StringBuilder sb = new StringBuilder();
                 Hashtable hs = new Hashtable();
-                foreach (KeyValuePair<Point, GridHelper.Directions> s in ql.QSA.Keys)
+                foreach (KeyValuePair<Point, GridHelper.Directions> s in ReinforcementLearning.QLearning.QSA.Keys)
                 {
                     if (hs.Contains(s.Key))
                     {
                         var a = hs[s.Key] as List<KeyValuePair<GridHelper.Directions, float>>;
-                        a.Add(new KeyValuePair<GridHelper.Directions, float>(s.Value, (float)ql.QSA[s]));
+                        a.Add(new KeyValuePair<GridHelper.Directions, float>(s.Value, (float)ReinforcementLearning.QLearning.QSA[s]));
                     }
                     else
                     {
-                        hs.Add(s.Key, new List<KeyValuePair<GridHelper.Directions, float>>() { new KeyValuePair<GridHelper.Directions, float>(s.Value, (float)ql.QSA[s]) });
+                        hs.Add(s.Key, new List<KeyValuePair<GridHelper.Directions, float>>() { new KeyValuePair<GridHelper.Directions, float>(s.Value, (float)ReinforcementLearning.QLearning.QSA[s]) });
                     }
                 }
                 var margin = 23;
@@ -290,7 +293,7 @@ namespace mltak2
                                     break;
                                 case GridHelper.Directions.EAST:
                                     gfx.FillPolygon(Brushes.LightBlue, new Point[] { new Point(p.X + margin, p.Y - margin), new Point(p.X + margin, p.Y + margin), new Point(p.X + 2 * margin, p.Y) });
-                                    this.g.Write(dir.Value.ToString("F1"), new Point(p.X + margin, p.Y - margin / 2), gfx, Brushes.DarkBlue, new Font("Arial", 10, FontStyle.Bold));
+                                    this.g.Write(dir.Value.ToString("F1"), new Point(p.X + margin - 4, p.Y - margin / 2), gfx, Brushes.DarkBlue, new Font("Arial", 10, FontStyle.Bold));
                                     break;
                                 case GridHelper.Directions.SOUTH:
                                     gfx.FillPolygon(Brushes.LightBlue, new Point[] { new Point(p.X - margin, p.Y + margin), new Point(p.X + margin, p.Y + margin), new Point(p.X, p.Y + 2 * margin) });
@@ -310,9 +313,9 @@ namespace mltak2
                     }
                     hs.Clear();
                     hs = new Hashtable();
-                    foreach (KeyValuePair<Point, GridHelper.Directions> cell in ql.VisitedSA.Keys)
+                    foreach (KeyValuePair<Point, GridHelper.Directions> cell in ReinforcementLearning.QLearning.VisitedSA.Keys)
                     {
-                        long count = (long)ql.VisitedSA[cell];
+                        long count = (long)ReinforcementLearning.QLearning.VisitedSA[cell];
                         if (hs.Contains(cell.Key))
                             hs[cell.Key] = (long)hs[cell.Key] + count;
                         else
