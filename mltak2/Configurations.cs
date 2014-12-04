@@ -16,6 +16,8 @@ namespace mltak2
             InitializeComponent();
             this.gridWidth.SelectedIndex = Properties.Settings.Default.GridSize.Width - 2;
             this.gamma.Text = Properties.Settings.Default.Gamma.ToString();
+            this.alpha.Text = Properties.Settings.Default.Alpha.ToString();
+            this.maxIter.Value = Properties.Settings.Default.MaxLearningIteration;
             this.KeyPreview = true;
             this.KeyDown += new KeyEventHandler((sender, e) =>
             {
@@ -29,6 +31,10 @@ namespace mltak2
         public Size GetGridSize() { return Properties.Settings.Default.GridSize;}
 
         public float GetGammaValue() { return Properties.Settings.Default.Gamma; }
+
+        public float GetAlphaValue() { return Properties.Settings.Default.Alpha; }
+
+        public int GetMaxIter() { return Properties.Settings.Default.MaxLearningIteration; }
 
         public void SetGridSize(Size size)
         {
@@ -46,12 +52,30 @@ namespace mltak2
             Properties.Settings.Default.Save();
         }
 
+        public void SetAlphaValue(float alpha)
+        {
+            if (alpha < 0 || alpha > 1)
+                throw new ArgumentOutOfRangeException("The gamma should be in range of [0..1]");
+            Properties.Settings.Default.Alpha = alpha;
+            Properties.Settings.Default.Save();
+        }
+
+        public void SetMaxIter(int max_iter)
+        {
+            if (max_iter <= 0)
+                throw new ArgumentOutOfRangeException("The max iter cannot be not 0");
+            Properties.Settings.Default.MaxLearningIteration = max_iter;
+            Properties.Settings.Default.Save();
+        }
+
         private void save_Click(object sender, EventArgs e)
         {
             try
             {
                 var s = new Size(int.Parse(this.gridWidth.SelectedItem.ToString()), int.Parse(this.gridWidth.SelectedItem.ToString()));
                 this.SetGammaValue(float.Parse(this.gamma.Text));
+                this.SetAlphaValue(float.Parse(this.alpha.Text));
+                this.SetMaxIter((int)this.maxIter.Value);
                 if (s != Properties.Settings.Default.GridSize)
                 {
                     this.SetGridSize(s);
@@ -59,6 +83,7 @@ namespace mltak2
                     if (MessageBox.Show("Application is going to restart in order to apply the new configurations!", "Notice...", MessageBoxButtons.OKCancel, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.OK)
                         Application.Restart();
                 }
+                this.Close();
             }
             catch (ArgumentOutOfRangeException aore)
             {

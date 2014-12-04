@@ -67,13 +67,6 @@ namespace ReinforcementLearning
             if (QTable != null)
                 this.QTable = QTable;
         }
-        /// <summary>
-        /// Construct a TD learner instance
-        /// </summary>
-        /// <param name="grid">The grid instance which trying to learn</param>
-        /// <param name="A">The list of valid actions</param>
-        /// <param name="gamma">The discount factor</param>
-        /// <param name="alpha">The learning rate</param>
         public TDLearning(Grid grid, List<Action> A, float gamma, float alpha)
         {
             this.Grid = grid;

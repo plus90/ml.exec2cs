@@ -46,5 +46,29 @@ namespace mltak2.Properties {
                 this["Gamma"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        public int MaxLearningIteration {
+            get {
+                return ((int)(this["MaxLearningIteration"]));
+            }
+            set {
+                this["MaxLearningIteration"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.2")]
+        public float Alpha {
+            get {
+                return ((float)(this["Alpha"]));
+            }
+            set {
+                this["Alpha"] = value;
+            }
+        }
     }
 }

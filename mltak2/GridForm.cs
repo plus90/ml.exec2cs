@@ -258,7 +258,7 @@ namespace mltak2
             System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(() =>
             {
                 var max_q_table_size = Enum.GetValues(typeof(GridHelper.Directions)).Length * this.g.Size.Height * this.g.Size.Width;
-                const int max_iter = 5;
+                int max_iter = Properties.Settings.Default.MaxLearningIteration;
                 long totall_step_counter = 0;
                 ReinforcementLearning.QLearning ql = null;
                 for (int i = 0; i < max_iter; i++)
@@ -266,14 +266,15 @@ namespace mltak2
                     ql = new ReinforcementLearning.QLearning(
                          this.g,
                          new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>()),
-                         0.9F,
-                         0.2F, ql == null ? null : ql.QTable);
+                         Properties.Settings.Default.Gamma,
+                         Properties.Settings.Default.Alpha,
+                         ql == null ? null : ql.QTable);
                     ql.Learn(
                         new Func<Grid, Point, long, bool>((g, s, step_counter) =>
                         {
                             if (step_counter % 10 == 0)
                                 this.toolStripStatus.Text = String.Format("{0}% Of learning process passed....", (step_counter + totall_step_counter + i + 1) * 100 / (max_q_table_size * 40 * max_iter));
-                            return 40 * max_q_table_size <= step_counter ;//|| s == g.GoalPoint;
+                            return 40 * max_q_table_size <= step_counter;// || s == g.GoalPoint;
                         }));
                     totall_step_counter += ql.StepCounter;
                 }

@@ -30,12 +30,17 @@
         {
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.maxIter = new System.Windows.Forms.NumericUpDown();
             this.cancel = new System.Windows.Forms.Button();
             this.save = new System.Windows.Forms.Button();
             this.gamma = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.gridWidth = new System.Windows.Forms.ComboBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.alpha = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.maxIter)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -52,6 +57,10 @@
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.alpha);
+            this.groupBox1.Controls.Add(this.label4);
+            this.groupBox1.Controls.Add(this.label2);
+            this.groupBox1.Controls.Add(this.maxIter);
             this.groupBox1.Controls.Add(this.cancel);
             this.groupBox1.Controls.Add(this.save);
             this.groupBox1.Controls.Add(this.gamma);
@@ -60,18 +69,45 @@
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(382, 139);
+            this.groupBox1.Size = new System.Drawing.Size(394, 162);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Configurations";
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(9, 120);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(116, 13);
+            this.label2.TabIndex = 10;
+            this.label2.Text = "Maximum Learning Iter.";
+            // 
+            // maxIter
+            // 
+            this.maxIter.Location = new System.Drawing.Point(131, 118);
+            this.maxIter.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.maxIter.Name = "maxIter";
+            this.maxIter.Size = new System.Drawing.Size(75, 20);
+            this.maxIter.TabIndex = 3;
+            this.maxIter.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.maxIter.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
             // cancel
             // 
             this.cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cancel.Location = new System.Drawing.Point(220, 101);
+            this.cancel.Location = new System.Drawing.Point(232, 124);
             this.cancel.Name = "cancel";
             this.cancel.Size = new System.Drawing.Size(75, 32);
-            this.cancel.TabIndex = 8;
+            this.cancel.TabIndex = 5;
             this.cancel.Text = "Cancel";
             this.cancel.UseVisualStyleBackColor = true;
             this.cancel.Click += new System.EventHandler(this.cancel_Click);
@@ -79,27 +115,27 @@
             // save
             // 
             this.save.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.save.Location = new System.Drawing.Point(301, 101);
+            this.save.Location = new System.Drawing.Point(313, 124);
             this.save.Name = "save";
             this.save.Size = new System.Drawing.Size(75, 32);
-            this.save.TabIndex = 7;
+            this.save.TabIndex = 4;
             this.save.Text = "Save";
             this.save.UseVisualStyleBackColor = true;
             this.save.Click += new System.EventHandler(this.save_Click);
             // 
             // gamma
             // 
-            this.gamma.Location = new System.Drawing.Point(71, 73);
+            this.gamma.Location = new System.Drawing.Point(71, 59);
             this.gamma.Name = "gamma";
             this.gamma.Size = new System.Drawing.Size(137, 20);
-            this.gamma.TabIndex = 6;
+            this.gamma.TabIndex = 1;
             this.gamma.Text = "0.9";
             this.gamma.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(9, 76);
+            this.label3.Location = new System.Drawing.Point(6, 62);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(43, 13);
             this.label3.TabIndex = 5;
@@ -122,13 +158,31 @@
             this.gridWidth.Location = new System.Drawing.Point(71, 21);
             this.gridWidth.Name = "gridWidth";
             this.gridWidth.Size = new System.Drawing.Size(54, 21);
-            this.gridWidth.TabIndex = 1;
+            this.gridWidth.TabIndex = 0;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 88);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(34, 13);
+            this.label4.TabIndex = 11;
+            this.label4.Text = "Alpha";
+            // 
+            // alpha
+            // 
+            this.alpha.Location = new System.Drawing.Point(71, 85);
+            this.alpha.Name = "alpha";
+            this.alpha.Size = new System.Drawing.Size(137, 20);
+            this.alpha.TabIndex = 2;
+            this.alpha.Text = "0.2";
+            this.alpha.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // Configurations
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(406, 163);
+            this.ClientSize = new System.Drawing.Size(418, 186);
             this.Controls.Add(this.groupBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -139,6 +193,7 @@
             this.Text = "Configurations";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.maxIter)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -152,5 +207,9 @@
         private System.Windows.Forms.Button save;
         private System.Windows.Forms.TextBox gamma;
         private System.Windows.Forms.ComboBox gridWidth;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.NumericUpDown maxIter;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox alpha;
     }
 }
