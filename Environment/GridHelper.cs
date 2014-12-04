@@ -102,6 +102,12 @@ namespace Environment
             }
             return am;
         }
+        /// <summary>
+        /// Get the exact point with respect to a point with a direction
+        /// </summary>
+        /// <param name="from">The current point</param>
+        /// <param name="direction">The desired direction</param>
+        /// <returns>The destination point</returns>
         protected Point __getDirectionPoint(Point from, Directions direction)
         {
             switch (direction)
@@ -128,6 +134,11 @@ namespace Environment
                     throw new ArgumentException("Unsupported direction");
             }
         }
+        /// <summary>
+        /// Get cross directions on the given direction
+        /// </summary>
+        /// <param name="direction">The origin direction</param>
+        /// <returns>The cross directions based on the origin direction; For HOLD direction if will return an empty direction array</returns>
         protected Directions[] __getCrossDirection(Directions direction)
         {
             switch (direction)
@@ -161,75 +172,34 @@ namespace Environment
         {
             switch (direction)
             {
-                //case Directions.NORTH:
-                //    lock (this.propExaminer)
-                //    {
-                //        if (this.propExaminer.NextDouble() <= MovementAccuracy)
-                //        {
-                //            if (from.Y == 0 || !this.CanMove(from, direction))
-                //                return from;
-                //            return new Point(from.X, from.Y - 1);
-                //        }
-                //        Point[] cross_moves = new Point[] { new Point(from.X - 1, from.Y), new Point(from.X + 1, from.Y) };
-                //        var dp = cross_moves[this.propExaminer.Next(0, cross_moves.Length - 1)];
-                //        if (dp.X < 0 || dp.X >= this.BoundedGrid.Size.Width)
-                //            return from;
-                //        if (this.CanMove(dp, direction))
-                //            return dp;
-                //        return from;
-                //    }
                 case Directions.NORTH:
                 case Directions.EAST:
                 case Directions.SOUTH:
                 case Directions.WEST:
                     lock (this.propExaminer)
                     {
+                        // validate the probability of origin move occurrence
                         if (this.propExaminer.NextDouble() <= MovementAccuracy)
                         {
+                            // if it is NOT a valid move?
                             if (!this.CanMove(from, direction))
+                                // return the origin point
                                 return from;
+                            // return the destination point directly
                             return this.__getDirectionPoint(from, direction);
                         }
+                        // if we are here it means there's been a exceptional move event
+                        // randomly choose a cross direction
                         var choosen_cross_direction = this.__getCrossDirection(direction)[this.propExaminer.Next(0, 1)];
+                        // if it is possible to move with choosen cross direction?
                         if (this.CanMove(from, choosen_cross_direction))
+                            // return the destination point following up the cross direction
                             return this.__getDirectionPoint(from, choosen_cross_direction);
+                        // otherwise return the origin point
                         return from;
                     }
-                //case Directions.SOUTH:
-                //    lock (this.propExaminer)
-                //    {
-                //        if (this.propExaminer.NextDouble() <= MovementAccuracy)
-                //        {
-                //            if (!this.CanMove(from, direction))
-                //                return from;
-                //            return new Point(from.X, from.Y + 1);
-                //        }
-                //        Point[] cross_moves = new Point[] { new Point(from.X - 1, from.Y), new Point(from.X + 1, from.Y) };
-                //        var dp = cross_moves[this.propExaminer.Next(0, cross_moves.Length - 1)];
-                //        if (dp.X < 0 || dp.X >= this.BoundedGrid.Size.Width)
-                //            return from;
-                //        if (this.CanMove(dp, direction))
-                //            return dp;
-                //        return from;
-                //    }
-                //case Directions.WEST:
-                //    lock (this.propExaminer)
-                //    {
-                //        if (this.propExaminer.NextDouble() <= MovementAccuracy)
-                //        {
-                //            if (from.X <= 0 || !this.CanMove(from, direction))
-                //                return from;
-                //            return new Point(from.X - 1, from.Y);
-                //        }
-                //        Point[] cross_moves = new Point[] { new Point(from.X, from.Y - 1), new Point(from.X, from.Y + 1) };
-                //        var dp = cross_moves[this.propExaminer.Next(0, cross_moves.Length - 1)];
-                //        if (dp.Y < 0 || dp.Y >= this.BoundedGrid.Size.Height)
-                //            return from;
-                //        if(this.CanMove(dp, direction))
-                //            return dp;
-                //        return from;
-                //    }
                 case Directions.HOLD:
+                    // hold-up to the origin point
                     return from;
                 default:
                     throw new ArgumentException("Not supported direction!!!");
@@ -241,9 +211,6 @@ namespace Environment
         /// <param name="point">The target point to move</param>
         /// <param name="direction">The desired direction</param>
         /// <returns>The movement status instance</returns>
-        public Status Move(Point point, Directions direction)
-        {
-            return new Status(__getPoint(point, direction), point);
-        }
+        public Status Move(Point point, Directions direction) { return new Status(__getPoint(point, direction), point); }
     }
 }
