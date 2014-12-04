@@ -223,7 +223,13 @@ namespace mltak2
                 g.AgentPoint = g.grid2abs(p);
             }
         }
-
+        private void MarkStartGoalPoints(Point ABS_Start, Point ABS_Goal)
+        {
+            __last_valid_grid_block = g.abs2grid(ABS_Goal);
+            MarkGoalPointGrid_Click(new object(), new EventArgs());
+            __last_valid_grid_block = g.abs2grid(ABS_Start);
+            MarkStartPointGrid_Click(new object(), new EventArgs());
+        }
         private void MarkGoalPointGrid_Click(object sender, EventArgs e)
         {
             using (var gfx = this.grid.CreateGraphics())
@@ -381,8 +387,7 @@ namespace mltak2
                 {
                     var s = (KeyValuePair<float, GridHelper.Directions>)this.optimalPath[this.g.AgentPoint];
                     var m = gh.Move(this.g.AgentPoint, s.Value);
-                    __last_valid_grid_block = g.abs2grid(m.NewPoint);
-                    MarkStartPointGrid_Click(sender, e);
+                    MarkStartGoalPoints(m.NewPoint, g.GoalPoint);
                     this.g.AgentPoint = m.NewPoint;
                     Application.DoEvents();
                     System.Threading.Thread.Sleep(500);
