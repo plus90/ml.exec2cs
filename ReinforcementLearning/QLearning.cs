@@ -57,17 +57,18 @@ namespace ReinforcementLearning
                 termination_validtor = new Func<Environment.Grid, long, bool>(this.__should_terminate);
             var gh = new GridHelper(this.Grid);
             Action a = Action.HOLD;
+            State state = this.Grid.AgentPoint;
             do
             {
                 // choose a random action
                 lock (this.RandGen)
                     a = this.Actions[this.RandGen.Next(0, this.Actions.Count)];
-                var s = gh.Move(this.Grid.AgentPoint, a);
+                var s = gh.Move(state, a);
                 this.__visit(s.OldPoint, a);
                 var r = this.__get_reward(s.NewPoint);
                 this.__update_q_value(s.OldPoint, a, s.NewPoint, r);
                 // go to the new point
-                this.Grid.AgentPoint = s.NewPoint;
+                state = s.NewPoint;
             } while (!termination_validtor(this.Grid, this.StepCounter) && ++this.StepCounter <= long.MaxValue);
         }
         /// <summary>
