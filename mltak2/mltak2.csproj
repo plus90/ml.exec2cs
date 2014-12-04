@@ -46,6 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configurations.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Configurations.Designer.cs">
+      <DependentUpon>Configurations.cs</DependentUpon>
+    </Compile>
     <Compile Include="Grid.cs" />
     <Compile Include="GridForm.cs">
       <SubType>Form</SubType>
@@ -62,6 +68,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Configurations.resx">
+      <DependentUpon>Configurations.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GridForm.resx">
       <DependentUpon>GridForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -77,6 +86,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

@@ -52,6 +52,8 @@ namespace mltak2
             this.Size = size;
             this.Graphic = graphic;
             this.Gridlines = new Hashtable();
+            this.GoalPoint = new Point(this.Size.Width - 1, 0);
+            this.AgentPoint = new Point(0, this.Size.Height - 1);
             __blockStatuses = new BlockStatus[(this.Size.Width), (this.Size.Height)];
             /**
              * Update the block status of borders of grid

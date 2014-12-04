@@ -1,7 +1,12 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="mltak2.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="GridSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">6, 6</Value>
+    </Setting>
+    <Setting Name="Gamma" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">0.9</Value>
+    </Setting>
+  </Settings>
 </SettingsFile>

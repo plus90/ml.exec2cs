@@ -23,7 +23,7 @@ namespace mltak2
             /**
              * Draw the grid
              */
-            Size gridSize = new Size(6, 6);
+            Size gridSize = Properties.Settings.Default.GridSize;
             Size s = Grid.GetSizeOfGrid(gridSize);
             this.grid.Image = new Bitmap(s.Width + 1, s.Height + 1, this.grid.CreateGraphics());
             using (Graphics gfx = Graphics.FromImage(this.grid.Image))
@@ -93,11 +93,10 @@ namespace mltak2
                 });
                 t.Start();
             });
-            try
-            {
+            if(System.IO.File.Exists("config.dat"))
                 loadConfigurationToolStripMenuItem_Click(new object(), new EventArgs());
-            }
-            catch { }
+            else
+                newConfigurationToolStripMenuItem_Click(new object(), new EventArgs());
         }
         public void grid_MouseDown(object sender, MouseEventArgs e)
         {
@@ -172,7 +171,9 @@ namespace mltak2
         private void newConfigurationToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.grid.CreateGraphics().Clear(Color.FromKnownColor(KnownColor.Control));
-            g = new Grid(g.Size, this.grid.CreateGraphics());
+            var s = Grid.GetSizeOfGrid(Properties.Settings.Default.GridSize);
+            g = new Grid(Properties.Settings.Default.GridSize, this.grid.CreateGraphics());
+            this.Size = new Size(s.Width + 21, s.Height + 90);
             Timer t = new Timer();
             t.Interval = 100;
             t.Tick += new EventHandler((_sender, _e) =>
@@ -180,6 +181,10 @@ namespace mltak2
                 t.Stop();
                 g.BlockBorders(this.grid);
                 g.Draw();
+                __last_valid_grid_block = g.abs2grid(g.AgentPoint);
+                MarkStartPointGrid_Click(new object(), new EventArgs());
+                __last_valid_grid_block = g.abs2grid(g.GoalPoint);
+                MarkGoalPointGrid_Click(new object(), new EventArgs());
             });
             t.Start();
         }
@@ -220,6 +225,11 @@ namespace mltak2
                 // set the new point
                 g.GoalPoint = g.grid2abs(p);
             }
+        }
+
+        private void configurationsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new Configurations().Show() ;
         }
     }
 }

@@ -40,6 +40,7 @@
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.MarkStartPointGrid = new System.Windows.Forms.ToolStripMenuItem();
             this.MarkGoalPointGrid = new System.Windows.Forms.ToolStripMenuItem();
+            this.configurationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.toolStrip.SuspendLayout();
@@ -58,7 +59,8 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem,
+            this.configurationsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(284, 24);
@@ -121,21 +123,29 @@
             this.MarkStartPointGrid,
             this.MarkGoalPointGrid});
             this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(153, 70);
+            this.contextMenuStrip.Size = new System.Drawing.Size(143, 48);
             // 
             // MarkStartPointGrid
             // 
             this.MarkStartPointGrid.Name = "MarkStartPointGrid";
-            this.MarkStartPointGrid.Size = new System.Drawing.Size(152, 22);
+            this.MarkStartPointGrid.Size = new System.Drawing.Size(142, 22);
             this.MarkStartPointGrid.Text = "Mark as &Start";
             this.MarkStartPointGrid.Click += new System.EventHandler(this.MarkStartPointGrid_Click);
             // 
             // MarkGoalPointGrid
             // 
             this.MarkGoalPointGrid.Name = "MarkGoalPointGrid";
-            this.MarkGoalPointGrid.Size = new System.Drawing.Size(173, 22);
+            this.MarkGoalPointGrid.Size = new System.Drawing.Size(142, 22);
             this.MarkGoalPointGrid.Text = "Mark as &Goal";
             this.MarkGoalPointGrid.Click += new System.EventHandler(this.MarkGoalPointGrid_Click);
+            // 
+            // configurationsToolStripMenuItem
+            // 
+            this.configurationsToolStripMenuItem.Name = "configurationsToolStripMenuItem";
+            this.configurationsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
+            this.configurationsToolStripMenuItem.Size = new System.Drawing.Size(98, 20);
+            this.configurationsToolStripMenuItem.Text = "Configurations";
+            this.configurationsToolStripMenuItem.Click += new System.EventHandler(this.configurationsToolStripMenuItem_Click);
             // 
             // GridForm
             // 
@@ -174,6 +184,7 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem MarkStartPointGrid;
         private System.Windows.Forms.ToolStripMenuItem MarkGoalPointGrid;
+        private System.Windows.Forms.ToolStripMenuItem configurationsToolStripMenuItem;
     }
 }
 
