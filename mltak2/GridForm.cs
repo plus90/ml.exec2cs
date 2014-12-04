@@ -29,8 +29,8 @@ namespace mltak2
             this.grid.Image = new Bitmap(s.Width + 1, s.Height + 1, this.grid.CreateGraphics());
             using (Graphics gfx = Graphics.FromImage(this.grid.Image))
             {
-                g = new Grid(gridSize, gfx);
-                g.Draw();
+                g = new Grid(gridSize);
+                g.Draw(gfx);
                 this.Size = new Size(s.Width + 21, s.Height + 90);
             }
             /**
@@ -98,16 +98,9 @@ namespace mltak2
                 t.Start();
                 this.toolStripStatus.Tag = t;
             });
-            if(System.IO.File.Exists("config.dat"))
-                try
-                {
-                    loadConfigurationToolStripMenuItem_Click(new object(), new EventArgs());
-                }
-                catch
-                {
-                    MessageBox.Show("Unable to load the saved configurations");
-                    newConfigurationToolStripMenuItem_Click(new object(), new EventArgs());
-                }
+            if (System.IO.File.Exists("config.dat"))
+                loadConfigurationToolStripMenuItem_Click(new object(), new EventArgs());
+
             else
                 newConfigurationToolStripMenuItem_Click(new object(), new EventArgs());
         }
@@ -168,8 +161,16 @@ namespace mltak2
                     t.Tick += new EventHandler((_sender, _e) =>
                     {
                         t.Stop();
-                        g.BlockBorders(this.grid);
-                        g.Draw();
+                        try
+                        {
+                            g.BlockBorders(this.grid);
+                            g.Draw(this.grid.CreateGraphics());
+                        }
+                        catch
+                        {
+                            MessageBox.Show("Unable to load the saved configurations");
+                            newConfigurationToolStripMenuItem_Click(new object(), new EventArgs());
+                        }
                         __last_valid_grid_block = g.abs2grid(g.AgentPoint);
                         MarkStartPointGrid_Click(new object(), new EventArgs());
                         __last_valid_grid_block = g.abs2grid(g.GoalPoint);
@@ -186,7 +187,7 @@ namespace mltak2
         {
             this.grid.CreateGraphics().Clear(Color.FromKnownColor(KnownColor.Control));
             var s = Grid.GetSizeOfGrid(Properties.Settings.Default.GridSize);
-            g = new Grid(Properties.Settings.Default.GridSize, this.grid.CreateGraphics());
+            g = new Grid(Properties.Settings.Default.GridSize);
             this.Size = new Size(s.Width + 21, s.Height + 90);
             Timer t = new Timer();
             t.Interval = 100;
@@ -194,7 +195,7 @@ namespace mltak2
             {
                 t.Stop();
                 g.BlockBorders(this.grid);
-                g.Draw();
+                g.Draw(this.grid.CreateGraphics());
                 __last_valid_grid_block = g.abs2grid(g.AgentPoint);
                 MarkStartPointGrid_Click(new object(), new EventArgs());
                 __last_valid_grid_block = g.abs2grid(g.GoalPoint);
@@ -243,7 +244,7 @@ namespace mltak2
 
         private void configurationsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            new Configurations().Show() ;
+            new Configurations().Show();
         }
         private void trainToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -263,7 +264,7 @@ namespace mltak2
                         new Func<Grid, long, bool>((g, step_counter) =>
                         {
                             if (step_counter % 40 == 0)
-                                this.toolStripStatus.Text = String.Format("{0}% Of learning process passed....", (step_counter + totall_step_counter) * (i + 1 ) * 10 / (max_q_table_size * 40 * max_iter));
+                                this.toolStripStatus.Text = String.Format("{0}% Of learning process passed....", (step_counter + totall_step_counter) * (i + 1) * 10 / (max_q_table_size * 40 * max_iter));
                             return 40 * max_q_table_size <= step_counter;
                         }));
                     totall_step_counter += ql.StepCounter;
@@ -332,7 +333,7 @@ namespace mltak2
                     foreach (Point cell in hs.Keys)
                     {
                         var p = g.abs2grid(cell);
-                        this.g.Write("#"+hs[cell].ToString(), new Point(p.X + 2 * margin /3, p.Y - 2 * margin), gfx, Brushes.Brown, new Font("Arial", 10, FontStyle.Bold));
+                        this.g.Write("#" + hs[cell].ToString(), new Point(p.X + 2 * margin / 3, p.Y - 2 * margin), gfx, Brushes.Brown, new Font("Arial", 10, FontStyle.Bold));
                     }
                 }
             }));
