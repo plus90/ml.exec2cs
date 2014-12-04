@@ -82,6 +82,12 @@ namespace ReinforcementLearning
         {
             var qt = this.__get_q_value(st, a);
             QVal v = QVal.MinValue;
+            foreach (var __a in this.Actions)
+            {
+                var __q = this.__get_q_value(stplus, __a);
+                if (v < __q)
+                    v = __q;
+            }
             qt = (1 - this.Alpha) * qt + this.Alpha * (r + this.Gamma * v);
             this.__set_q_value(st, a, qt);
             return qt;
