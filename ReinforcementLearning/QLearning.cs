@@ -134,10 +134,9 @@ namespace ReinforcementLearning
             var gh = new GridHelper(this.Grid);
             foreach (var __a in this.Actions)
             {
-                var s = gh.Move(stplus,__a);
-                var __r = this.__get_reward(s.NewPoint);
-                if (v < __r)
-                    v = __r;
+                var __q = this.__get_q_value(stplus, __a);
+                if (v < __q)
+                    v = __q;
             }
             qt = (1 - this.Alpha) * qt + this.Alpha * (r + this.Gamma * v);
             return this.__set_q_value(st, a, qt);
