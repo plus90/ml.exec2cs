@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 
-namespace mltak2
+namespace Environment
 {
-    class GridHelper
+    public class GridHelper
     {
         const float MovementAccuracy = 0.9F;
         Random propExaminer { get; set; }
@@ -44,12 +44,12 @@ namespace mltak2
         public GridHelper(Grid grid)
         {
             this.Bind(grid);
-            this.propExaminer = new Random(Environment.TickCount);
+            this.propExaminer = new Random(System.Environment.TickCount);
             this.Timer = new System.Timers.Timer(400);
             this.Timer.Elapsed += new System.Timers.ElapsedEventHandler((sender, e) =>
             {
                 lock (this.propExaminer)
-                    this.propExaminer = new Random(Environment.TickCount + e.SignalTime.Millisecond);
+                    this.propExaminer = new Random(System.Environment.TickCount + e.SignalTime.Millisecond);
             });
             this.Timer.Start();
         }

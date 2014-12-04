@@ -52,14 +52,12 @@
     <Compile Include="Configurations.Designer.cs">
       <DependentUpon>Configurations.cs</DependentUpon>
     </Compile>
-    <Compile Include="Grid.cs" />
     <Compile Include="GridForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GridForm.Designer.cs">
       <DependentUpon>GridForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GridHelper.cs" />
     <Compile Include="output.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -96,6 +94,16 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Environment\Environment.csproj">
+      <Project>{7FCAC0D2-CC81-4905-B18A-B36DC2B63FAE}</Project>
+      <Name>Environment</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ReinforcementLearning\ReinforcementLearning.csproj">
+      <Project>{23D4BE3B-1179-4AAD-AB8C-51915C4A8742}</Project>
+      <Name>ReinforcementLearning</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

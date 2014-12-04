@@ -5,9 +5,9 @@ using System.Text;
 using System.Drawing;
 using System.Collections;
 
-namespace mltak2
+namespace Environment
 {
-    class Grid : IDisposable
+    public class Grid : IDisposable
     {
         [Flags]
         public enum BlockStatus { UNBLOCKED = 0x0, NORTH = 0x1, EAST = 0x2, SOUTH = 0x4, WEST = 0x8, BLOCKED = 0x10 }
