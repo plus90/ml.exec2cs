@@ -60,6 +60,8 @@ namespace ReinforcementLearning
                 this.__update_q_value(s.OldPoint, a, r, s.NewPoint, aprim);
                 // assign the next state
                 state = s.NewPoint;
+                // assign the next action
+                a = aprim;
                 // examine the learning loop
             } while (!termination_validtor(this.Grid, state, this.StepCounter) && ++this.StepCounter <= long.MaxValue);
             // stop the refresher's timer
@@ -78,7 +80,7 @@ namespace ReinforcementLearning
         /// <returns>The updated Q-Value</returns>
         protected override QVal __update_q_value(State st, Action a, Reward r, State stplus, params object[] aplus)
         {
-            if (aplus.Length == 0 || (aplus[0] is Action))
+            if (aplus.Length == 0 || !(aplus[0] is Action))
                 throw new ArgumentException("Expecting an action as last comment", "o");
             var qt = this.__get_q_value(st, a);
             var v = this.__get_q_value(stplus, (Action)aplus[0]);
