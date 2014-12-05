@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="RLInstance.cs" />
     <Compile Include="SarsaLambdaLearning.cs" />
     <Compile Include="QLambdaLearning.cs" />
     <Compile Include="QLearning.cs" />
@@ -48,12 +49,16 @@
     <Compile Include="SarsaLearning.cs" />
     <Compile Include="RLambdaLearning.cs" />
     <Compile Include="RLearning.cs" />
+    <Compile Include="TDLambda.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Environment\Environment.csproj">
       <Project>{7FCAC0D2-CC81-4905-B18A-B36DC2B63FAE}</Project>
       <Name>Environment</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -29,6 +29,8 @@ namespace ReinforcementLearning
         /// <param name="A">The list of valid actions</param>
         /// <param name="gamma">The discount factor</param>
         /// <param name="alpha">The learning rate</param>
+        /// <param name="lambda">The lambda rate</param>
+        /// <param name="QSA">The initial Q-Table</param>
         /// <param name="QTable">The initial Q-table(Can be also `null`)</param>
         public RLambdaLearning(Grid grid, List<Action> A, float gamma, float alpha, float lambda, Hashtable QSA) : base(grid, A, gamma, alpha, QSA) { this.Lambda = lambda; this.EligTable = new Hashtable(); }
         /// <summary>
@@ -38,6 +40,7 @@ namespace ReinforcementLearning
         /// <param name="A">The list of valid actions</param>
         /// <param name="gamma">The discount factor</param>
         /// <param name="alpha">The learning rate</param>
+        /// <param name="lambda">The lambda rate</param>
         public RLambdaLearning(Grid grid, List<Action> A, float gamma, float alpha, float lambda) : base(grid, A, gamma, alpha) { this.Lambda = lambda; this.EligTable = new Hashtable(); }
         /// <summary>
         /// Sets eligibility trace value

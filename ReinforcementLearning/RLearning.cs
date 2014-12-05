@@ -11,7 +11,7 @@ namespace ReinforcementLearning
     using State = System.Drawing.Point;
     using Reward = Int16;
     using Action = GridHelper.Directions;
-    public abstract class RLearning
+    public abstract class RLearning : RLInstance
     {
         #region Members
         /// <summary>
@@ -39,14 +39,6 @@ namespace ReinforcementLearning
         /// </summary>
         protected GridHelper GridHelper { get; set; }
         /// <summary>
-        /// The random# generator
-        /// </summary>
-        protected Random RandGen { get; set; }
-        /// <summary>
-        /// The refresher timer
-        /// </summary>
-        protected System.Timers.Timer RefreshTimer { get; set; }
-        /// <summary>
         /// The learning rate
         /// </summary>
         protected readonly float Alpha;
@@ -55,7 +47,8 @@ namespace ReinforcementLearning
         /// </summary>
         protected readonly float Gamma;
         #endregion
-        #region (Con/De)structors
+
+        #region Constructors
         /// <summary>
         /// Construct a TD learner instance
         /// </summary>
@@ -78,6 +71,7 @@ namespace ReinforcementLearning
         /// <param name="gamma">The discount factor</param>
         /// <param name="alpha">The learning rate</param>
         public RLearning(Grid grid, List<Action> A, float gamma, float alpha)
+            : base()
         {
             this.Grid = grid;
             this.Actions = A;
@@ -87,24 +81,9 @@ namespace ReinforcementLearning
             this.QTable = new Hashtable();
             this.VisitedStates = new Hashtable();
             this.GridHelper = new GridHelper(this.Grid);
-            this.RandGen = new Random(System.Environment.TickCount);
-            this.RefreshTimer = new System.Timers.Timer(400);
-            this.RefreshTimer.Elapsed += new System.Timers.ElapsedEventHandler((sender, e) =>
-            {
-                lock (this.RandGen)
-                    this.RandGen = new Random(System.Environment.TickCount + e.SignalTime.Millisecond);
-                GC.Collect();
-            });
-        }
-        /// <summary>
-        /// The destructor
-        /// </summary>
-        ~RLearning()
-        {
-            this.RefreshTimer.Stop();
-            this.RefreshTimer.Dispose();
         }
         #endregion
+        
         #region Methods
         #region Protecteds
         /// <summary>
