@@ -289,10 +289,12 @@ namespace mltak2
                 }
                 if (optimalPath.Contains(s.Key))
                 {
-                    if ((float)ql.QTable[s] > ((KeyValuePair<float, GridHelper.Directions>)optimalPath[s.Key]).Key)
-                        optimalPath[s.Key] = new KeyValuePair<float, GridHelper.Directions>((float)ql.QTable[s], s.Value);
+                    if ((float)ql.QTable[s] > ((List<KeyValuePair<float, GridHelper.Directions>>)optimalPath[s.Key])[0].Key)
+                        optimalPath[s.Key] = new List<KeyValuePair<float, GridHelper.Directions>>() { new KeyValuePair<float, GridHelper.Directions>((float)ql.QTable[s], s.Value) };
+                    else if ((float)ql.QTable[s] == ((List<KeyValuePair<float, GridHelper.Directions>>)optimalPath[s.Key])[0].Key)
+                        ((List<KeyValuePair<float, GridHelper.Directions>>)optimalPath[s.Key]).Add(new KeyValuePair<float, GridHelper.Directions>((float)ql.QTable[s], s.Value));
                 }
-                else optimalPath.Add(s.Key, new KeyValuePair<float, GridHelper.Directions>((float)ql.QTable[s], s.Value));
+                else optimalPath.Add(s.Key, new List<KeyValuePair<float, GridHelper.Directions>>() { new KeyValuePair<float, GridHelper.Directions>((float)ql.QTable[s], s.Value) });
             }
             var margin = 23;
             /**
@@ -481,16 +483,28 @@ namespace mltak2
             {
                 if (this.optimalPath == null || this.optimalPath.Count == 0)
                 {
-                    MessageBox.Show("There no stored optimal values...");
+                    this.examToolStripMenuItem.GetCurrentParent().Invoke(new Action(() =>
+                    {
+                        __enable_all_menus(true);
+                        this.examToolStripMenuItem.Enabled = false;
+                    }));
+                    return;
                 }
                 var gh = new GridHelper(this.g);
+                var rand = new Random();
                 while (this.g.AgentPoint != this.g.GoalPoint)
                 {
-                    var s = (KeyValuePair<float, GridHelper.Directions>)this.optimalPath[this.g.AgentPoint];
+                    var l = (List<KeyValuePair<float, GridHelper.Directions>>)this.optimalPath[this.g.AgentPoint];
+                    var s = l[rand.Next(0, l.Count - 1)];
                     var m = gh.Move(this.g.AgentPoint, s.Value);
                     MarkStartGoalPoints(m.NewPoint, g.GoalPoint);
                     this.g.AgentPoint = m.NewPoint;
                     this.DrawDirection(m.OldPoint, s.Value);
+                    l.Remove(s);
+                    if (l.Count == 0)
+                        this.optimalPath.Remove(l);
+                    else
+                        this.optimalPath[this.optimalPath] = l;
                     Application.DoEvents();
                     System.Threading.Thread.Sleep(500);
                 }
@@ -509,6 +523,15 @@ namespace mltak2
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (ql == null || ql.QTable.Count == 0)
+            {
+                this.saveToolStripMenuItem.GetCurrentParent().Invoke(new Action(() =>
+                {
+                    __enable_all_menus(true);
+                    this.saveToolStripMenuItem.Enabled = false;
+                }));
+                return;
+            }
             __enable_all_menus(false);
             using (SaveFileDialog sfd = new SaveFileDialog())
             {
@@ -517,18 +540,20 @@ namespace mltak2
                 sfd.OverwritePrompt = true;
                 sfd.Filter = "Data files (*.dat)|*.dat";
                 var res = sfd.ShowDialog(this);
-                if (res == System.Windows.Forms.DialogResult.Cancel) return;
-                BinaryFormatter bf = new BinaryFormatter();
+                if (res == System.Windows.Forms.DialogResult.OK)
                 {
-                    using (var fs = sfd.OpenFile())
+                    BinaryFormatter bf = new BinaryFormatter();
                     {
-                        bf.Serialize(fs, g.GetStatus());
-                        bf.Serialize(fs, ql.QTable);
-                        bf.Serialize(fs, ql.VisitedStates);
-                        bf.Serialize(fs, ql.StepCounter);
+                        using (var fs = sfd.OpenFile())
+                        {
+                            bf.Serialize(fs, g.GetStatus());
+                            bf.Serialize(fs, ql.QTable);
+                            bf.Serialize(fs, ql.VisitedStates);
+                            bf.Serialize(fs, ql.StepCounter);
+                        }
                     }
+                    this.toolStripStatus.Text = "The QTable saved successfully....";
                 }
-                this.toolStripStatus.Text = "The QTable saved successfully....";
             }
             __enable_all_menus(true);
         }
@@ -542,26 +567,28 @@ namespace mltak2
                 sfd.AddExtension = true;
                 sfd.Filter = "Data files (*.dat)|*.dat";
                 var res = sfd.ShowDialog(this);
-                if (res == System.Windows.Forms.DialogResult.Cancel) return;
-                BinaryFormatter bf = new BinaryFormatter();
+                if (res == System.Windows.Forms.DialogResult.OK)
                 {
-                    using (var fs = sfd.OpenFile())
+                    BinaryFormatter bf = new BinaryFormatter();
                     {
-                        g = new Grid((Grid.BlockStatus[,])bf.Deserialize(fs), this.grid);
-                        if (ql == null)
-                            ql = new ReinforcementLearning.QLearning(
-                                this.g,
-                                new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>()),
-                                Properties.Settings.Default.Gamma,
-                                Properties.Settings.Default.Alpha);
-                        ql.QTable = (Hashtable)bf.Deserialize(fs);
-                        ql.VisitedStates = (Hashtable)bf.Deserialize(fs);
-                        ql.StepCounter = (long)bf.Deserialize(fs);
+                        using (var fs = sfd.OpenFile())
+                        {
+                            g = new Grid((Grid.BlockStatus[,])bf.Deserialize(fs), this.grid);
+                            if (ql == null)
+                                ql = new ReinforcementLearning.QLearning(
+                                    this.g,
+                                    new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>()),
+                                    Properties.Settings.Default.Gamma,
+                                    Properties.Settings.Default.Alpha);
+                            ql.QTable = (Hashtable)bf.Deserialize(fs);
+                            ql.VisitedStates = (Hashtable)bf.Deserialize(fs);
+                            ql.StepCounter = (long)bf.Deserialize(fs);
+                        }
                     }
+                    __reload_grid();
+                    __plotPolicy(ql);
+                    this.toolStripStatus.Text = "The QTable saved successfully....";
                 }
-                __reload_grid();
-                __plotPolicy(ql);
-                this.toolStripStatus.Text = "The QTable saved successfully....";
             }
             __enable_all_menus(true);
         }
