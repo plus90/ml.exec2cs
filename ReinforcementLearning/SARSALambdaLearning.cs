@@ -44,7 +44,7 @@ namespace ReinforcementLearning
         protected virtual void __set_elig_value(State s, Action a, EligVal e)
         {
             var sig = new KeyValuePair<State, Action>(s, a);
-            if (this.EligTable.Contains(sig))
+            if (!this.EligTable.Contains(sig))
                 this.EligTable.Add(sig, e);
             else this.EligTable[sig] = e;
         }
@@ -57,8 +57,8 @@ namespace ReinforcementLearning
         protected virtual EligVal __get_elig_value(State s, Action a)
         {
             var sig = new KeyValuePair<State, Action>(s, a);
-            if (this.EligTable.Contains(sig))
-                this.EligTable.Add(sig, 0);
+            if (!this.EligTable.Contains(sig))
+                this.EligTable.Add(sig, (EligVal)0);
             return (EligVal)this.EligTable[sig];
         }
         /// <summary>
@@ -116,12 +116,14 @@ namespace ReinforcementLearning
                 throw new ArgumentException("Expecting an action as last comment", "o");
             var delta = (r + this.Gamma * this.__get_q_value(stplus, (Action)aplus[0]) - this.__get_q_value(st, a));                        // δ <- r + γ * Q(s', a') - Q(s, a)
             this.__set_elig_value(st, a, this.__get_elig_value(st, a) + 1);                                                                 // e(s, a) <- e(s, a) + 1
-            foreach (KeyValuePair<State, Action> sa in this.QTable.Keys)                                                                    // for all s, a
+            var keys = this.QTable.Keys.Cast<KeyValuePair<State, Action>>().ToArray();
+            for (int i = 0; i < keys.Length; i++)
             {
+                var sa = (KeyValuePair<State, Action>)keys[i];
                 this.__set_q_value(sa.Key, sa.Value, (QVal)this.QTable[sa] + this.Alpha * delta * this.__get_elig_value(sa.Key, sa.Value)); // Q(s, a) ← Q(s, a) + αδe(s, a) 
                 this.__set_elig_value(sa.Key, sa.Value, this.Gamma * this.Lambda * this.__get_elig_value(sa.Key, sa.Value));                // e(s, a) ← γλe(s, a)
             }
-            return 0.0F;
+            return this.__get_q_value(st, a);
         }
     }
 }
