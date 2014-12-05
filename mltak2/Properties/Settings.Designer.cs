@@ -70,5 +70,17 @@ namespace mltak2.Properties {
                 this["Alpha"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.9")]
+        public float Lambda {
+            get {
+                return ((float)(this["Lambda"]));
+            }
+            set {
+                this["Lambda"] = value;
+            }
+        }
     }
 }

@@ -18,6 +18,7 @@ namespace mltak2
             this.gamma.Text = Properties.Settings.Default.Gamma.ToString();
             this.alpha.Text = Properties.Settings.Default.Alpha.ToString();
             this.maxIter.Value = Properties.Settings.Default.MaxLearningIteration;
+            this.lambda.Text = Properties.Settings.Default.Lambda.ToString();
             this.KeyPreview = true;
             this.KeyDown += new KeyEventHandler((sender, e) =>
             {
@@ -33,6 +34,8 @@ namespace mltak2
         public float GetGammaValue() { return Properties.Settings.Default.Gamma; }
 
         public float GetAlphaValue() { return Properties.Settings.Default.Alpha; }
+
+        public float GetLambdaValue() { return Properties.Settings.Default.Lambda; }
 
         public int GetMaxIter() { return Properties.Settings.Default.MaxLearningIteration; }
 
@@ -59,6 +62,13 @@ namespace mltak2
             Properties.Settings.Default.Alpha = alpha;
             Properties.Settings.Default.Save();
         }
+        public void SetLambdaValue(float lambda)
+        {
+            if (lambda < 0 || lambda > 1)
+                throw new ArgumentOutOfRangeException("The gamma should be in range of [0..1]");
+            Properties.Settings.Default.Lambda = lambda;
+            Properties.Settings.Default.Save();
+        }
 
         public void SetMaxIter(int max_iter)
         {
@@ -75,6 +85,7 @@ namespace mltak2
                 var s = new Size(int.Parse(this.gridWidth.SelectedItem.ToString()), int.Parse(this.gridWidth.SelectedItem.ToString()));
                 this.SetGammaValue(float.Parse(this.gamma.Text));
                 this.SetAlphaValue(float.Parse(this.alpha.Text));
+                this.SetLambdaValue(float.Parse(this.lambda.Text));
                 this.SetMaxIter((int)this.maxIter.Value);
                 if (s != Properties.Settings.Default.GridSize)
                 {

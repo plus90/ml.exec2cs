@@ -14,5 +14,8 @@
     <Setting Name="Alpha" Type="System.Single" Scope="User">
       <Value Profile="(Default)">0.2</Value>
     </Setting>
+    <Setting Name="Lambda" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">0.9</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

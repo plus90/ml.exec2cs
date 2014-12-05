@@ -45,6 +45,9 @@
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.MarkStartPointGrid = new System.Windows.Forms.ToolStripMenuItem();
             this.MarkGoalPointGrid = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.qLambdaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sARSALambdaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.toolStrip.SuspendLayout();
@@ -119,7 +122,10 @@
             // 
             this.learnToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.qLearningToolStripMenuItem,
-            this.SARSAToolStripMenuItem});
+            this.SARSAToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.qLambdaToolStripMenuItem,
+            this.sARSALambdaToolStripMenuItem});
             this.learnToolStripMenuItem.Name = "learnToolStripMenuItem";
             this.learnToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.learnToolStripMenuItem.Text = "&Learn";
@@ -128,15 +134,15 @@
             // 
             this.qLearningToolStripMenuItem.Name = "qLearningToolStripMenuItem";
             this.qLearningToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q)));
-            this.qLearningToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.qLearningToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
             this.qLearningToolStripMenuItem.Text = "QLearning";
             this.qLearningToolStripMenuItem.Click += new System.EventHandler(this.learnGridToolStripMenuItem_Click);
             // 
-            // sARSAToolStripMenuItem
+            // SARSAToolStripMenuItem
             // 
-            this.SARSAToolStripMenuItem.Name = "sARSAToolStripMenuItem";
+            this.SARSAToolStripMenuItem.Name = "SARSAToolStripMenuItem";
             this.SARSAToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.SARSAToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.SARSAToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
             this.SARSAToolStripMenuItem.Text = "SARSA";
             this.SARSAToolStripMenuItem.Click += new System.EventHandler(this.learnGridToolStripMenuItem_Click);
             // 
@@ -186,6 +192,29 @@
             this.MarkGoalPointGrid.Text = "Mark as &Goal";
             this.MarkGoalPointGrid.Click += new System.EventHandler(this.MarkGoalPointGrid_Click);
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(230, 6);
+            // 
+            // qLambdaToolStripMenuItem
+            // 
+            this.qLambdaToolStripMenuItem.Name = "qLambdaToolStripMenuItem";
+            this.qLambdaToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift)
+                        | System.Windows.Forms.Keys.Q)));
+            this.qLambdaToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
+            this.qLambdaToolStripMenuItem.Text = "Q(Lambda)";
+            this.qLambdaToolStripMenuItem.Click += new System.EventHandler(this.learnGridToolStripMenuItem_Click);
+            // 
+            // sARSALambdaToolStripMenuItem
+            // 
+            this.sARSALambdaToolStripMenuItem.Name = "sARSALambdaToolStripMenuItem";
+            this.sARSALambdaToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift)
+                        | System.Windows.Forms.Keys.R)));
+            this.sARSALambdaToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
+            this.sARSALambdaToolStripMenuItem.Text = "SARSA(Lambda)";
+            this.sARSALambdaToolStripMenuItem.Click += new System.EventHandler(this.learnGridToolStripMenuItem_Click);
+            // 
             // GridForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -228,6 +257,9 @@
         private System.Windows.Forms.ToolStripMenuItem qLearningToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem SARSAToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem examToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem qLambdaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem sARSALambdaToolStripMenuItem;
     }
 }
 
