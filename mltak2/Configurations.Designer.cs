@@ -30,6 +30,8 @@
         {
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.lambda = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.alpha = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -39,8 +41,6 @@
             this.gamma = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.gridWidth = new System.Windows.Forms.ComboBox();
-            this.lambda = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.maxIter)).BeginInit();
             this.SuspendLayout();
@@ -78,6 +78,24 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Configurations";
             // 
+            // lambda
+            // 
+            this.lambda.Location = new System.Drawing.Point(72, 106);
+            this.lambda.Name = "lambda";
+            this.lambda.Size = new System.Drawing.Size(137, 20);
+            this.lambda.TabIndex = 12;
+            this.lambda.Text = "0.9";
+            this.lambda.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(7, 109);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(45, 13);
+            this.label5.TabIndex = 13;
+            this.label5.Text = "Lambda";
+            // 
             // alpha
             // 
             this.alpha.Location = new System.Drawing.Point(71, 79);
@@ -108,6 +126,11 @@
             // maxIter
             // 
             this.maxIter.Location = new System.Drawing.Point(131, 136);
+            this.maxIter.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
             this.maxIter.Minimum = new decimal(new int[] {
             1,
             0,
@@ -181,24 +204,6 @@
             this.gridWidth.Name = "gridWidth";
             this.gridWidth.Size = new System.Drawing.Size(54, 21);
             this.gridWidth.TabIndex = 0;
-            // 
-            // lambda
-            // 
-            this.lambda.Location = new System.Drawing.Point(72, 106);
-            this.lambda.Name = "lambda";
-            this.lambda.Size = new System.Drawing.Size(137, 20);
-            this.lambda.TabIndex = 12;
-            this.lambda.Text = "0.9";
-            this.lambda.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(7, 109);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(45, 13);
-            this.label5.TabIndex = 13;
-            this.label5.Text = "Lambda";
             // 
             // Configurations
             // 

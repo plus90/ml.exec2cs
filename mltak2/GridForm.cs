@@ -509,15 +509,6 @@ namespace mltak2
                     var m = gh.Move(this.g.AgentPoint, s.Value);
                     MarkStartGoalPoints(m.NewPoint, g.GoalPoint);
                     this.DrawDirection(m.OldPoint, s.Value);
-                    if (m.Succeed)
-                    {
-                        l.Remove(s);
-                        this.g.AgentPoint = m.NewPoint;
-                    }
-                    if (l.Count == 0)
-                        this.optimalPath.Remove(l);
-                    else
-                        this.optimalPath[this.optimalPath] = l;
                     Application.DoEvents();
                     System.Threading.Thread.Sleep(500);
                 }
