@@ -404,6 +404,7 @@ namespace mltak2
                 int max_iter = Properties.Settings.Default.MaxLearningIteration;
                 long totall_step_counter = 0;
                 var Actions = new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>());
+                tdl = null;
                 for (int i = 0; i < max_iter; i++)
                 {
                     // if the Q-Learning has been invoked?
@@ -592,7 +593,9 @@ namespace mltak2
                             ql.QTable = (Hashtable)bf.Deserialize(fs);
                             ql.VisitedStates = (Hashtable)bf.Deserialize(fs);
                             ql.StepCounter = (long)bf.Deserialize(fs);
-                            tdl.VTable = (Hashtable)bf.Deserialize(fs);
+                            // support for non-VTable contain files
+                            if(fs.Position <  fs.Length)
+                                tdl.VTable = (Hashtable)bf.Deserialize(fs);
                         }
                     }
                     __reload_grid();
