@@ -13,6 +13,7 @@ namespace ReinforcementLearning
     using Action = GridHelper.Directions;
     public abstract class TDLearning
     {
+        #region Members
         /// <summary>
         /// The defined valid actions
         /// </summary>
@@ -53,6 +54,8 @@ namespace ReinforcementLearning
         /// The discount factor
         /// </summary>
         protected readonly float Gamma;
+        #endregion
+        #region (Con/De)structors
         /// <summary>
         /// Construct a TD learner instance
         /// </summary>
@@ -101,6 +104,9 @@ namespace ReinforcementLearning
             this.RefreshTimer.Stop();
             this.RefreshTimer.Dispose();
         }
+        #endregion
+        #region Methods
+        #region Protecteds
         /// <summary>
         /// Returns the Q-Value of a State-Action if any exists or initializes it by 0.
         /// </summary>
@@ -153,17 +159,13 @@ namespace ReinforcementLearning
             // return the updated visit#
             return (long)this.VisitedStates[sig];
         }
+        #endregion
+        #region Virtuals
         /// <summary>
         /// Randomly chooses an action
         /// </summary>
         /// <returns>The choosen action</returns>
-        protected virtual Action __choose_action()
-        {
-            // The init choose procedure
-            lock (this.RandGen)
-                // choose a random action
-                return this.Actions[this.RandGen.Next(0, this.Actions.Count)];
-        }
+        protected virtual Action __choose_action(State s) { lock (this.RandGen) /* choose a random action */ return this.Actions[this.RandGen.Next(0, this.Actions.Count)]; }
         /// <summary>
         /// Get reward based on current state of grid
         /// </summary>
@@ -173,6 +175,8 @@ namespace ReinforcementLearning
         /// Check if should terminate the training loop
         /// </summary>
         protected virtual bool __should_terminate(Grid grid, State s, long step_counter) { return s == grid.GoalPoint; }
+        #endregion
+        #region Abstracts
         /// <summary>
         /// Updates the Q-Value
         /// </summary>
@@ -188,5 +192,7 @@ namespace ReinforcementLearning
         /// <param name="termination_validtor">The learning terminator validator; if it returns true the learning operation will halt.</param>
         /// <returns>The learned policy</returns>
         public abstract Hashtable Learn(Func<Grid, State, long, bool> termination_validtor = null);
+        #endregion
+        #endregion
     }
 }

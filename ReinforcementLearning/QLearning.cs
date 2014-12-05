@@ -50,7 +50,7 @@ namespace ReinforcementLearning
             do
             {
                 // choose a random action
-                a = this.__choose_action();
+                a = this.__choose_action(state);
                 // change the destination `state` with respect to the choosen action 
                 var s = this.GridHelper.Move(state, a);
                 // mark current state-action as visited
