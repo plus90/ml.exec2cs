@@ -56,7 +56,7 @@ namespace ReinforcementLearning
                 // get the new-state's reward
                 var r = this.__get_reward(s.NewPoint);
                 // choose a' from s'
-                Action aprim = this.__choose_action(s.NewPoint);
+                Action aprim = this.__choose_toothily_action(s.NewPoint);
                 // update the Q-Value of current with [s, a, s', r] values
                 this.__update_q_value(s.OldPoint, a, r, s.NewPoint, aprim);
                 // assign the next state

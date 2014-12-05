@@ -45,7 +45,7 @@ namespace ReinforcementLearning
             // deine the initial state
             State state = this.Grid.AgentPoint;
             // define an initial action
-            Action a = this.__choose_action(state);
+            Action a = this.__choose_toothily_action(state);
             do
             {
                 // change the destination `state` with respect to the choosen action 
@@ -55,7 +55,7 @@ namespace ReinforcementLearning
                 // get the new-state's reward
                 var r = this.__get_reward(s.NewPoint);
                 // choose a' from s'
-                Action aprim = this.__choose_action(s.NewPoint);
+                Action aprim = this.__choose_toothily_action(s.NewPoint);
                 // update the Q-Value of current with [s, a, s', r] values
                 this.__update_q_value(s.OldPoint, a, r, s.NewPoint, aprim);
                 // assign the next state
@@ -68,52 +68,6 @@ namespace ReinforcementLearning
             this.RefreshTimer.Stop();
             // return the learned policy
             return this.QTable;
-        }
-        protected override Action __choose_action(State s)
-        {
-            // 20% of time choose random move
-            const float EXPLORATION_RATIO = 0.2F;
-            if (this.RandGen.NextDouble() <= EXPLORATION_RATIO)
-            {
-                // return the base's choose action
-                // which selects a random action
-                return base.__choose_action(s);
-            }
-            else
-            {
-                // list of actions which have maximum Q-Value in current state
-                List<Action> actions = new List<Action>();
-                // latest larg Q value
-                float max_q = QVal.MinValue;
-                // choose actions which have maximum Q-Value
-                foreach (var a in this.Actions)
-                {
-                    // get the Q-Value for current actions
-                    var qv = this.__get_q_value(s, a);
-                    // if it is a bigger than previously actions 
-                    if (qv > max_q)
-                    {
-                        // update the maximum threshold
-                        max_q = qv;
-                        // ignore all previously choosen actions
-                        actions.Clear();
-                        // add current action to the list
-                        actions.Add(a);
-                    }
-                    // it has the same value as previously choosen actions
-                    else if (qv == max_q)
-                    {
-                        // add current action to the list also
-                        actions.Add(a);
-                    }
-                    // ignore the actions who don't have the maximum Q-Value for current state
-                }
-                // it should never happen, but for fail safe
-                if (actions.Count == 0)
-                    return base.__choose_action(s);
-                // randomly choose an action from the maximum actions' list
-                return actions[this.RandGen.Next(0, actions.Count)];
-            }
         }
         /// <summary>
         /// Updates the Q-Value
