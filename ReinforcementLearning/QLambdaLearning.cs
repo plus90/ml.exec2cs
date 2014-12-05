@@ -50,7 +50,7 @@ namespace ReinforcementLearning
             do
             {
                 // choose a random action
-                a = this.__choose_random_action(state);
+                a = this.__choose_toothily_action(state);
                 // change the destination `state` with respect to the choosen action 
                 var s = this.GridHelper.Move(state, a);
                 // get the new-state's reward
@@ -83,8 +83,8 @@ namespace ReinforcementLearning
             if (aplus.Length == 0 || !(aplus[0] is Action))
                 throw new ArgumentException("Expecting an action as last comment", "aplus");
             var qt = this.__get_q_value(st, a);
-            Action astar = (Action)aplus[0];
-            QVal v = this.__get_q_value(stplus, astar);
+            Action astar = (Action)aplus[0];                                                                                                // if a' ties for the max, the a* ← a'
+            QVal v = this.__get_q_value(stplus, astar);                                                                                     // Q(s', a')
             foreach (var __a in this.Actions) { var __q = this.__get_q_value(stplus, __a); if (v < __q) { v = __q; astar = __a; } }         // argmaxQ(s', b)
             var delta = (r + this.Gamma * this.__get_q_value(stplus, astar) - this.__get_q_value(st, a));                                   // δ ← r + γ * Q(s', a*) - Q(s, a)
             this.__set_elig_value(st, a, this.__get_elig_value(st, a) + 1);                                                                 // e(s, a) ← e(s, a) + 1
@@ -93,10 +93,10 @@ namespace ReinforcementLearning
             {
                 var sa = (KeyValuePair<State, Action>)keys[i];
                 this.__set_q_value(sa.Key, sa.Value, (QVal)this.QTable[sa] + this.Alpha * delta * this.__get_elig_value(sa.Key, sa.Value)); // Q(s, a) ← Q(s, a) + αδe(s, a) 
-                if ((Action)aplus[0] == astar)
+                if ((Action)aplus[0] == astar)                                                                                              // if a' = a*
                     this.__set_elig_value(sa.Key, sa.Value, this.Gamma * this.Lambda * this.__get_elig_value(sa.Key, sa.Value));            // e(s, a) ← γλe(s, a)
                 else
-                    this.__set_elig_value(sa.Key, sa.Value, 0);
+                    this.__set_elig_value(sa.Key, sa.Value, 0);                                                                             // e(s, a) ← 0
             }
             return qt;
         }
