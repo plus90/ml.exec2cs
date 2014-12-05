@@ -21,6 +21,7 @@ namespace mltak2
         Hashtable optimalPath = new Hashtable();
         List<System.Threading.Thread> ThreadsPool = new List<System.Threading.Thread>();
         ReinforcementLearning.RLearning ql = null;
+        ReinforcementLearning.TDLambda tdl = null;
         public GridForm()
         {
             InitializeComponent();
@@ -357,7 +358,7 @@ namespace mltak2
                 foreach (Point cell in tdl.VTable.Keys)
                 {
                     var p = g.abs2grid(cell);
-                    this.g.Write("T"+((float)tdl.VTable[cell]).ToString("F2"), new Point(p.X + 2 * margin / 3 , p.Y + margin + 5), gfx, Brushes.Brown, new Font("Arial", 8, FontStyle.Bold));
+                    this.g.Write("T"+((float)tdl.VTable[cell]).ToString("F2"), new Point(p.X + 2 * margin / 3 , p.Y + margin + 7), gfx, Brushes.Brown, new Font("Arial", 8, FontStyle.Bold));
                 }
             }
         }
@@ -402,7 +403,6 @@ namespace mltak2
             {
                 int max_iter = Properties.Settings.Default.MaxLearningIteration;
                 long totall_step_counter = 0;
-                ReinforcementLearning.TDLambda tdl = null;
                 var Actions = new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>());
                 for (int i = 0; i < max_iter; i++)
                 {
@@ -554,6 +554,7 @@ namespace mltak2
                             bf.Serialize(fs, ql.QTable);
                             bf.Serialize(fs, ql.VisitedStates);
                             bf.Serialize(fs, ql.StepCounter);
+                            bf.Serialize(fs, tdl.VTable);
                         }
                     }
                     this.toolStripStatus.Text = "The QTable saved successfully....";
@@ -584,13 +585,18 @@ namespace mltak2
                                     new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>()),
                                     Properties.Settings.Default.Gamma,
                                     Properties.Settings.Default.Alpha);
+                            if (tdl == null)
+                                tdl = new ReinforcementLearning.TDLambda(
+                                    ql,
+                                    Properties.Settings.Default.Lambda);
                             ql.QTable = (Hashtable)bf.Deserialize(fs);
                             ql.VisitedStates = (Hashtable)bf.Deserialize(fs);
                             ql.StepCounter = (long)bf.Deserialize(fs);
+                            tdl.VTable = (Hashtable)bf.Deserialize(fs);
                         }
                     }
                     __reload_grid();
-                    __plotPolicy(ql, new ReinforcementLearning.TDLambda(ql, Properties.Settings.Default.Lambda));
+                    __plotPolicy(ql, tdl);
                     this.toolStripStatus.Text = "The QTable saved successfully....";
                 }
             }

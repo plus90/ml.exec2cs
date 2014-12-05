@@ -17,7 +17,7 @@ namespace ReinforcementLearning
         /// <summary>
         /// The V(s) table's container
         /// </summary>
-        public Hashtable VTable { get; protected set; }
+        public Hashtable VTable { get; set; }
         /// <summary>
         /// Construct a Q-learner instance
         /// </summary>
@@ -81,7 +81,13 @@ namespace ReinforcementLearning
                 this.VTable.Add(sig, (VVal)0);
             return (VVal)this.VTable[sig];
         }
-
+        /// <summary>
+        /// Updates the V-Value
+        /// </summary>
+        /// <param name="st">The state at `t`</param>
+        /// <param name="r">The awarded reward at `t+1`</param>
+        /// <param name="stplus">The state at `t+1`</param>
+        /// <returns>The updated V-Value</returns>
         protected VVal __update_v_value(State st, Reward r, State stplus)
         {
             var delta = r + this.Gamma * this.__get_v_value(stplus) - this.__get_v_value(st);
@@ -96,8 +102,15 @@ namespace ReinforcementLearning
             return this.__get_v_value(st);
         }
 
+        /// <summary>
+        /// NOT SUPPORTED
+        /// </summary>
         protected override VVal __update_q_value(State st, Action a, Reward r, State stplus, params object[] o) { throw new NotSupportedException("This method is not supported for TDLambda instance"); }
-
+        /// <summary>
+        /// Learn V-values of a policy
+        /// </summary>
+        /// <param name="termination_validtor">The learning terminator validator; if it returns true the learning operation will halt.</param>
+        /// <returns>The learned V-Values</returns>
         public override Hashtable Learn(Func<Grid, State, long, bool> termination_validtor = null)
         {
             // start the refresher's timer
@@ -134,7 +147,6 @@ namespace ReinforcementLearning
 
         protected Action __get_best_action(State s)
         {
-            return base.__choose_toothily_action(s);
             List<Action> actionList = new List<Action>();
             var max = QVal.MinValue;
             foreach (var _a in this.Actions)
