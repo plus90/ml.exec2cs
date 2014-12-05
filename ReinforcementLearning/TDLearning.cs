@@ -21,15 +21,15 @@ namespace ReinforcementLearning
         /// <summary>
         /// The Q-Table
         /// </summary>
-        public Hashtable QTable { get; protected set; }
+        public Hashtable QTable { get; set; }
         /// <summary>
         /// The learning steps counter
         /// </summary>
-        public long StepCounter { get; protected set; }
+        public long StepCounter { get; set; }
         /// <summary>
         /// The visited states' container
         /// </summary>
-        public Hashtable VisitedStates { get; protected set; }
+        public Hashtable VisitedStates { get; set; }
         /// <summary>
         /// The grid instance
         /// </summary>

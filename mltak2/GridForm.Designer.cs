@@ -39,15 +39,18 @@
             this.learnToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.qLearningToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SARSAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.qLambdaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sARSALambdaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.examToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.toolStripStatus = new System.Windows.Forms.ToolStripLabel();
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.MarkStartPointGrid = new System.Windows.Forms.ToolStripMenuItem();
             this.MarkGoalPointGrid = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.qLambdaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.sARSALambdaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.qTableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.toolStrip.SuspendLayout();
@@ -59,7 +62,7 @@
             this.grid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grid.Location = new System.Drawing.Point(0, 24);
             this.grid.Name = "grid";
-            this.grid.Size = new System.Drawing.Size(284, 238);
+            this.grid.Size = new System.Drawing.Size(339, 238);
             this.grid.TabIndex = 0;
             this.grid.TabStop = false;
             // 
@@ -69,10 +72,11 @@
             this.fileToolStripMenuItem,
             this.configurationsToolStripMenuItem,
             this.learnToolStripMenuItem,
-            this.examToolStripMenuItem});
+            this.examToolStripMenuItem,
+            this.qTableToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(284, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(339, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -146,6 +150,29 @@
             this.SARSAToolStripMenuItem.Text = "SARSA";
             this.SARSAToolStripMenuItem.Click += new System.EventHandler(this.learnGridToolStripMenuItem_Click);
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(230, 6);
+            // 
+            // qLambdaToolStripMenuItem
+            // 
+            this.qLambdaToolStripMenuItem.Name = "qLambdaToolStripMenuItem";
+            this.qLambdaToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift)
+                        | System.Windows.Forms.Keys.Q)));
+            this.qLambdaToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
+            this.qLambdaToolStripMenuItem.Text = "Q(Lambda)";
+            this.qLambdaToolStripMenuItem.Click += new System.EventHandler(this.learnGridToolStripMenuItem_Click);
+            // 
+            // sARSALambdaToolStripMenuItem
+            // 
+            this.sARSALambdaToolStripMenuItem.Name = "sARSALambdaToolStripMenuItem";
+            this.sARSALambdaToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift)
+                        | System.Windows.Forms.Keys.R)));
+            this.sARSALambdaToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
+            this.sARSALambdaToolStripMenuItem.Text = "SARSA(Lambda)";
+            this.sARSALambdaToolStripMenuItem.Click += new System.EventHandler(this.learnGridToolStripMenuItem_Click);
+            // 
             // examToolStripMenuItem
             // 
             this.examToolStripMenuItem.Enabled = false;
@@ -161,7 +188,7 @@
             this.toolStripStatus});
             this.toolStrip.Location = new System.Drawing.Point(0, 237);
             this.toolStrip.Name = "toolStrip";
-            this.toolStrip.Size = new System.Drawing.Size(284, 25);
+            this.toolStrip.Size = new System.Drawing.Size(339, 25);
             this.toolStrip.TabIndex = 2;
             this.toolStrip.Text = "toolStrip1";
             // 
@@ -192,34 +219,39 @@
             this.MarkGoalPointGrid.Text = "Mark as &Goal";
             this.MarkGoalPointGrid.Click += new System.EventHandler(this.MarkGoalPointGrid_Click);
             // 
-            // toolStripSeparator1
+            // qTableToolStripMenuItem
             // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(230, 6);
+            this.qTableToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveToolStripMenuItem,
+            this.loadToolStripMenuItem});
+            this.qTableToolStripMenuItem.Name = "qTableToolStripMenuItem";
+            this.qTableToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
+            this.qTableToolStripMenuItem.Text = "&QTable";
             // 
-            // qLambdaToolStripMenuItem
+            // saveToolStripMenuItem
             // 
-            this.qLambdaToolStripMenuItem.Name = "qLambdaToolStripMenuItem";
-            this.qLambdaToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift)
-                        | System.Windows.Forms.Keys.Q)));
-            this.qLambdaToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
-            this.qLambdaToolStripMenuItem.Text = "Q(Lambda)";
-            this.qLambdaToolStripMenuItem.Click += new System.EventHandler(this.learnGridToolStripMenuItem_Click);
+            this.saveToolStripMenuItem.Enabled = false;
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift)
+                        | System.Windows.Forms.Keys.S)));
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.saveToolStripMenuItem.Text = "&Save";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
-            // sARSALambdaToolStripMenuItem
+            // loadToolStripMenuItem
             // 
-            this.sARSALambdaToolStripMenuItem.Name = "sARSALambdaToolStripMenuItem";
-            this.sARSALambdaToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift)
-                        | System.Windows.Forms.Keys.R)));
-            this.sARSALambdaToolStripMenuItem.Size = new System.Drawing.Size(233, 22);
-            this.sARSALambdaToolStripMenuItem.Text = "SARSA(Lambda)";
-            this.sARSALambdaToolStripMenuItem.Click += new System.EventHandler(this.learnGridToolStripMenuItem_Click);
+            this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
+            this.loadToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift)
+                        | System.Windows.Forms.Keys.O)));
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.loadToolStripMenuItem.Text = "&Load";
+            this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
             // 
             // GridForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 262);
+            this.ClientSize = new System.Drawing.Size(339, 262);
             this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.grid);
             this.Controls.Add(this.menuStrip1);
@@ -260,6 +292,9 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem qLambdaToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem sARSALambdaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem qTableToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
     }
 }
 

@@ -155,35 +155,39 @@ namespace mltak2
             {
                 using (System.IO.FileStream fs = new System.IO.FileStream("config.dat", System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.None))
                 {
-                    this.grid.CreateGraphics().Clear(Color.FromKnownColor(KnownColor.Control));
                     g = new Grid((Grid.BlockStatus[,])bf.Deserialize(fs), this.grid);
                     g.AgentPoint = (Point)bf.Deserialize(fs);
                     g.GoalPoint = (Point)bf.Deserialize(fs);
-                    Timer t = new Timer();
-                    t.Interval = 100;
-                    t.Tick += new EventHandler((_sender, _e) =>
-                    {
-                        t.Stop();
-                        try
-                        {
-                            g.BlockBorders(this.grid);
-                            g.Draw(this.grid.CreateGraphics());
-                        }
-                        catch
-                        {
-                            MessageBox.Show("Unable to load the saved configurations");
-                            newConfigurationToolStripMenuItem_Click(new object(), new EventArgs());
-                        }
-                        __last_valid_grid_block = g.abs2grid(g.AgentPoint);
-                        MarkStartPointGrid_Click(new object(), new EventArgs());
-                        __last_valid_grid_block = g.abs2grid(g.GoalPoint);
-                        MarkGoalPointGrid_Click(new object(), new EventArgs());
-                    });
-                    t.Start();
                 }
+                __reload_grid();
             }
             this.toolStripStatus.Text = "Configuration Loaded Sucessfully...";
-            //trainToolStripMenuItem_Click(sender, e);
+        }
+
+        private void __reload_grid()
+        {
+            this.grid.CreateGraphics().Clear(Color.FromKnownColor(KnownColor.Control));
+            Timer t = new Timer();
+            t.Interval = 100;
+            t.Tick += new EventHandler((_sender, _e) =>
+            {
+                t.Stop();
+                try
+                {
+                    g.BlockBorders(this.grid);
+                    g.Draw(this.grid.CreateGraphics());
+                }
+                catch
+                {
+                    MessageBox.Show("Unable to load the saved configurations");
+                    newConfigurationToolStripMenuItem_Click(new object(), new EventArgs());
+                }
+                __last_valid_grid_block = g.abs2grid(g.AgentPoint);
+                MarkStartPointGrid_Click(new object(), new EventArgs());
+                __last_valid_grid_block = g.abs2grid(g.GoalPoint);
+                MarkGoalPointGrid_Click(new object(), new EventArgs());
+            });
+            t.Start();
         }
 
         private void newConfigurationToolStripMenuItem_Click(object sender, EventArgs e)
@@ -261,7 +265,7 @@ namespace mltak2
                 foreach (var t in this.ThreadsPool) if (t.IsAlive) t.Abort();
         }
 
-        private void plotPolicy(ReinforcementLearning.TDLearning ql)
+        private void __plotPolicy(ReinforcementLearning.TDLearning ql)
         {
             /**
              * Draw the result POLICY!!!
@@ -381,11 +385,11 @@ namespace mltak2
                 }
             }
         }
+
         private void learnGridToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (!this.learnToolStripMenuItem.Enabled) return;
-            this.examToolStripMenuItem.Enabled = false;
-            this.learnToolStripMenuItem.Enabled = false;
+            __enable_all_menus(false);
             this.__kill_threads();
             System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ParameterizedThreadStart((thread) =>
             {
@@ -437,12 +441,11 @@ namespace mltak2
                     this.toolStripStatus.Text = String.Format("{0}% Of {1} episodes passed - Last episode's steps#: {2} - Totall episodes' step#: {3} ", (i + 1) * 100 / (max_iter), ql.GetType().Name, ql.StepCounter, totall_step_counter);
                 }
                 this.toolStripStatus.Text = String.Format("The model has learned by {0} with total# {1} of steps...", ql.GetType().Name, totall_step_counter);
-                this.plotPolicy(ql);
+                this.__plotPolicy(ql);
             __END_LEARNING:
                 this.examToolStripMenuItem.GetCurrentParent().Invoke(new Action(() =>
                 {
-                    this.examToolStripMenuItem.Enabled = true;
-                    this.learnToolStripMenuItem.Enabled = true;
+                    __enable_all_menus(true);
                 }));
                 lock (this.ThreadsPool)
                     this.ThreadsPool.Remove(thread as System.Threading.Thread);
@@ -452,11 +455,27 @@ namespace mltak2
                 this.ThreadsPool.Add(t);
             this.toolStripStatus.Text = "Start learning...";
         }
+
+        private void __enable_all_menus(bool p)
+        {
+            foreach (var c in this.menuStrip1.Items)
+            {
+                if (c is ToolStripMenuItem)
+                {
+                    (c as ToolStripMenuItem).Enabled = p;
+                    foreach (var sc in (c as ToolStripMenuItem).DropDownItems)
+                    {
+                        if (sc is ToolStripMenuItem)
+                            (sc as ToolStripMenuItem).Enabled = p;
+                    }
+                }
+            }
+            Application.DoEvents();
+        }
         private void examToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (!this.examToolStripMenuItem.Enabled) return;
-            this.examToolStripMenuItem.Enabled = false;
-            this.learnToolStripMenuItem.Enabled = false;
+            __enable_all_menus(false);
             this.__kill_threads();
             System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ParameterizedThreadStart((thread) =>
             {
@@ -478,8 +497,7 @@ namespace mltak2
                 MessageBox.Show("Has reached the goal...", "Horray!!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk, MessageBoxDefaultButton.Button1);
                 this.examToolStripMenuItem.GetCurrentParent().Invoke(new Action(() =>
                 {
-                    this.examToolStripMenuItem.Enabled = true;
-                    this.learnToolStripMenuItem.Enabled = true;
+                    __enable_all_menus(true);
                 }));
                 lock (this.ThreadsPool)
                     this.ThreadsPool.Remove(thread as System.Threading.Thread);
@@ -487,6 +505,65 @@ namespace mltak2
             t.Start(t);
             lock (this.ThreadsPool)
                 this.ThreadsPool.Add(t);
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            __enable_all_menus(false);
+            using (SaveFileDialog sfd = new SaveFileDialog())
+            {
+                sfd.DefaultExt = "dat";
+                sfd.AddExtension = true;
+                sfd.OverwritePrompt = true;
+                sfd.Filter = "Data files (*.dat)|*.dat";
+                var res = sfd.ShowDialog(this);
+                if (res == System.Windows.Forms.DialogResult.Cancel) return;
+                BinaryFormatter bf = new BinaryFormatter();
+                {
+                    using (var fs = sfd.OpenFile())
+                    {
+                        bf.Serialize(fs, g.GetStatus());
+                        bf.Serialize(fs, ql.QTable);
+                        bf.Serialize(fs, ql.VisitedStates);
+                        bf.Serialize(fs, ql.StepCounter);
+                    }
+                }
+                this.toolStripStatus.Text = "The QTable saved successfully....";
+            }
+            __enable_all_menus(true);
+        }
+
+        private void loadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            __enable_all_menus(false);
+            using (OpenFileDialog sfd = new OpenFileDialog())
+            {
+                sfd.DefaultExt = "dat";
+                sfd.AddExtension = true;
+                sfd.Filter = "Data files (*.dat)|*.dat";
+                var res = sfd.ShowDialog(this);
+                if (res == System.Windows.Forms.DialogResult.Cancel) return;
+                BinaryFormatter bf = new BinaryFormatter();
+                {
+                    using (var fs = sfd.OpenFile())
+                    {
+                        g = new Grid((Grid.BlockStatus[,])bf.Deserialize(fs), this.grid);
+                        if (ql == null)
+                            ql = new ReinforcementLearning.QLearning(
+                                this.g,
+                                new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>()),
+                                Properties.Settings.Default.Gamma,
+                                Properties.Settings.Default.Alpha);
+                        ql.QTable = (Hashtable)bf.Deserialize(fs);
+                        ql.VisitedStates = (Hashtable)bf.Deserialize(fs);
+                        ql.StepCounter = (long)bf.Deserialize(fs);
+                    }
+                }
+                __reload_grid();
+                __plotPolicy(ql);
+                this.toolStripStatus.Text = "The QTable saved successfully....";
+            }
+            __enable_all_menus(true);
         }
     }
 }
