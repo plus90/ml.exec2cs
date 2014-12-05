@@ -19,6 +19,7 @@ namespace mltak2
         Grid g { get; set; }
         Point __last_valid_grid_block;
         Hashtable optimalPath = new Hashtable();
+        List<System.Threading.Thread> ThreadsPool = new List<System.Threading.Thread>();
         public GridForm()
         {
             InitializeComponent();
@@ -253,55 +254,10 @@ namespace mltak2
         {
             new Configurations().Show();
         }
-        private void learnGridToolStripMenuItem_Click(object sender, EventArgs e)
+        private void __kill_threads()
         {
-            if (!this.learnToolStripMenuItem.Enabled) return;
-            this.learnToolStripMenuItem.Enabled = false;
-            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(() =>
-            {
-                var max_q_table_size = Enum.GetValues(typeof(GridHelper.Directions)).Length * this.g.Size.Height * this.g.Size.Width;
-                int max_iter = Properties.Settings.Default.MaxLearningIteration;
-                long totall_step_counter = 0;
-                ReinforcementLearning.TDLearning ql = null;
-                for (int i = 0; i < max_iter; i++)
-                {
-                    if(sender == this.qLearningToolStripMenuItem)
-                        ql = new ReinforcementLearning.QLearning(
-                             this.g,
-                             new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>()),
-                             Properties.Settings.Default.Gamma,
-                             Properties.Settings.Default.Alpha,
-                             ql == null ? null : ql.QTable);
-                    else if (sender == this.SARSAToolStripMenuItem)
-                        ql = new ReinforcementLearning.SarsaLearning(
-                             this.g,
-                             new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>()),
-                             Properties.Settings.Default.Gamma,
-                             Properties.Settings.Default.Alpha,
-                             ql == null ? null : ql.QTable);
-                    else
-                    {
-                        MessageBox.Show("Invalid learning invoke ...", "Ops!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                    ql.Learn(
-                        new Func<Grid, Point, long, bool>((g, s, step_counter) =>
-                        {
-                            return s == g.GoalPoint;
-                        }));
-                    totall_step_counter += ql.StepCounter;
-                    this.toolStripStatus.Text = String.Format("{0}% Of {1}-Learning episodes passed - Last episode's steps#: {2} - Totall episodes' step#: {3} ", (i + 1) * 100 / (max_iter), sender == this.qLearningToolStripMenuItem ? "Q" : "SARSA", ql.StepCounter, totall_step_counter);        
-                }
-                this.toolStripStatus.Text = String.Format("The model has learned by {0}-Learning...", sender == this.qLearningToolStripMenuItem ? "Q" : "SARSA");
-                this.plotPolicy(ql);
-                this.examToolStripMenuItem.GetCurrentParent().Invoke(new Action(() =>
-                {
-                    this.examToolStripMenuItem.Enabled = true;
-                    this.learnToolStripMenuItem.Enabled = true;
-                }));
-            }));
-            t.Start();
-            this.toolStripStatus.Text = "Start learning...";
+            lock (this.ThreadsPool)
+                foreach (var t in this.ThreadsPool) if (t.IsAlive) t.Abort();
         }
 
         private void plotPolicy(ReinforcementLearning.TDLearning ql)
@@ -343,7 +299,6 @@ namespace mltak2
                 {
                     foreach (KeyValuePair<GridHelper.Directions, float> dir in hs[cell] as List<KeyValuePair<GridHelper.Directions, float>>)
                     {
-
                         var p = g.abs2grid(cell);
                         switch (dir.Key)
                         {
@@ -425,9 +380,68 @@ namespace mltak2
                 }
             }
         }
+        private void learnGridToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!this.learnToolStripMenuItem.Enabled) return;
+            this.examToolStripMenuItem.Enabled = false;
+            this.learnToolStripMenuItem.Enabled = false;
+            this.__kill_threads();
+            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ParameterizedThreadStart((thread) =>
+            {
+                int max_iter = Properties.Settings.Default.MaxLearningIteration;
+                long totall_step_counter = 0;
+                ReinforcementLearning.TDLearning ql = null;
+                for (int i = 0; i < max_iter; i++)
+                {
+                    // if the Q-Learning has been invoked?
+                    if (sender == this.qLearningToolStripMenuItem)
+                        // init the Q-learning instance
+                        ql = new ReinforcementLearning.QLearning(
+                             this.g,
+                             new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>()),
+                             Properties.Settings.Default.Gamma,
+                             Properties.Settings.Default.Alpha,
+                             ql == null ? null : ql.QTable);
+                    // if the SARSA-Learning has been invoked?
+                    else if (sender == this.SARSAToolStripMenuItem)
+                        // init the SARSA-learning instance
+                        ql = new ReinforcementLearning.SarsaLearning(
+                             this.g,
+                             new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>()),
+                             Properties.Settings.Default.Gamma,
+                             Properties.Settings.Default.Alpha,
+                             ql == null ? null : ql.QTable);
+                    // fail-safe
+                    else { MessageBox.Show("Invalid learning invoke ...", "Ops!!", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
+                    // learn the grid
+                    ql.Learn(new Func<Grid, Point, long, bool>((g, s, step_counter) => { return s == g.GoalPoint; }));
+                    // sum-up the steps' counters
+                    totall_step_counter += ql.StepCounter;
+                    // indicate the results
+                    this.toolStripStatus.Text = String.Format("{0}% Of {1}-Learning episodes passed - Last episode's steps#: {2} - Totall episodes' step#: {3} ", (i + 1) * 100 / (max_iter), sender == this.qLearningToolStripMenuItem ? "Q" : "SARSA", ql.StepCounter, totall_step_counter);
+                }
+                this.toolStripStatus.Text = String.Format("The model has learned by {0}-Learning with total# {1} of steps...", sender == this.qLearningToolStripMenuItem ? "Q" : "SARSA", totall_step_counter);
+                this.plotPolicy(ql);
+                this.examToolStripMenuItem.GetCurrentParent().Invoke(new Action(() =>
+                {
+                    this.examToolStripMenuItem.Enabled = true;
+                    this.learnToolStripMenuItem.Enabled = true;
+                }));
+                lock (this.ThreadsPool)
+                    this.ThreadsPool.Remove(thread as System.Threading.Thread);
+            }));
+            t.Start(t);
+            lock (this.ThreadsPool)
+                this.ThreadsPool.Add(t);
+            this.toolStripStatus.Text = "Start learning...";
+        }
         private void examToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(() =>
+            if (!this.examToolStripMenuItem.Enabled) return;
+            this.examToolStripMenuItem.Enabled = false;
+            this.learnToolStripMenuItem.Enabled = false;
+            this.__kill_threads();
+            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ParameterizedThreadStart((thread) =>
             {
                 if (this.optimalPath == null || this.optimalPath.Count == 0)
                 {
@@ -445,8 +459,17 @@ namespace mltak2
                     System.Threading.Thread.Sleep(500);
                 }
                 MessageBox.Show("Has reached the goal...", "Horray!!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk, MessageBoxDefaultButton.Button1);
+                this.examToolStripMenuItem.GetCurrentParent().Invoke(new Action(() =>
+                {
+                    this.examToolStripMenuItem.Enabled = true;
+                    this.learnToolStripMenuItem.Enabled = true;
+                }));
+                lock (this.ThreadsPool)
+                    this.ThreadsPool.Remove(thread as System.Threading.Thread);
             }));
-            t.Start();
+            t.Start(t);
+            lock (this.ThreadsPool)
+                this.ThreadsPool.Add(t);
         }
     }
 }
