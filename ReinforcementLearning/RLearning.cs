@@ -33,19 +33,19 @@ namespace ReinforcementLearning
         /// <summary>
         /// The grid instance
         /// </summary>
-        protected Grid Grid { get; set; }
+        public Grid Grid { get; protected set; }
         /// <summary>
         /// The grid's helper instance
         /// </summary>
-        protected GridHelper GridHelper { get; set; }
+        public GridHelper GridHelper { get; protected set; }
         /// <summary>
         /// The learning rate
         /// </summary>
-        protected readonly float Alpha;
+        public readonly float Alpha;
         /// <summary>
         /// The discount factor
         /// </summary>
-        protected readonly float Gamma;
+        public readonly float Gamma;
         #endregion
 
         #region Constructors

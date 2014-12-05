@@ -28,44 +28,7 @@ namespace ReinforcementLearning
         /// <param name="lambda">The lambda rate</param>
         /// <param name="QSA">The initial Q-Table</param>
         /// <param name="QTable">The initial Q-table(Can be also `null`)</param>
-        public TDLambda(Grid grid, List<Action> A, float gamma, float alpha, float lambda, Hashtable QSA) : base(grid, A, gamma, alpha, alpha, QSA) { this.VTable = new Hashtable(); }
-        /// <summary>
-        /// Construct a Q-learner instance
-        /// </summary>
-        /// <param name="grid">The grid instance which trying to learn</param>
-        /// <param name="A">The list of valid actions</param>
-        /// <param name="gamma">The discount factor</param>
-        /// <param name="alpha">The learning rate</param>
-        /// <param name="lambda">The lambda rate</param>
-        public TDLambda(Grid grid, List<Action> A, float gamma, float alpha, float lambda) : base(grid, A, gamma, alpha, alpha) { this.VTable = new Hashtable(); }
-
-        public void DoStep(RLearning pi, State s)
-        {
-            this.RefreshTimer.Start();
-            List<Action> actionList = new List<Action>();
-            var max = QVal.MinValue;
-            foreach (var _a in pi.Actions)
-            {
-                var v = this.__get_q_value(s, _a);
-                if (v > max)
-                {
-                    actionList.Clear();
-                    actionList.Add(_a);
-                    max = v;
-                }
-                else if (v == max)
-                    actionList.Add(_a);
-            }
-            var a = actionList[this.RandGen.Next(0, actionList.Count - 1)];
-
-            var sprim = this.GridHelper.Move(s, a);
-
-            var r = this.__get_reward(sprim.NewPoint);
-
-            this.__update_v_value(pi, s, r, sprim.NewPoint);
-
-            this.RefreshTimer.Stop();
-        }
+        public TDLambda(RLearning r, float lambda) : base(r.Grid, r.Actions, r.Gamma, r.Alpha, lambda, r.QTable) { this.VTable = new Hashtable(); }
         /// <summary>
         /// Sets eligibility trace value
         /// </summary>
@@ -119,7 +82,7 @@ namespace ReinforcementLearning
             return (VVal)this.VTable[sig];
         }
 
-        protected VVal __update_v_value(RLearning pi, State st, Reward r, State stplus)
+        protected VVal __update_v_value(State st, Reward r, State stplus)
         {
             var delta = r + this.Gamma * this.__get_v_value(stplus) - this.__get_v_value(st);
             this.__set_elig_value(st, this.__get_elig_value(st) + 1);                                                                       // e(s) ← e(s) + 1
@@ -127,7 +90,7 @@ namespace ReinforcementLearning
             for (int i = 0; i < keys.Length; i++)                                                                                           // for each s,a
             {
                 var s = keys[i];
-                this.__set_v_value(s,  (VVal)this.VTable[s] + this.Alpha * delta * this.__get_elig_value(s));                               // V(s) ← V(s, a) + αδe(s) 
+                this.__set_v_value(s, (VVal)this.VTable[s] + this.Alpha * delta * this.__get_elig_value(s));                               // V(s) ← V(s, a) + αδe(s) 
                 this.__set_elig_value(s, this.Gamma * this.Lambda * this.__get_elig_value(s));                                              // e(s, a) ← γλe(s, a)
             }
             return this.__get_v_value(st);
@@ -135,6 +98,58 @@ namespace ReinforcementLearning
 
         protected override VVal __update_q_value(State st, Action a, Reward r, State stplus, params object[] o) { throw new NotSupportedException("This method is not supported for TDLambda instance"); }
 
-        public override Hashtable Learn(Func<Grid, State, long, bool> termination_validtor = null) { throw new NotSupportedException("This method is not supported for TDLambda instance"); }
+        public override Hashtable Learn(Func<Grid, State, long, bool> termination_validtor = null)
+        {
+            // start the refresher's timer
+            this.RefreshTimer.Start();
+            // if no termination validator passed
+            if (termination_validtor == null)
+                // assign the built-in default validator
+                termination_validtor = new Func<Environment.Grid, State, long, bool>(this.__should_terminate);
+            // deine the initial state
+            State state = this.Grid.AgentPoint;
+            // define an initial action
+            Action a = Action.HOLD;
+            do
+            {
+                // choose action given this pi for state
+                a = this.__get_best_action(state);
+                // change the destination `state` with respect to the choosen action 
+                var s = this.GridHelper.Move(state, a);
+                // get the new-state's reward
+                var r = this.__get_reward(s.NewPoint);
+                // update the Q-Value of current with [s, r s'] values
+                this.__update_v_value(s.OldPoint, r, s.NewPoint);
+                // assign the next state
+                state = s.NewPoint;
+                // mark current state-action as visited
+                this.__visit(s.OldPoint, a);
+                // examine the learning loop
+            } while (!termination_validtor(this.Grid, state, this.StepCounter) && ++this.StepCounter <= long.MaxValue);
+            // stop the refresher's timer
+            this.RefreshTimer.Stop();
+            // return the learned policy
+            return this.VTable;
+        }
+
+        protected Action __get_best_action(State s)
+        {
+            return base.__choose_toothily_action(s);
+            List<Action> actionList = new List<Action>();
+            var max = QVal.MinValue;
+            foreach (var _a in this.Actions)
+            {
+                var v = this.__get_q_value(s, _a);
+                if (v > max)
+                {
+                    actionList.Clear();
+                    actionList.Add(_a);
+                    max = v;
+                }
+                else if (v == max)
+                    actionList.Add(_a);
+            }
+            return actionList[this.RandGen.Next(0, actionList.Count - 1)];
+        }
     }
 }

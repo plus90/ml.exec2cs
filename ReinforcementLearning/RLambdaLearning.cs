@@ -17,7 +17,7 @@ namespace ReinforcementLearning
         /// <summary>
         /// The lambda rate
         /// </summary>
-        protected readonly float Lambda;
+        public readonly float Lambda;
         /// <summary>
         /// The eligibility trace container
         /// </summary>

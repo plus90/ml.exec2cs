@@ -265,7 +265,7 @@ namespace mltak2
                 foreach (var t in this.ThreadsPool) if (t.IsAlive) t.Abort();
         }
 
-        private void __plotPolicy(ReinforcementLearning.RLearning ql)
+        private void __plotPolicy(ReinforcementLearning.RLearning ql, ReinforcementLearning.TDLambda tdl)
         {
             /**
              * Draw the result POLICY!!!
@@ -354,6 +354,11 @@ namespace mltak2
                     var p = g.abs2grid(cell);
                     this.g.Write("#" + hs[cell].ToString(), new Point(p.X + 2 * margin / 3, p.Y - 2 * margin), gfx, Brushes.Brown, new Font("Arial", 10, FontStyle.Bold));
                 }
+                foreach (Point cell in tdl.VTable.Keys)
+                {
+                    var p = g.abs2grid(cell);
+                    this.g.Write("T"+((float)tdl.VTable[cell]).ToString("F2"), new Point(p.X + 2 * margin / 3 , p.Y + margin + 5), gfx, Brushes.Brown, new Font("Arial", 8, FontStyle.Bold));
+                }
             }
         }
         private void DrawDirection(Point point, GridHelper.Directions direction)
@@ -397,14 +402,8 @@ namespace mltak2
             {
                 int max_iter = Properties.Settings.Default.MaxLearningIteration;
                 long totall_step_counter = 0;
+                ReinforcementLearning.TDLambda tdl = null;
                 var Actions = new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>());
-                ReinforcementLearning.TDLambda
-                    tdl = new ReinforcementLearning.TDLambda(
-                        this.g,
-                        Actions,
-                        Properties.Settings.Default.Gamma,
-                        Properties.Settings.Default.Alpha,
-                        Properties.Settings.Default.Lambda);
                 for (int i = 0; i < max_iter; i++)
                 {
                     // if the Q-Learning has been invoked?
@@ -433,7 +432,7 @@ namespace mltak2
                              Properties.Settings.Default.Alpha,
                              Properties.Settings.Default.Lambda,
                              ql == null ? null : ql.QTable);
-                    else if(sender == this.qLambdaToolStripMenuItem)
+                    else if (sender == this.qLambdaToolStripMenuItem)
                         ql = new ReinforcementLearning.QLambdaLearning(
                              this.g,
                              Actions,
@@ -444,19 +443,17 @@ namespace mltak2
                     // fail-safe
                     else { MessageBox.Show("Invalid learning invoke ...", "Ops!!", MessageBoxButtons.OK, MessageBoxIcon.Error); goto __END_LEARNING; }
                     // learn the grid
-                    ql.Learn(new Func<Grid, Point, long, bool>((g, s, step_counter) =>
-                    {
-                        //if (ql.GetType().IsSubclassOf(typeof(ReinforcementLearning.RLambdaLearning)))
-                        //    tdl.DoStep(ql, s);
-                        return s == g.GoalPoint;
-                    }));
+                    ql.Learn(new Func<Grid, Point, long, bool>((g, s, step_counter) => { return s == g.GoalPoint; }));
+                    if (tdl == null)
+                        tdl = new ReinforcementLearning.TDLambda(ql, Properties.Settings.Default.Lambda);
+                    tdl.Learn(new Func<Grid, Point, long, bool>((g, s, step_counter) => { return s == g.GoalPoint; }));
                     // sum-up the steps' counters
                     totall_step_counter += ql.StepCounter;
                     // indicate the results
                     this.toolStripStatus.Text = String.Format("{0}% Of {1} episodes passed - Last episode's steps#: {2} - Totall episodes' step#: {3} ", (i + 1) * 100 / (max_iter), ql.GetType().Name, ql.StepCounter, totall_step_counter);
                 }
                 this.toolStripStatus.Text = String.Format("The model has learned by {0} with total# {1} of steps...", ql.GetType().Name, totall_step_counter);
-                this.__plotPolicy(ql);
+                this.__plotPolicy(ql, tdl);
             __END_LEARNING:
                 this.examToolStripMenuItem.GetCurrentParent().Invoke(new Action(() =>
                 {
@@ -511,10 +508,12 @@ namespace mltak2
                     var s = l[rand.Next(0, l.Count - 1)];
                     var m = gh.Move(this.g.AgentPoint, s.Value);
                     MarkStartGoalPoints(m.NewPoint, g.GoalPoint);
-                    this.g.AgentPoint = m.NewPoint;
                     this.DrawDirection(m.OldPoint, s.Value);
-                    if(m.Succeed)
+                    if (m.Succeed)
+                    {
                         l.Remove(s);
+                        this.g.AgentPoint = m.NewPoint;
+                    }
                     if (l.Count == 0)
                         this.optimalPath.Remove(l);
                     else
@@ -600,7 +599,7 @@ namespace mltak2
                         }
                     }
                     __reload_grid();
-                    __plotPolicy(ql);
+                    __plotPolicy(ql, new ReinforcementLearning.TDLambda(ql, Properties.Settings.Default.Lambda));
                     this.toolStripStatus.Text = "The QTable saved successfully....";
                 }
             }
