@@ -98,7 +98,7 @@ namespace ReinforcementLearning
                 else
                     this.__set_elig_value(sa.Key, sa.Value, 0);                                                                             // e(s, a) ← 0
             }
-            return qt;
+            return this.__get_q_value(st, a);
         }
     }
 }
