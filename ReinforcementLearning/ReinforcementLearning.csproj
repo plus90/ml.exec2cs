@@ -46,6 +46,7 @@
     <Compile Include="QLearning.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SarsaLearning.cs" />
+    <Compile Include="TDLambdaLearning.cs" />
     <Compile Include="TDLearning.cs" />
   </ItemGroup>
   <ItemGroup>

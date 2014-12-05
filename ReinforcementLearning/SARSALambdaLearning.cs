@@ -11,13 +11,8 @@ namespace ReinforcementLearning
     using Reward = Int16;
     using Action = GridHelper.Directions;
     using EligVal = System.Single;
-    public class SARSALambdaLearning : SarsaLearning
+    public class SARSALambdaLearning : TDLambdaLearning
     {
-        /// <summary>
-        /// The lambda rate
-        /// </summary>
-        protected readonly float Lambda;
-        public Hashtable EligTable { get; protected set; }
         /// <summary>
         /// Construct a Q-learner instance
         /// </summary>
@@ -26,7 +21,7 @@ namespace ReinforcementLearning
         /// <param name="gamma">The discount factor</param>
         /// <param name="alpha">The learning rate</param>
         /// <param name="QTable">The initial Q-table(Can be also `null`)</param>
-        public SARSALambdaLearning(Grid grid, List<Action> A, float gamma, float alpha, float lambda, Hashtable QSA) : base(grid, A, gamma, alpha, QSA) { this.Lambda = lambda; this.EligTable = new Hashtable(); }
+        public SARSALambdaLearning(Grid grid, List<Action> A, float gamma, float alpha, float lambda, Hashtable QSA) : base(grid, A, gamma, alpha, lambda, QSA) { }
         /// <summary>
         /// Construct a Q-learner instance
         /// </summary>
@@ -34,33 +29,7 @@ namespace ReinforcementLearning
         /// <param name="A">The list of valid actions</param>
         /// <param name="gamma">The discount factor</param>
         /// <param name="alpha">The learning rate</param>
-        public SARSALambdaLearning(Grid grid, List<Action> A, float gamma, float alpha, float lambda) : base(grid, A, gamma, alpha) { this.Lambda = lambda; this.EligTable = new Hashtable(); }
-        /// <summary>
-        /// Sets eligibility trace value
-        /// </summary>
-        /// <param name="s">The state</param>
-        /// <param name="a">The action</param>
-        /// <param name="e">The eligibility value to be updated</param>
-        protected virtual void __set_elig_value(State s, Action a, EligVal e)
-        {
-            var sig = new KeyValuePair<State, Action>(s, a);
-            if (!this.EligTable.Contains(sig))
-                this.EligTable.Add(sig, e);
-            else this.EligTable[sig] = e;
-        }
-        /// <summary>
-        /// Gets eligibility trace value if any exists or initializes it by 0.
-        /// </summary>
-        /// <param name="s">The state</param>
-        /// <param name="a">The action</param>
-        /// <returns>The eligibility trace value</returns>
-        protected virtual EligVal __get_elig_value(State s, Action a)
-        {
-            var sig = new KeyValuePair<State, Action>(s, a);
-            if (!this.EligTable.Contains(sig))
-                this.EligTable.Add(sig, (EligVal)0);
-            return (EligVal)this.EligTable[sig];
-        }
+        public SARSALambdaLearning(Grid grid, List<Action> A, float gamma, float alpha, float lambda) : base(grid, A, gamma, lambda, alpha) { }
         /// <summary>
         /// Learn the grid
         /// </summary>
@@ -114,10 +83,10 @@ namespace ReinforcementLearning
         {
             if (aplus.Length == 0 || !(aplus[0] is Action))
                 throw new ArgumentException("Expecting an action as last comment", "o");
-            var delta = (r + this.Gamma * this.__get_q_value(stplus, (Action)aplus[0]) - this.__get_q_value(st, a));                        // δ <- r + γ * Q(s', a') - Q(s, a)
-            this.__set_elig_value(st, a, this.__get_elig_value(st, a) + 1);                                                                 // e(s, a) <- e(s, a) + 1
+            var delta = (r + this.Gamma * this.__get_q_value(stplus, (Action)aplus[0]) - this.__get_q_value(st, a));                        // δ ← r + γ * Q(s', a') - Q(s, a)
+            this.__set_elig_value(st, a, this.__get_elig_value(st, a) + 1);                                                                 // e(s, a) ← e(s, a) + 1
             var keys = this.QTable.Keys.Cast<KeyValuePair<State, Action>>().ToArray();
-            for (int i = 0; i < keys.Length; i++)
+            for (int i = 0; i < keys.Length; i++)                                                                                           // for each s,a
             {
                 var sa = (KeyValuePair<State, Action>)keys[i];
                 this.__set_q_value(sa.Key, sa.Value, (QVal)this.QTable[sa] + this.Alpha * delta * this.__get_elig_value(sa.Key, sa.Value)); // Q(s, a) ← Q(s, a) + αδe(s, a) 
