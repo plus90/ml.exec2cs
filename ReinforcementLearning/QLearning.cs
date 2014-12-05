@@ -11,7 +11,7 @@ namespace ReinforcementLearning
     using State = System.Drawing.Point;
     using Reward = Int16;
     using Action = GridHelper.Directions;
-    public class QLearning : TDLearning
+    public class QLearning : RLearning
     {
         /// <summary>
         /// Construct a Q-learner instance

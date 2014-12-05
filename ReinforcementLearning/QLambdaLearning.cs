@@ -11,7 +11,7 @@ namespace ReinforcementLearning
     using Reward = Int16;
     using Action = GridHelper.Directions;
     using EligVal = System.Single;
-    public class QLambdaLearning : TDLambdaLearning
+    public class QLambdaLearning : RLambdaLearning
 {
         /// <summary>
         /// Construct a Q-learner instance

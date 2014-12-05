@@ -11,7 +11,7 @@ namespace ReinforcementLearning
     using State = System.Drawing.Point;
     using Reward = Int16;
     using Action = GridHelper.Directions;
-    public abstract class TDLearning
+    public abstract class RLearning
     {
         #region Members
         /// <summary>
@@ -64,7 +64,7 @@ namespace ReinforcementLearning
         /// <param name="gamma">The discount factor</param>
         /// <param name="alpha">The learning rate</param>
         /// <param name="QTable">The initial Q-table(Can be also `null`)</param>
-        public TDLearning(Grid grid, List<Action> A, float gamma, float alpha, Hashtable QTable)
+        public RLearning(Grid grid, List<Action> A, float gamma, float alpha, Hashtable QTable)
             : this(grid, A, gamma, alpha)
         {
             if (QTable != null)
@@ -77,7 +77,7 @@ namespace ReinforcementLearning
         /// <param name="A">The list of valid actions</param>
         /// <param name="gamma">The discount factor</param>
         /// <param name="alpha">The learning rate</param>
-        public TDLearning(Grid grid, List<Action> A, float gamma, float alpha)
+        public RLearning(Grid grid, List<Action> A, float gamma, float alpha)
         {
             this.Grid = grid;
             this.Actions = A;
@@ -99,7 +99,7 @@ namespace ReinforcementLearning
         /// <summary>
         /// The destructor
         /// </summary>
-        ~TDLearning()
+        ~RLearning()
         {
             this.RefreshTimer.Stop();
             this.RefreshTimer.Dispose();

@@ -20,7 +20,7 @@ namespace mltak2
         Point __last_valid_grid_block;
         Hashtable optimalPath = new Hashtable();
         List<System.Threading.Thread> ThreadsPool = new List<System.Threading.Thread>();
-        ReinforcementLearning.TDLearning ql = null;
+        ReinforcementLearning.RLearning ql = null;
         public GridForm()
         {
             InitializeComponent();
@@ -265,7 +265,7 @@ namespace mltak2
                 foreach (var t in this.ThreadsPool) if (t.IsAlive) t.Abort();
         }
 
-        private void __plotPolicy(ReinforcementLearning.TDLearning ql)
+        private void __plotPolicy(ReinforcementLearning.RLearning ql)
         {
             /**
              * Draw the result POLICY!!!

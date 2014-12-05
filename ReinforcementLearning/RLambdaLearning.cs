@@ -12,7 +12,7 @@ namespace ReinforcementLearning
     using Reward = Int16;
     using Action = Environment.GridHelper.Directions;
     using EligVal = System.Single;
-    public abstract class TDLambdaLearning : TDLearning
+    public abstract class RLambdaLearning : RLearning
     {
         /// <summary>
         /// The lambda rate
@@ -30,7 +30,7 @@ namespace ReinforcementLearning
         /// <param name="gamma">The discount factor</param>
         /// <param name="alpha">The learning rate</param>
         /// <param name="QTable">The initial Q-table(Can be also `null`)</param>
-        public TDLambdaLearning(Grid grid, List<Action> A, float gamma, float alpha, float lambda, Hashtable QSA) : base(grid, A, gamma, alpha, QSA) { this.Lambda = lambda; this.EligTable = new Hashtable(); }
+        public RLambdaLearning(Grid grid, List<Action> A, float gamma, float alpha, float lambda, Hashtable QSA) : base(grid, A, gamma, alpha, QSA) { this.Lambda = lambda; this.EligTable = new Hashtable(); }
         /// <summary>
         /// Construct a Q-learner instance
         /// </summary>
@@ -38,7 +38,7 @@ namespace ReinforcementLearning
         /// <param name="A">The list of valid actions</param>
         /// <param name="gamma">The discount factor</param>
         /// <param name="alpha">The learning rate</param>
-        public TDLambdaLearning(Grid grid, List<Action> A, float gamma, float alpha, float lambda) : base(grid, A, gamma, alpha) { this.Lambda = lambda; this.EligTable = new Hashtable(); }
+        public RLambdaLearning(Grid grid, List<Action> A, float gamma, float alpha, float lambda) : base(grid, A, gamma, alpha) { this.Lambda = lambda; this.EligTable = new Hashtable(); }
         /// <summary>
         /// Sets eligibility trace value
         /// </summary>
