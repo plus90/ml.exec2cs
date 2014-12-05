@@ -397,6 +397,7 @@ namespace mltak2
             {
                 int max_iter = Properties.Settings.Default.MaxLearningIteration;
                 long totall_step_counter = 0;
+                var Actions = new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>());
                 for (int i = 0; i < max_iter; i++)
                 {
                     // if the Q-Learning has been invoked?
@@ -404,7 +405,7 @@ namespace mltak2
                         // init the Q-learning instance
                         ql = new ReinforcementLearning.QLearning(
                              this.g,
-                             new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>()),
+                             Actions,
                              Properties.Settings.Default.Gamma,
                              Properties.Settings.Default.Alpha,
                              ql == null ? null : ql.QTable);
@@ -413,14 +414,14 @@ namespace mltak2
                         // init the SARSA-learning instance
                         ql = new ReinforcementLearning.SarsaLearning(
                              this.g,
-                             new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>()),
+                             Actions,
                              Properties.Settings.Default.Gamma,
                              Properties.Settings.Default.Alpha,
                              ql == null ? null : ql.QTable);
                     else if (sender == this.sARSALambdaToolStripMenuItem)
                         ql = new ReinforcementLearning.SarsaLambdaLearning(
                              this.g,
-                             new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>()),
+                             Actions,
                              Properties.Settings.Default.Gamma,
                              Properties.Settings.Default.Alpha,
                              Properties.Settings.Default.Lambda,
@@ -428,7 +429,7 @@ namespace mltak2
                     else if(sender == this.qLambdaToolStripMenuItem)
                         ql = new ReinforcementLearning.QLambdaLearning(
                              this.g,
-                             new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>()),
+                             Actions,
                              Properties.Settings.Default.Gamma,
                              Properties.Settings.Default.Alpha,
                              Properties.Settings.Default.Lambda,
@@ -436,7 +437,10 @@ namespace mltak2
                     // fail-safe
                     else { MessageBox.Show("Invalid learning invoke ...", "Ops!!", MessageBoxButtons.OK, MessageBoxIcon.Error); goto __END_LEARNING; }
                     // learn the grid
-                    ql.Learn(new Func<Grid, Point, long, bool>((g, s, step_counter) => { return s == g.GoalPoint; }));
+                    ql.Learn(new Func<Grid, Point, long, bool>((g, s, step_counter) =>
+                    {
+                        return s == g.GoalPoint;
+                    }));
                     // sum-up the steps' counters
                     totall_step_counter += ql.StepCounter;
                     // indicate the results
@@ -500,7 +504,8 @@ namespace mltak2
                     MarkStartGoalPoints(m.NewPoint, g.GoalPoint);
                     this.g.AgentPoint = m.NewPoint;
                     this.DrawDirection(m.OldPoint, s.Value);
-                    l.Remove(s);
+                    if(m.Succeed)
+                        l.Remove(s);
                     if (l.Count == 0)
                         this.optimalPath.Remove(l);
                     else
