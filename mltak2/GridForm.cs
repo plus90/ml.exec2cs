@@ -398,6 +398,13 @@ namespace mltak2
                 int max_iter = Properties.Settings.Default.MaxLearningIteration;
                 long totall_step_counter = 0;
                 var Actions = new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>());
+                ReinforcementLearning.TDLambda
+                    tdl = new ReinforcementLearning.TDLambda(
+                        this.g,
+                        Actions,
+                        Properties.Settings.Default.Gamma,
+                        Properties.Settings.Default.Alpha,
+                        Properties.Settings.Default.Lambda);
                 for (int i = 0; i < max_iter; i++)
                 {
                     // if the Q-Learning has been invoked?
@@ -439,6 +446,8 @@ namespace mltak2
                     // learn the grid
                     ql.Learn(new Func<Grid, Point, long, bool>((g, s, step_counter) =>
                     {
+                        //if (ql.GetType().IsSubclassOf(typeof(ReinforcementLearning.RLambdaLearning)))
+                        //    tdl.DoStep(ql, s);
                         return s == g.GoalPoint;
                     }));
                     // sum-up the steps' counters

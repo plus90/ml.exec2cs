@@ -28,7 +28,7 @@ namespace ReinforcementLearning
         /// <param name="lambda">The lambda rate</param>
         /// <param name="QSA">The initial Q-Table</param>
         /// <param name="QTable">The initial Q-table(Can be also `null`)</param>
-        public TDLambda(Grid grid, List<Action> A, float gamma, float alpha, float lambda, Hashtable QSA) : base(grid, A, gamma, alpha, alpha, QSA) { }
+        public TDLambda(Grid grid, List<Action> A, float gamma, float alpha, float lambda, Hashtable QSA) : base(grid, A, gamma, alpha, alpha, QSA) { this.VTable = new Hashtable(); }
         /// <summary>
         /// Construct a Q-learner instance
         /// </summary>
@@ -37,7 +37,7 @@ namespace ReinforcementLearning
         /// <param name="gamma">The discount factor</param>
         /// <param name="alpha">The learning rate</param>
         /// <param name="lambda">The lambda rate</param>
-        public TDLambda(Grid grid, List<Action> A, float gamma, float alpha, float lambda) : base(grid, A, gamma, alpha, alpha) { }
+        public TDLambda(Grid grid, List<Action> A, float gamma, float alpha, float lambda) : base(grid, A, gamma, alpha, alpha) { this.VTable = new Hashtable(); }
 
         public void DoStep(RLearning pi, State s)
         {
@@ -46,7 +46,7 @@ namespace ReinforcementLearning
             var max = QVal.MinValue;
             foreach (var _a in pi.Actions)
             {
-                var v = (QVal)pi.QTable[new KeyValuePair<State, Action>(s, _a)];
+                var v = this.__get_q_value(s, _a);
                 if (v > max)
                 {
                     actionList.Clear();
@@ -122,13 +122,13 @@ namespace ReinforcementLearning
         protected VVal __update_v_value(RLearning pi, State st, Reward r, State stplus)
         {
             var delta = r + this.Gamma * this.__get_v_value(stplus) - this.__get_v_value(st);
-            this.__set_elig_value(st, this.__get_elig_value(st) + 1);                                                                       // e(s, a) ← e(s, a) + 1
-            var keys = this.QTable.Keys.Cast<KeyValuePair<State, Action>>().ToArray();
+            this.__set_elig_value(st, this.__get_elig_value(st) + 1);                                                                       // e(s) ← e(s) + 1
+            var keys = this.VTable.Keys.Cast<State>().ToArray();
             for (int i = 0; i < keys.Length; i++)                                                                                           // for each s,a
             {
-                var sa = (KeyValuePair<State, Action>)keys[i];
-                this.__set_v_value(sa.Key,  (VVal)this.VTable[sa] + this.Alpha * delta * this.__get_elig_value(sa.Key));                    // Q(s, a) ← Q(s, a) + αδe(s, a) 
-                this.__set_elig_value(sa.Key, this.Gamma * this.Lambda * this.__get_elig_value(sa.Key));                // e(s, a) ← γλe(s, a)
+                var s = keys[i];
+                this.__set_v_value(s,  (VVal)this.VTable[s] + this.Alpha * delta * this.__get_elig_value(s));                               // V(s) ← V(s, a) + αδe(s) 
+                this.__set_elig_value(s, this.Gamma * this.Lambda * this.__get_elig_value(s));                                              // e(s, a) ← γλe(s, a)
             }
             return this.__get_v_value(st);
         }
