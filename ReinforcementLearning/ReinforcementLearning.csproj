@@ -41,6 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SARSALambdaLearning.cs" />
+    <Compile Include="QLambdaLearning.cs" />
     <Compile Include="QLearning.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SarsaLearning.cs" />
