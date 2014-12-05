@@ -287,11 +287,10 @@ namespace mltak2
                     ql.Learn(
                         new Func<Grid, Point, long, bool>((g, s, step_counter) =>
                         {
-                            if (step_counter % 10 == 0)
-                                this.toolStripStatus.Text = String.Format("{0}% Of {1}-Learning process passed....", (step_counter + totall_step_counter + i + 1) * 100 / (max_q_table_size * 40 * max_iter), sender == this.qLearningToolStripMenuItem ? "Q" : "SARSA");
-                            return 40 * max_q_table_size <= step_counter;// || s == g.GoalPoint;
+                            return s == g.GoalPoint;
                         }));
                     totall_step_counter += ql.StepCounter;
+                    this.toolStripStatus.Text = String.Format("{0}% Of {1}-Learning episodes passed - Last episode's steps#: {2} - Totall episodes' step#: {3} ", (i + 1) * 100 / (max_iter), sender == this.qLearningToolStripMenuItem ? "Q" : "SARSA", ql.StepCounter, totall_step_counter);        
                 }
                 this.toolStripStatus.Text = String.Format("The model has learned by {0}-Learning...", sender == this.qLearningToolStripMenuItem ? "Q" : "SARSA");
                 this.plotPolicy(ql);
