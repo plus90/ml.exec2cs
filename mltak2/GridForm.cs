@@ -20,6 +20,7 @@ namespace mltak2
         Point __last_valid_grid_block;
         Hashtable optimalPath = new Hashtable();
         List<System.Threading.Thread> ThreadsPool = new List<System.Threading.Thread>();
+        ReinforcementLearning.TDLearning ql = null;
         public GridForm()
         {
             InitializeComponent();
@@ -390,7 +391,6 @@ namespace mltak2
             {
                 int max_iter = Properties.Settings.Default.MaxLearningIteration;
                 long totall_step_counter = 0;
-                ReinforcementLearning.TDLearning ql = null;
                 for (int i = 0; i < max_iter; i++)
                 {
                     // if the Q-Learning has been invoked?
@@ -420,16 +420,17 @@ namespace mltak2
                              Properties.Settings.Default.Lambda,
                              ql == null ? null : ql.QTable);
                     // fail-safe
-                    else { MessageBox.Show("Invalid learning invoke ...", "Ops!!", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
+                    else { MessageBox.Show("Invalid learning invoke ...", "Ops!!", MessageBoxButtons.OK, MessageBoxIcon.Error); goto __END_LEARNING; }
                     // learn the grid
                     ql.Learn(new Func<Grid, Point, long, bool>((g, s, step_counter) => { return s == g.GoalPoint; }));
                     // sum-up the steps' counters
                     totall_step_counter += ql.StepCounter;
                     // indicate the results
-                    this.toolStripStatus.Text = String.Format("{0}% Of {1}-Learning episodes passed - Last episode's steps#: {2} - Totall episodes' step#: {3} ", (i + 1) * 100 / (max_iter), sender == this.qLearningToolStripMenuItem ? "Q" : "SARSA", ql.StepCounter, totall_step_counter);
+                    this.toolStripStatus.Text = String.Format("{0}% Of {1} episodes passed - Last episode's steps#: {2} - Totall episodes' step#: {3} ", (i + 1) * 100 / (max_iter), ql.GetType().Name, ql.StepCounter, totall_step_counter);
                 }
-                this.toolStripStatus.Text = String.Format("The model has learned by {0}-Learning with total# {1} of steps...", sender == this.qLearningToolStripMenuItem ? "Q" : "SARSA", totall_step_counter);
+                this.toolStripStatus.Text = String.Format("The model has learned by {0} with total# {1} of steps...", ql.GetType().Name, totall_step_counter);
                 this.plotPolicy(ql);
+            __END_LEARNING:
                 this.examToolStripMenuItem.GetCurrentParent().Invoke(new Action(() =>
                 {
                     this.examToolStripMenuItem.Enabled = true;
