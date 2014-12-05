@@ -412,7 +412,7 @@ namespace mltak2
                              Properties.Settings.Default.Alpha,
                              ql == null ? null : ql.QTable);
                     else if (sender == this.sARSALambdaToolStripMenuItem)
-                        ql = new ReinforcementLearning.SARSALambdaLearning(
+                        ql = new ReinforcementLearning.SarsaLambdaLearning(
                              this.g,
                              new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>()),
                              Properties.Settings.Default.Gamma,

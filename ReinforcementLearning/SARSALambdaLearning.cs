@@ -11,7 +11,7 @@ namespace ReinforcementLearning
     using Reward = Int16;
     using Action = GridHelper.Directions;
     using EligVal = System.Single;
-    public class SARSALambdaLearning : TDLambdaLearning
+    public class SarsaLambdaLearning : TDLambdaLearning
     {
         /// <summary>
         /// Construct a Q-learner instance
@@ -21,7 +21,7 @@ namespace ReinforcementLearning
         /// <param name="gamma">The discount factor</param>
         /// <param name="alpha">The learning rate</param>
         /// <param name="QTable">The initial Q-table(Can be also `null`)</param>
-        public SARSALambdaLearning(Grid grid, List<Action> A, float gamma, float alpha, float lambda, Hashtable QSA) : base(grid, A, gamma, alpha, lambda, QSA) { }
+        public SarsaLambdaLearning(Grid grid, List<Action> A, float gamma, float alpha, float lambda, Hashtable QSA) : base(grid, A, gamma, alpha, lambda, QSA) { }
         /// <summary>
         /// Construct a Q-learner instance
         /// </summary>
@@ -29,7 +29,7 @@ namespace ReinforcementLearning
         /// <param name="A">The list of valid actions</param>
         /// <param name="gamma">The discount factor</param>
         /// <param name="alpha">The learning rate</param>
-        public SARSALambdaLearning(Grid grid, List<Action> A, float gamma, float alpha, float lambda) : base(grid, A, gamma, lambda, alpha) { }
+        public SarsaLambdaLearning(Grid grid, List<Action> A, float gamma, float alpha, float lambda) : base(grid, A, gamma, lambda, alpha) { }
         /// <summary>
         /// Learn the grid
         /// </summary>
