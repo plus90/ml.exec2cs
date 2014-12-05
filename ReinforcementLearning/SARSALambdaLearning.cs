@@ -82,7 +82,7 @@ namespace ReinforcementLearning
         protected override EligVal __update_q_value(State st, Action a, Reward r, State stplus, params object[] aplus)
         {
             if (aplus.Length == 0 || !(aplus[0] is Action))
-                throw new ArgumentException("Expecting an action as last comment", "o");
+                throw new ArgumentException("Expecting an action as last comment", "aplus");
             var delta = (r + this.Gamma * this.__get_q_value(stplus, (Action)aplus[0]) - this.__get_q_value(st, a));                        // δ ← r + γ * Q(s', a') - Q(s, a)
             this.__set_elig_value(st, a, this.__get_elig_value(st, a) + 1);                                                                 // e(s, a) ← e(s, a) + 1
             var keys = this.QTable.Keys.Cast<KeyValuePair<State, Action>>().ToArray();

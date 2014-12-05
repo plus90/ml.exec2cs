@@ -81,7 +81,7 @@ namespace ReinforcementLearning
         protected override QVal __update_q_value(State st, Action a, Reward r, State stplus, params object[] aplus)
         {
             if (aplus.Length == 0 || !(aplus[0] is Action))
-                throw new ArgumentException("Expecting an action as last comment", "o");
+                throw new ArgumentException("Expecting an action as last comment", "aplus");
             var qt = this.__get_q_value(st, a);
             var v = this.__get_q_value(stplus, (Action)aplus[0]);
             qt = (1 - this.Alpha) * qt + this.Alpha * (r + this.Gamma * v);
