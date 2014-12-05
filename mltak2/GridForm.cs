@@ -419,6 +419,14 @@ namespace mltak2
                              Properties.Settings.Default.Alpha,
                              Properties.Settings.Default.Lambda,
                              ql == null ? null : ql.QTable);
+                    else if(sender == this.qLambdaToolStripMenuItem)
+                        ql = new ReinforcementLearning.QLambdaLearning(
+                             this.g,
+                             new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>()),
+                             Properties.Settings.Default.Gamma,
+                             Properties.Settings.Default.Alpha,
+                             Properties.Settings.Default.Lambda,
+                             ql == null ? null : ql.QTable);
                     // fail-safe
                     else { MessageBox.Show("Invalid learning invoke ...", "Ops!!", MessageBoxButtons.OK, MessageBoxIcon.Error); goto __END_LEARNING; }
                     // learn the grid
