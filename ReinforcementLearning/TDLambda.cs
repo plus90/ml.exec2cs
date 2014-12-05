@@ -82,31 +82,6 @@ namespace ReinforcementLearning
             return (VVal)this.VTable[sig];
         }
         /// <summary>
-        /// Updates the V-Value
-        /// </summary>
-        /// <param name="st">The state at `t`</param>
-        /// <param name="r">The awarded reward at `t+1`</param>
-        /// <param name="stplus">The state at `t+1`</param>
-        /// <returns>The updated V-Value</returns>
-        protected VVal __update_v_value(State st, Reward r, State stplus)
-        {
-            var delta = r + this.Gamma * this.__get_v_value(stplus) - this.__get_v_value(st);
-            this.__set_elig_value(st, this.__get_elig_value(st) + 1);                                                                       // e(s) ← e(s) + 1
-            var keys = this.VTable.Keys.Cast<State>().ToArray();
-            for (int i = 0; i < keys.Length; i++)                                                                                           // for each s,a
-            {
-                var s = keys[i];
-                this.__set_v_value(s, (VVal)this.VTable[s] + this.Alpha * delta * this.__get_elig_value(s));                               // V(s) ← V(s, a) + αδe(s) 
-                this.__set_elig_value(s, this.Gamma * this.Lambda * this.__get_elig_value(s));                                              // e(s, a) ← γλe(s, a)
-            }
-            return this.__get_v_value(st);
-        }
-
-        /// <summary>
-        /// NOT SUPPORTED
-        /// </summary>
-        protected override VVal __update_q_value(State st, Action a, Reward r, State stplus, params object[] o) { throw new NotSupportedException("This method is not supported for TDLambda instance"); }
-        /// <summary>
         /// Learn V-values of a policy
         /// </summary>
         /// <param name="termination_validtor">The learning terminator validator; if it returns true the learning operation will halt.</param>
@@ -126,7 +101,7 @@ namespace ReinforcementLearning
             do
             {
                 // choose action given this pi for state
-                a = this.__get_best_action(state);
+                a = this.__choose_toothily_action(state, 0.1F);
                 // change the destination `state` with respect to the choosen action 
                 var s = this.GridHelper.Move(state, a);
                 // get the new-state's reward
@@ -144,24 +119,29 @@ namespace ReinforcementLearning
             // return the learned policy
             return this.VTable;
         }
-
-        protected Action __get_best_action(State s)
+        /// <summary>
+        /// Updates the V-Value
+        /// </summary>
+        /// <param name="st">The state at `t`</param>
+        /// <param name="r">The awarded reward at `t+1`</param>
+        /// <param name="stplus">The state at `t+1`</param>
+        /// <returns>The updated V-Value</returns>
+        protected VVal __update_v_value(State st, Reward r, State stplus)
         {
-            List<Action> actionList = new List<Action>();
-            var max = QVal.MinValue;
-            foreach (var _a in this.Actions)
+            var delta = r + this.Gamma * this.__get_v_value(stplus) - this.__get_v_value(st);
+            this.__set_elig_value(st, this.__get_elig_value(st) + 1);                                                                       // e(s) ← e(s) + 1
+            var keys = this.VTable.Keys.Cast<State>().ToArray();
+            for (int i = 0; i < keys.Length; i++)                                                                                           // for each s,a
             {
-                var v = this.__get_q_value(s, _a);
-                if (v > max)
-                {
-                    actionList.Clear();
-                    actionList.Add(_a);
-                    max = v;
-                }
-                else if (v == max)
-                    actionList.Add(_a);
+                var s = keys[i];
+                this.__set_v_value(s, (VVal)this.VTable[s] + this.Alpha * delta * this.__get_elig_value(s));                               // V(s) ← V(s, a) + αδe(s) 
+                this.__set_elig_value(s, this.Gamma * this.Lambda * this.__get_elig_value(s));                                             // e(s, a) ← γλe(s, a)
             }
-            return actionList[this.RandGen.Next(0, actionList.Count - 1)];
+            return this.__get_v_value(st);
         }
+        /// <summary>
+        /// NOT SUPPORTED
+        /// </summary>
+        protected override VVal __update_q_value(State st, Action a, Reward r, State stplus, params object[] o) { throw new NotSupportedException("This method is not supported for TDLambda instance"); }
     }
 }

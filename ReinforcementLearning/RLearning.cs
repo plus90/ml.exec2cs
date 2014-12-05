@@ -155,45 +155,55 @@ namespace ReinforcementLearning
         {
             if (this.RandGen.NextDouble() <= EXPLORATION_RATIO)
             {
-                // return the base's choose action
-                // which selects a random action
+                // return a random action
                 return this.__choose_random_action(s);
             }
             else
             {
-                // list of actions which have maximum Q-Value in current state
-                List<Action> actions = new List<Action>();
-                // latest larg Q value
-                float max_q = QVal.MinValue;
-                // choose actions which have maximum Q-Value
-                foreach (var a in this.Actions)
-                {
-                    // get the Q-Value for current actions
-                    var qv = this.__get_q_value(s, a);
-                    // if it is a bigger than previously actions
-                    if (qv > max_q)
-                    {
-                        // update the maximum threshold
-                        max_q = qv;
-                        // ignore all previously choosen actions
-                        actions.Clear();
-                        // add current action to the list
-                        actions.Add(a);
-                    }
-                    // it has the same value as previously choosen actions
-                    else if (qv == max_q)
-                    {
-                        // add current action to the list also
-                        actions.Add(a);
-                    }
-                    // ignore the actions who don't have the maximum Q-Value for current state
-                }
-                // it should never happen, but for fail safe
-                if (actions.Count == 0)
-                    return this.__choose_random_action(s);
-                // randomly choose an action from the maximum actions' list
-                return actions[this.RandGen.Next(0, actions.Count)];
+                // return the best possible action
+                return this.__choose_best_action(s);
             }
+        }
+        /// <summary>
+        /// Chooses a best action for a state
+        /// </summary>
+        /// <param name="s">For current state</param>
+        /// <param name="EXPLORATION_RATIO">The exploration ratio in range of [0..1]</param>
+        /// <returns>The choosen action</returns>
+        protected virtual Action __choose_best_action(State s)
+        {
+            // list of actions which have maximum Q-Value in current state
+            List<Action> actions = new List<Action>();
+            // latest larg Q value
+            float max_q = QVal.MinValue;
+            // choose actions which have maximum Q-Value
+            foreach (var a in this.Actions)
+            {
+                // get the Q-Value for current actions
+                var qv = this.__get_q_value(s, a);
+                // if it is a bigger than previously actions
+                if (qv > max_q)
+                {
+                    // update the maximum threshold
+                    max_q = qv;
+                    // ignore all previously choosen actions
+                    actions.Clear();
+                    // add current action to the list
+                    actions.Add(a);
+                }
+                // it has the same value as previously choosen actions
+                else if (qv == max_q)
+                {
+                    // add current action to the list also
+                    actions.Add(a);
+                }
+                // ignore the actions who don't have the maximum Q-Value for current state
+            }
+            // it should never happen, but for fail safe
+            if (actions.Count == 0)
+                return this.__choose_random_action(s);
+            // randomly choose an action from the maximum actions' list
+            return actions[this.RandGen.Next(0, actions.Count)];
         }
         /// <summary>
         /// Get reward based on current state of grid
