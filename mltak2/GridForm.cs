@@ -264,7 +264,6 @@ namespace mltak2
             System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ParameterizedThreadStart((thread) =>
             {
                 __learn_policy(sender);
-            __END_LEARNING:
                 this.examToolStripMenuItem.GetCurrentParent().Invoke(new Action(() =>
                 {
                     __enable_all_menus(true);
@@ -346,7 +345,7 @@ namespace mltak2
                             bf.Serialize(fs, ql.QTable);
                             bf.Serialize(fs, ql.VisitedStateActions);
                             bf.Serialize(fs, ql.StepCounter);
-                            bf.Serialize(fs, ReinforcementLearning.TDLambda.VTable);
+                            bf.Serialize(fs, tdl.VTable);
                         }
                     }
                     this.toolStripStatus.Text = "The QTable saved successfully....";
@@ -385,7 +384,7 @@ namespace mltak2
                             ql.StepCounter = (long)bf.Deserialize(fs);
                             // support for non-VTable contain files
                             if(fs.Position <  fs.Length)
-                                ReinforcementLearning.TDLambda.VTable = (Hashtable)bf.Deserialize(fs);
+                                tdl.VTable = (Hashtable)bf.Deserialize(fs);
                         }
                     }
                     __reload_grid();

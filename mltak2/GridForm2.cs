@@ -17,6 +17,7 @@ namespace mltak2
     {
         Grid g { get; set; }
         Hashtable optimalPath = new Hashtable();
+        List<Hashtable> policyHistory = null;
         ReinforcementLearning.RLearning ql = null;
         ReinforcementLearning.TDLambda tdl = null;
         private void __reload_grid()
@@ -150,10 +151,14 @@ namespace mltak2
                     var p = g.abs2grid(cell);
                     this.g.Write("#" + hs[cell].ToString(), new Point(p.X + 2 * margin / 3, p.Y - 2 * margin), gfx, Brushes.Brown, new Font("Arial", 10, FontStyle.Bold));
                 }
-                foreach (Point cell in ReinforcementLearning.TDLambda.VTable.Keys)
+                foreach (Point cell in tdl.VTable.Keys)
                 {
                     var p = g.abs2grid(cell);
-                    this.g.Write("T" + ((float)ReinforcementLearning.TDLambda.VTable[cell]).ToString("F2"), new Point(p.X + 2 * margin / 3, p.Y + margin + 7), gfx, Brushes.Brown, new Font("Arial", 8, FontStyle.Bold));
+                    var f = (float)tdl.VTable[cell];
+                    var txt = "X";
+                    if (f != 0)
+                        txt = ((float)Math.Log10(1 / f)).ToString("F2");
+                    this.g.Write("T" + txt, new Point(p.X + 2 * margin / 3, p.Y + margin + 7), gfx, Brushes.Brown, new Font("Arial", 8, FontStyle.Bold));
                 }
             }
         }
@@ -163,6 +168,7 @@ namespace mltak2
             long totall_step_counter = 0;
             var Actions = new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>());
             tdl = null;
+            this.policyHistory = new List<Hashtable>();
             for (int i = 0; i < max_iter; i++)
             {
                 // if the Q-Learning has been invoked?
@@ -203,16 +209,32 @@ namespace mltak2
                 else { MessageBox.Show("Invalid learning invoke ...", "Ops!!", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
                 // learn the grid
                 ql.Learn(new Func<Grid, Point, long, bool>((g, s, step_counter) => { return s == g.GoalPoint; }));
-                if (tdl == null)
-                    tdl = new ReinforcementLearning.TDLambda(ql, Properties.Settings.Default.Lambda);
-                //tdl.Learn(new Func<Grid, Point, long, bool>((g, s, step_counter) => { return s == g.GoalPoint; }));
+                // clone the QTbale
+                policyHistory.Add(ql.QTable.Clone() as System.Collections.Hashtable);
                 // sum-up the steps' counters
                 totall_step_counter += ql.StepCounter;
                 // indicate the results
                 this.toolStripStatus.Text = String.Format("{0}% Of {1} episodes passed - Last episode's steps#: {2} - Totall episodes' step#: {3} ", (i + 1) * 100 / (max_iter), ql.GetType().Name, ql.StepCounter, totall_step_counter);
             }
             this.toolStripStatus.Text = String.Format("The model has learned by {0} with total# {1} of steps...", ql.GetType().Name, totall_step_counter);
+            this.__build_UTable(this.policyHistory);
             this.__plot_policy(ql, tdl);
+        }
+
+        private void __build_UTable(List<Hashtable> policyHistory)
+        {
+            List<Hashtable> tdlist = new List<Hashtable>();
+            tdl = new ReinforcementLearning.TDLambda(ql, Properties.Settings.Default.Lambda);
+            foreach (var qtable in policyHistory)
+            {
+                //tdl.QTable = qtable;
+                foreach (Point state in ql.VisitedState.Keys)
+                {
+                    tdl.InitialState = state;
+                    tdl.Learn(new Func<Grid, Point, long, bool>((g, s, step_counter) => { return s == g.GoalPoint; }));
+                }
+                tdlist.Add(tdl.VTable);
+            }
         }
     }
 }
