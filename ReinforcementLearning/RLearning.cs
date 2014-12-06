@@ -27,9 +27,13 @@ namespace ReinforcementLearning
         /// </summary>
         public long StepCounter { get; set; }
         /// <summary>
+        /// The visited state-action container
+        /// </summary>
+        public Hashtable VisitedStateActions { get; set; }
+        /// <summary>
         /// The visited states' container
         /// </summary>
-        public Hashtable VisitedStates { get; set; }
+        public Hashtable VisitedState { get; set; }
         /// <summary>
         /// The grid instance
         /// </summary>
@@ -79,7 +83,8 @@ namespace ReinforcementLearning
             this.Gamma = gamma;
             this.StepCounter = 0;
             this.QTable = new Hashtable();
-            this.VisitedStates = new Hashtable();
+            this.VisitedState = new Hashtable();
+            this.VisitedStateActions = new Hashtable();
             this.GridHelper = new GridHelper(this.Grid);
         }
         #endregion
@@ -130,13 +135,15 @@ namespace ReinforcementLearning
             // craete a signature of current State-Action
             var sig = new KeyValuePair<State, Action>(s, a);
             // if the signature has NOT been registered
-            if (!this.VisitedStates.Contains(sig))
+            if (!this.VisitedStateActions.Contains(sig))
                 // initialize the signature with 0
-                this.VisitedStates.Add(sig, (long)0);
+                this.VisitedStateActions.Add(sig, (long)0);
+            if (!this.VisitedState.Contains(s))
+                this.VisitedState.Add(s, 1);
             // increase the visit# of the signature by one
-            this.VisitedStates[sig] = (long)this.VisitedStates[sig] + 1;
+            this.VisitedStateActions[sig] = (long)this.VisitedStateActions[sig] + 1;
             // return the updated visit#
-            return (long)this.VisitedStates[sig];
+            return (long)this.VisitedStateActions[sig];
         }
         #endregion
         #region Virtuals
