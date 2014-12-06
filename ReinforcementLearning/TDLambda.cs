@@ -17,7 +17,31 @@ namespace ReinforcementLearning
         /// <summary>
         /// The V(s) table's container
         /// </summary>
-        public Hashtable VTable { get; set; }
+        public static Hashtable VTable { get; set; }
+        /// <summary>
+        /// Static Constructor
+        /// </summary>
+        static TDLambda()
+        {
+            VTable = new Hashtable();
+        }
+        /// <summary>
+        /// Construct a Q-learner instance
+        /// </summary>
+        /// <param name="grid">The grid instance which trying to learn</param>
+        /// <param name="A">The list of valid actions</param>
+        /// <param name="gamma">The discount factor</param>
+        /// <param name="alpha">The learning rate</param>
+        /// <param name="QTable">The initial Q-table(Can be also `null`)</param>
+        public TDLambda(Grid grid, List<Action> A, float gamma, float alpha, float lambda, Hashtable QSA) : this(grid, A, gamma, alpha, lambda) { if (QSA != null)this.QTable = QSA; }
+        /// <summary>
+        /// Construct a Q-learner instance
+        /// </summary>
+        /// <param name="grid">The grid instance which trying to learn</param>
+        /// <param name="A">The list of valid actions</param>
+        /// <param name="gamma">The discount factor</param>
+        /// <param name="alpha">The learning rate</param>
+        public TDLambda(Grid grid, List<Action> A, float gamma, float alpha, float lambda) : base(grid, A, gamma, lambda, alpha) { }
         /// <summary>
         /// Construct a Q-learner instance
         /// </summary>
@@ -28,7 +52,7 @@ namespace ReinforcementLearning
         /// <param name="lambda">The lambda rate</param>
         /// <param name="QSA">The initial Q-Table</param>
         /// <param name="QTable">The initial Q-table(Can be also `null`)</param>
-        public TDLambda(RLearning r, float lambda) : base(r.Grid, r.Actions, r.Gamma, r.Alpha, lambda, r.QTable) { this.VTable = new Hashtable(); }
+        public TDLambda(RLearning r, float lambda) : this(r.Grid, r.Actions, r.Gamma, r.Alpha, lambda, r.QTable) {  this.VisitedStateActions = r.VisitedStateActions; }
         /// <summary>
         /// Sets eligibility trace value
         /// </summary>
@@ -38,9 +62,9 @@ namespace ReinforcementLearning
         protected virtual void __set_v_value(State s, VVal e)
         {
             var sig = s;
-            if (!this.VTable.Contains(sig))
-                this.VTable.Add(sig, e);
-            else this.VTable[sig] = e;
+            if (!TDLambda.VTable.Contains(sig))
+                TDLambda.VTable.Add(sig, e);
+            else TDLambda.VTable[sig] = e;
         }
         /// <summary>
         /// Gets VTable if any exists or initializes it by 0.
@@ -51,9 +75,9 @@ namespace ReinforcementLearning
         protected virtual VVal __get_v_value(State s)
         {
             var sig = s;
-            if (!this.VTable.Contains(sig))
-                this.VTable.Add(sig, (VVal)0);
-            return (VVal)this.VTable[sig];
+            if (!TDLambda.VTable.Contains(sig))
+                TDLambda.VTable.Add(sig, (VVal)0);
+            return (VVal)TDLambda.VTable[sig];
         }
         /// <summary>
         /// Sets eligibility trace value
@@ -64,9 +88,9 @@ namespace ReinforcementLearning
         protected void __set_elig_value(State s, VVal e)
         {
             var sig = s;
-            if (!this.VTable.Contains(sig))
-                this.VTable.Add(sig, e);
-            else this.VTable[sig] = e;
+            if (!TDLambda.VTable.Contains(sig))
+                TDLambda.VTable.Add(sig, e);
+            else TDLambda.VTable[sig] = e;
         }
         /// <summary>
         /// Gets VTable if any exists or initializes it by 0.
@@ -77,9 +101,9 @@ namespace ReinforcementLearning
         protected VVal __get_elig_value(State s)
         {
             var sig = s;
-            if (!this.VTable.Contains(sig))
-                this.VTable.Add(sig, (VVal)0);
-            return (VVal)this.VTable[sig];
+            if (!TDLambda.VTable.Contains(sig))
+                TDLambda.VTable.Add(sig, (VVal)0);
+            return (VVal)TDLambda.VTable[sig];
         }
         /// <summary>
         /// Learn V-values of a policy
@@ -117,7 +141,7 @@ namespace ReinforcementLearning
             // stop the refresher's timer
             this.RefreshTimer.Stop();
             // return the learned policy
-            return this.VTable;
+            return TDLambda.VTable;
         }
         /// <summary>
         /// Updates the V-Value
@@ -128,13 +152,14 @@ namespace ReinforcementLearning
         /// <returns>The updated V-Value</returns>
         protected VVal __update_v_value(State st, Reward r, State stplus)
         {
-            var delta = r + this.Gamma * this.__get_v_value(stplus) - this.__get_v_value(st);
+            var delta = r + this.Gamma * this.__get_v_value(stplus) - this.__get_v_value(st);                                               // δ ← r + γ * V(s') - V(s)
             this.__set_elig_value(st, this.__get_elig_value(st) + 1);                                                                       // e(s) ← e(s) + 1
-            var keys = this.VTable.Keys.Cast<State>().ToArray();
+            var keys = TDLambda.VTable.Keys.Cast<State>().ToArray();
             for (int i = 0; i < keys.Length; i++)                                                                                           // for each s,a
             {
                 var s = keys[i];
-                this.__set_v_value(s, (VVal)this.VTable[s] + this.Alpha * delta * this.__get_elig_value(s));                               // V(s) ← V(s, a) + αδe(s) 
+                if (s == st) continue;
+                this.__set_v_value(s, (VVal)TDLambda.VTable[s] + this.Alpha * delta * this.__get_elig_value(s));                               // V(s) ← V(s, a) + αδe(s) 
                 this.__set_elig_value(s, this.Gamma * this.Lambda * this.__get_elig_value(s));                                             // e(s, a) ← γλe(s, a)
             }
             return this.__get_v_value(st);

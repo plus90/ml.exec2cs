@@ -150,10 +150,10 @@ namespace mltak2
                     var p = g.abs2grid(cell);
                     this.g.Write("#" + hs[cell].ToString(), new Point(p.X + 2 * margin / 3, p.Y - 2 * margin), gfx, Brushes.Brown, new Font("Arial", 10, FontStyle.Bold));
                 }
-                foreach (Point cell in tdl.VTable.Keys)
+                foreach (Point cell in ReinforcementLearning.TDLambda.VTable.Keys)
                 {
                     var p = g.abs2grid(cell);
-                    this.g.Write("T" + ((float)tdl.VTable[cell]).ToString("F2"), new Point(p.X + 2 * margin / 3, p.Y + margin + 7), gfx, Brushes.Brown, new Font("Arial", 8, FontStyle.Bold));
+                    this.g.Write("T" + ((float)ReinforcementLearning.TDLambda.VTable[cell]).ToString("F2"), new Point(p.X + 2 * margin / 3, p.Y + margin + 7), gfx, Brushes.Brown, new Font("Arial", 8, FontStyle.Bold));
                 }
             }
         }

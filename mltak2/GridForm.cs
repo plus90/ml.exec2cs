@@ -346,7 +346,7 @@ namespace mltak2
                             bf.Serialize(fs, ql.QTable);
                             bf.Serialize(fs, ql.VisitedStateActions);
                             bf.Serialize(fs, ql.StepCounter);
-                            bf.Serialize(fs, tdl.VTable);
+                            bf.Serialize(fs, ReinforcementLearning.TDLambda.VTable);
                         }
                     }
                     this.toolStripStatus.Text = "The QTable saved successfully....";
@@ -385,7 +385,7 @@ namespace mltak2
                             ql.StepCounter = (long)bf.Deserialize(fs);
                             // support for non-VTable contain files
                             if(fs.Position <  fs.Length)
-                                tdl.VTable = (Hashtable)bf.Deserialize(fs);
+                                ReinforcementLearning.TDLambda.VTable = (Hashtable)bf.Deserialize(fs);
                         }
                     }
                     __reload_grid();
