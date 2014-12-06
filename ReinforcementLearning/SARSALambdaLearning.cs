@@ -46,7 +46,7 @@ namespace ReinforcementLearning
             // deine the initial state
             State state = this.Grid.AgentPoint;
             // define an initial action
-            Action a = Action.HOLD;
+            Action a = this.__choose_toothily_action(state);
             do
             {
                 // change the destination `state` with respect to the choosen action 
