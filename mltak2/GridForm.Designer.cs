@@ -43,14 +43,16 @@
             this.qLambdaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sARSALambdaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.examToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.qTableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.utilityProgressShowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tDLambdaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.toolStripStatus = new System.Windows.Forms.ToolStripLabel();
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.MarkStartPointGrid = new System.Windows.Forms.ToolStripMenuItem();
             this.MarkGoalPointGrid = new System.Windows.Forms.ToolStripMenuItem();
-            this.qTableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.toolStrip.SuspendLayout();
@@ -62,7 +64,7 @@
             this.grid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grid.Location = new System.Drawing.Point(0, 24);
             this.grid.Name = "grid";
-            this.grid.Size = new System.Drawing.Size(339, 238);
+            this.grid.Size = new System.Drawing.Size(456, 238);
             this.grid.TabIndex = 0;
             this.grid.TabStop = false;
             // 
@@ -73,10 +75,11 @@
             this.configurationsToolStripMenuItem,
             this.learnToolStripMenuItem,
             this.examToolStripMenuItem,
-            this.qTableToolStripMenuItem});
+            this.qTableToolStripMenuItem,
+            this.utilityProgressShowToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(339, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(456, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -181,6 +184,50 @@
             this.examToolStripMenuItem.Text = "&Exam";
             this.examToolStripMenuItem.Click += new System.EventHandler(this.examToolStripMenuItem_Click);
             // 
+            // qTableToolStripMenuItem
+            // 
+            this.qTableToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveToolStripMenuItem,
+            this.loadToolStripMenuItem});
+            this.qTableToolStripMenuItem.Name = "qTableToolStripMenuItem";
+            this.qTableToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
+            this.qTableToolStripMenuItem.Text = "&QTable";
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Enabled = false;
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift)
+                        | System.Windows.Forms.Keys.S)));
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.saveToolStripMenuItem.Text = "&Save";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            // 
+            // loadToolStripMenuItem
+            // 
+            this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
+            this.loadToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift)
+                        | System.Windows.Forms.Keys.O)));
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.loadToolStripMenuItem.Text = "&Load";
+            this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
+            // 
+            // utilityProgressShowToolStripMenuItem
+            // 
+            this.utilityProgressShowToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tDLambdaToolStripMenuItem});
+            this.utilityProgressShowToolStripMenuItem.Name = "utilityProgressShowToolStripMenuItem";
+            this.utilityProgressShowToolStripMenuItem.Size = new System.Drawing.Size(130, 20);
+            this.utilityProgressShowToolStripMenuItem.Text = "&Utility Progress Show";
+            // 
+            // tDLambdaToolStripMenuItem
+            // 
+            this.tDLambdaToolStripMenuItem.Name = "tDLambdaToolStripMenuItem";
+            this.tDLambdaToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.T)));
+            this.tDLambdaToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.tDLambdaToolStripMenuItem.Text = "TDLambda";
+            this.tDLambdaToolStripMenuItem.Click += new System.EventHandler(this.tDLambdaProgressShowToolStripMenuItem_Click);
+            // 
             // toolStrip
             // 
             this.toolStrip.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -188,7 +235,7 @@
             this.toolStripStatus});
             this.toolStrip.Location = new System.Drawing.Point(0, 237);
             this.toolStrip.Name = "toolStrip";
-            this.toolStrip.Size = new System.Drawing.Size(339, 25);
+            this.toolStrip.Size = new System.Drawing.Size(456, 25);
             this.toolStrip.TabIndex = 2;
             this.toolStrip.Text = "toolStrip1";
             // 
@@ -219,39 +266,11 @@
             this.MarkGoalPointGrid.Text = "Mark as &Goal";
             this.MarkGoalPointGrid.Click += new System.EventHandler(this.MarkGoalPointGrid_Click);
             // 
-            // qTableToolStripMenuItem
-            // 
-            this.qTableToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveToolStripMenuItem,
-            this.loadToolStripMenuItem});
-            this.qTableToolStripMenuItem.Name = "qTableToolStripMenuItem";
-            this.qTableToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
-            this.qTableToolStripMenuItem.Text = "&QTable";
-            // 
-            // saveToolStripMenuItem
-            // 
-            this.saveToolStripMenuItem.Enabled = false;
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift)
-                        | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
-            this.saveToolStripMenuItem.Text = "&Save";
-            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
-            // 
-            // loadToolStripMenuItem
-            // 
-            this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
-            this.loadToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift)
-                        | System.Windows.Forms.Keys.O)));
-            this.loadToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
-            this.loadToolStripMenuItem.Text = "&Load";
-            this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
-            // 
             // GridForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(339, 262);
+            this.ClientSize = new System.Drawing.Size(456, 262);
             this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.grid);
             this.Controls.Add(this.menuStrip1);
@@ -295,6 +314,8 @@
         private System.Windows.Forms.ToolStripMenuItem qTableToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem utilityProgressShowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tDLambdaToolStripMenuItem;
     }
 }
 

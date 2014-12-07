@@ -346,6 +346,7 @@ namespace mltak2
                             bf.Serialize(fs, ql.VisitedStateActions);
                             bf.Serialize(fs, ql.StepCounter);
                             bf.Serialize(fs, tdl.VTable);
+                            bf.Serialize(fs, TDLambdaUtilityProgress);
                         }
                     }
                     this.toolStripStatus.Text = "The QTable saved successfully....";
@@ -383,8 +384,11 @@ namespace mltak2
                             ql.VisitedStateActions = (Hashtable)bf.Deserialize(fs);
                             ql.StepCounter = (long)bf.Deserialize(fs);
                             // support for non-VTable contain files
-                            if(fs.Position <  fs.Length)
+                            if (fs.Position < fs.Length)
                                 tdl.VTable = (Hashtable)bf.Deserialize(fs);
+                            // support for non-VTable contain files
+                            if (fs.Position < fs.Length)
+                                this.TDLambdaUtilityProgress = (Hashtable)bf.Deserialize(fs);
                         }
                     }
                     __reload_grid();
@@ -394,6 +398,12 @@ namespace mltak2
                 }
             }
             __enable_all_menus(true);
+        }
+
+        private void tDLambdaProgressShowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            UtilityHistoryForm uhf = new UtilityHistoryForm(this.g, this.TDLambdaUtilityProgress);
+            uhf.ShowDialog(this);
         }
     }
 }
