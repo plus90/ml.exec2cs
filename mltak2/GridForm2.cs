@@ -17,7 +17,8 @@ namespace mltak2
     {
         Grid g { get; set; }
         Hashtable optimalPath = new Hashtable();
-        List<Hashtable> policyHistory = null;
+        Hashtable TDLambdaUtilityProgress = new Hashtable();
+        List<KeyValuePair<Hashtable, Hashtable>> policyHistory = null;
         ReinforcementLearning.RLearning ql = null;
         ReinforcementLearning.TDLambda tdl = null;
         private void __reload_grid()
@@ -62,7 +63,7 @@ namespace mltak2
             }
             Application.DoEvents();
         }
-        private void __plot_policy(ReinforcementLearning.RLearning ql, ReinforcementLearning.TDLambda tdl)
+        private void __plot_policy(ReinforcementLearning.RLearning ql)
         {
             /**
              * Draw the result POLICY!!!
@@ -151,15 +152,6 @@ namespace mltak2
                     var p = g.abs2grid(cell);
                     this.g.Write("#" + hs[cell].ToString(), new Point(p.X + 2 * margin / 3, p.Y - 2 * margin), gfx, Brushes.Brown, new Font("Arial", 10, FontStyle.Bold));
                 }
-                foreach (Point cell in tdl.VTable.Keys)
-                {
-                    var p = g.abs2grid(cell);
-                    var f = (float)tdl.VTable[cell];
-                    var txt = "X";
-                    if (f != 0)
-                        txt = ((float)Math.Log10(1 / f)).ToString("F2");
-                    this.g.Write("T" + txt, new Point(p.X + 2 * margin / 3, p.Y + margin + 7), gfx, Brushes.Brown, new Font("Arial", 8, FontStyle.Bold));
-                }
             }
         }
         private void __learn_policy(object sender)
@@ -168,7 +160,7 @@ namespace mltak2
             long totall_step_counter = 0;
             var Actions = new List<GridHelper.Directions>(Enum.GetValues(typeof(GridHelper.Directions)).Cast<GridHelper.Directions>());
             tdl = null;
-            this.policyHistory = new List<Hashtable>();
+            this.policyHistory = new List<KeyValuePair<Hashtable, Hashtable>>();
             for (int i = 0; i < max_iter; i++)
             {
                 // if the Q-Learning has been invoked?
@@ -210,31 +202,68 @@ namespace mltak2
                 // learn the grid
                 ql.Learn(new Func<Grid, Point, long, bool>((g, s, step_counter) => { return s == g.GoalPoint; }));
                 // clone the QTbale
-                policyHistory.Add(ql.QTable.Clone() as System.Collections.Hashtable);
+                policyHistory.Add(new KeyValuePair<Hashtable, Hashtable>(ql.QTable.Clone() as System.Collections.Hashtable, ql.VisitedState.Clone() as System.Collections.Hashtable));
                 // sum-up the steps' counters
                 totall_step_counter += ql.StepCounter;
                 // indicate the results
                 this.toolStripStatus.Text = String.Format("{0}% Of {1} episodes passed - Last episode's steps#: {2} - Totall episodes' step#: {3} ", (i + 1) * 100 / (max_iter), ql.GetType().Name, ql.StepCounter, totall_step_counter);
             }
             this.toolStripStatus.Text = String.Format("The model has learned by {0} with total# {1} of steps...", ql.GetType().Name, totall_step_counter);
+            this.__plot_policy(ql);
             this.__build_UTable(this.policyHistory);
-            this.__plot_policy(ql, tdl);
         }
 
-        private void __build_UTable(List<Hashtable> policyHistory)
+        private void __plot_utility(ReinforcementLearning.TDLambda tdl)
         {
-            List<Hashtable> tdlist = new List<Hashtable>();
-            tdl = new ReinforcementLearning.TDLambda(ql, Properties.Settings.Default.Lambda);
-            foreach (var qtable in policyHistory)
+            var margin = 23;
+            using (var gfx = this.grid.CreateGraphics())
             {
-                //tdl.QTable = qtable;
-                foreach (Point state in ql.VisitedState.Keys)
+                foreach (Point cell in tdl.VTable.Keys)
                 {
-                    tdl.InitialState = state;
-                    tdl.Learn(new Func<Grid, Point, long, bool>((g, s, step_counter) => { return s == g.GoalPoint; }));
+                    var p = g.abs2grid(cell);
+                    var f = (float)tdl.VTable[cell];
+                    var txt = f.ToString("0.##");//"X";
+                    
+                    if (f != 0 && false)
+                        txt = ((float)Math.Log10(1 / f)).ToString("F2");
+                    this.g.Write("T" + txt, new Point(p.X + 2 * margin / 3, p.Y + margin + 7), gfx, Brushes.Brown, new Font("Arial", 8, FontStyle.Bold));
                 }
-                tdlist.Add(tdl.VTable);
             }
+        }
+
+        private void __build_UTable(List<KeyValuePair<Hashtable, Hashtable>> policyHistory)
+        {
+            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ParameterizedThreadStart((thread) =>
+            {
+                var origin_txt = this.toolStripStatus.Text;
+                this.toolStripStatus.Text = "Calculating utility values...";
+                List<Hashtable> tdlist = new List<Hashtable>();
+                tdl = new ReinforcementLearning.TDLambda(ql, Properties.Settings.Default.Lambda);
+                TDLambdaUtilityProgress = new Hashtable();
+                float c = 0;
+                foreach (var epic in policyHistory)
+                {
+                    tdl.QTable = epic.Key;
+                    foreach (Point state in epic.Value.Keys)
+                    {
+                        tdl.InitialState = state;
+                        tdl.Learn(new Func<Grid, Point, long, bool>((g, s, step_counter) => { return s == g.GoalPoint; }));
+                        // store td-lambda utility progress for the state
+                        if (TDLambdaUtilityProgress.Contains(state))
+                            (TDLambdaUtilityProgress[state] as List<float>).Add((float)tdl.VTable[state]);
+                        else
+                            TDLambdaUtilityProgress.Add(state, new List<float>() { (float)tdl.VTable[state] });
+                    }
+                    this.toolStripStatus.Text = String.Format("[ {0:F1}% ] Calculating utility values...", (++c / policyHistory.Count) * 100);
+                    tdlist.Add(tdl.VTable);
+                }
+                __plot_utility(tdl);
+                this.toolStripStatus.Text = origin_txt;
+                ThreadsPool.Remove(thread as System.Threading.Thread);
+            }));
+            t.Start(t);
+            ThreadsPool.Add(t);
+
         }
     }
 }

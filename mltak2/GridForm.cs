@@ -388,7 +388,8 @@ namespace mltak2
                         }
                     }
                     __reload_grid();
-                    __plot_policy(ql, tdl);
+                    __plot_policy(ql);
+                    __plot_utility(tdl);
                     this.toolStripStatus.Text = "The QTable saved successfully....";
                 }
             }

@@ -122,7 +122,7 @@ namespace ReinforcementLearning
             do
             {
                 // choose action given this pi for state
-                a = this.__choose_best_action(state);
+                a = this.__choose_toothily_action(state, 0.1F);
                 // change the destination `state` with respect to the choosen action 
                 var s = this.GridHelper.Move(state, a);
                 // get the new-state's reward
@@ -131,8 +131,6 @@ namespace ReinforcementLearning
                 this.__update_v_value(s.OldPoint, r, s.NewPoint);
                 // assign the next state
                 state = s.NewPoint;
-                // mark current state-action as visited
-                this.__visit(s.OldPoint, a);
                 // examine the learning loop
             } while (!termination_validtor(this.Grid, state, this.StepCounter) && ++this.StepCounter <= long.MaxValue);
             // stop the refresher's timer
