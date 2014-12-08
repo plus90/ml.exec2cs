@@ -53,6 +53,7 @@
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.MarkStartPointGrid = new System.Windows.Forms.ToolStripMenuItem();
             this.MarkGoalPointGrid = new System.Windows.Forms.ToolStripMenuItem();
+            this.aDPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.toolStrip.SuspendLayout();
@@ -190,8 +191,8 @@
             this.saveToolStripMenuItem,
             this.loadToolStripMenuItem});
             this.qTableToolStripMenuItem.Name = "qTableToolStripMenuItem";
-            this.qTableToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
-            this.qTableToolStripMenuItem.Text = "&QTable";
+            this.qTableToolStripMenuItem.Size = new System.Drawing.Size(51, 20);
+            this.qTableToolStripMenuItem.Text = "&Policy";
             // 
             // saveToolStripMenuItem
             // 
@@ -215,7 +216,8 @@
             // utilityProgressShowToolStripMenuItem
             // 
             this.utilityProgressShowToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tDLambdaToolStripMenuItem});
+            this.tDLambdaToolStripMenuItem,
+            this.aDPToolStripMenuItem});
             this.utilityProgressShowToolStripMenuItem.Name = "utilityProgressShowToolStripMenuItem";
             this.utilityProgressShowToolStripMenuItem.Size = new System.Drawing.Size(130, 20);
             this.utilityProgressShowToolStripMenuItem.Text = "&Utility Progress Show";
@@ -265,6 +267,14 @@
             this.MarkGoalPointGrid.Size = new System.Drawing.Size(142, 22);
             this.MarkGoalPointGrid.Text = "Mark as &Goal";
             this.MarkGoalPointGrid.Click += new System.EventHandler(this.MarkGoalPointGrid_Click);
+            // 
+            // aDPToolStripMenuItem
+            // 
+            this.aDPToolStripMenuItem.Name = "aDPToolStripMenuItem";
+            this.aDPToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
+            this.aDPToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.aDPToolStripMenuItem.Text = "ADP";
+            this.aDPToolStripMenuItem.Click += new System.EventHandler(this.tDLambdaProgressShowToolStripMenuItem_Click);
             // 
             // GridForm
             // 
@@ -316,6 +326,7 @@
         private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem utilityProgressShowToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tDLambdaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aDPToolStripMenuItem;
     }
 }
 

@@ -12,12 +12,12 @@ namespace ReinforcementLearning
     using Reward = Int16;
     using Action = Environment.GridHelper.Directions;
     using VVal = System.Single;
-    public class TDLambda : RLambdaLearning
+    public class TDLambda : RLambdaLearning, IUtility
     {
         /// <summary>
         /// The V(s) table's container
         /// </summary>
-        public Hashtable VTable { get; set; }
+        public Hashtable UTable { get; set; }
         /// <summary>
         /// Set or get inital state
         /// </summary>
@@ -38,7 +38,7 @@ namespace ReinforcementLearning
         /// <param name="A">The list of valid actions</param>
         /// <param name="gamma">The discount factor</param>
         /// <param name="alpha">The learning rate</param>
-        public TDLambda(Grid grid, List<Action> A, float gamma, float alpha, float lambda) : base(grid, A, gamma, lambda, alpha) { this.VTable = new Hashtable(); this.InitialState = grid.AgentPoint; }
+        public TDLambda(Grid grid, List<Action> A, float gamma, float alpha, float lambda) : base(grid, A, gamma, lambda, alpha) { this.UTable = new Hashtable(); this.InitialState = grid.AgentPoint; }
         /// <summary>
         /// Construct a Q-learner instance
         /// </summary>
@@ -56,25 +56,25 @@ namespace ReinforcementLearning
         /// <param name="s">The state</param>
         /// <param name="a">The action</param>
         /// <param name="e">The eligibility value to be updated</param>
-        protected virtual void __set_v_value(State s, VVal e)
+        protected virtual void __set_u_value(State s, VVal e)
         {
             var sig = s;
-            if (!this.VTable.Contains(sig))
-                this.VTable.Add(sig, e);
-            else this.VTable[sig] = e;
+            if (!this.UTable.Contains(sig))
+                this.UTable.Add(sig, e);
+            else this.UTable[sig] = e;
         }
         /// <summary>
-        /// Gets VTable if any exists or initializes it by 0.
+        /// Gets UTable if any exists or initializes it by 0.
         /// </summary>
         /// <param name="s">The state</param>
         /// <param name="a">The action</param>
         /// <returns>The eligibility trace value</returns>
-        protected virtual VVal __get_v_value(State s)
+        protected virtual VVal __get_u_value(State s)
         {
             var sig = s;
-            if (!this.VTable.Contains(sig))
-                this.VTable.Add(sig, (VVal)0);
-            return (VVal)this.VTable[sig];
+            if (!this.UTable.Contains(sig))
+                this.UTable.Add(sig, (VVal)0);
+            return (VVal)this.UTable[sig];
         }
         /// <summary>
         /// Sets eligibility trace value
@@ -85,12 +85,12 @@ namespace ReinforcementLearning
         protected void __set_elig_value(State s, VVal e)
         {
             var sig = s;
-            if (!this.VTable.Contains(sig))
-                this.VTable.Add(sig, e);
-            else this.VTable[sig] = e;
+            if (!this.UTable.Contains(sig))
+                this.UTable.Add(sig, e);
+            else this.UTable[sig] = e;
         }
         /// <summary>
-        /// Gets VTable if any exists or initializes it by 0.
+        /// Gets UTable if any exists or initializes it by 0.
         /// </summary>
         /// <param name="s">The state</param>
         /// <param name="a">The action</param>
@@ -98,9 +98,9 @@ namespace ReinforcementLearning
         protected VVal __get_elig_value(State s)
         {
             var sig = s;
-            if (!this.VTable.Contains(sig))
-                this.VTable.Add(sig, (VVal)0);
-            return (VVal)this.VTable[sig];
+            if (!this.UTable.Contains(sig))
+                this.UTable.Add(sig, (VVal)0);
+            return (VVal)this.UTable[sig];
         }
         /// <summary>
         /// Learn V-values of a policy
@@ -136,7 +136,7 @@ namespace ReinforcementLearning
             // stop the refresher's timer
             this.RefreshTimer.Stop();
             // return the learned policy
-            return this.VTable;
+            return this.UTable;
         }
         /// <summary>
         /// Updates the V-Value
@@ -147,16 +147,16 @@ namespace ReinforcementLearning
         /// <returns>The updated V-Value</returns>
         protected VVal __update_v_value(State st, Reward r, State stplus)
         {
-            var delta = r + this.Gamma * this.__get_v_value(stplus) - this.__get_v_value(st);                                               // δ ← r + γ * V(s') - V(s)
+            var delta = r + this.Gamma * this.__get_u_value(stplus) - this.__get_u_value(st);                                               // δ ← r + γ * V(s') - V(s)
             this.__set_elig_value(st, this.__get_elig_value(st) + 1);                                                                       // e(s) ← e(s) + 1
             var keys = this.VisitedState.Keys.Cast<State>().ToArray();
             for (int i = 0; i < keys.Length; i++)                                                                                           // for each s,a
             {
                 var s = keys[i];
-                this.__set_v_value(s, (VVal)this.VTable[s] + this.Alpha * delta * this.__get_elig_value(s));                               // V(s) ← V(s, a) + αδe(s) 
+                this.__set_u_value(s, (VVal)this.UTable[s] + this.Alpha * delta * this.__get_elig_value(s));                               // V(s) ← V(s, a) + αδe(s) 
                 this.__set_elig_value(s, this.Gamma * this.Lambda * this.__get_elig_value(s));                                             // e(s, a) ← γλe(s, a)
             }
-            return this.__get_v_value(st);
+            return this.__get_u_value(st);
         }
         /// <summary>
         /// NOT SUPPORTED

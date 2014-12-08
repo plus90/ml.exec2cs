@@ -11,7 +11,7 @@ namespace ReinforcementLearning
     using State = System.Drawing.Point;
     using Reward = Int16;
     using Action = GridHelper.Directions;
-    public abstract class RLearning : RLInstance
+    public abstract class RLearning : RLInstance, ReinforcementLearning.IRLearning
     {
         #region Members
         /// <summary>

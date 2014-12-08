@@ -349,7 +349,7 @@ namespace mltak2
                             bf.Serialize(fs, ql.QTable);
                             bf.Serialize(fs, ql.VisitedStateActions);
                             bf.Serialize(fs, ql.StepCounter);
-                            bf.Serialize(fs, tdl.VTable);
+                            bf.Serialize(fs, tdl.UTable);
                             bf.Serialize(fs, TDLambdaUtilityProgress);
                         }
                     }
@@ -391,10 +391,10 @@ namespace mltak2
                             ql.QTable = (Hashtable)bf.Deserialize(fs);
                             ql.VisitedStateActions = (Hashtable)bf.Deserialize(fs);
                             ql.StepCounter = (long)bf.Deserialize(fs);
-                            // support for non-VTable contain files
+                            // support for non-UTable contain files
                             if (fs.Position < fs.Length)
-                                tdl.VTable = (Hashtable)bf.Deserialize(fs);
-                            // support for non-VTable contain files
+                                tdl.UTable = (Hashtable)bf.Deserialize(fs);
+                            // support for non-UTable contain files
                             if (fs.Position < fs.Length)
                                 this.TDLambdaUtilityProgress = (Hashtable)bf.Deserialize(fs);
                         }
@@ -412,7 +412,7 @@ namespace mltak2
 
         private void tDLambdaProgressShowToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            UtilityHistoryForm uhf = new UtilityHistoryForm(this.g, this.TDLambdaUtilityProgress);
+            UtilityHistoryForm uhf = new UtilityHistoryForm(this.g, (sender == this.tDLambdaToolStripMenuItem) ? this.TDLambdaUtilityProgress : this.ADPUtilityProgress);
             uhf.ShowDialog(this);
         }
     }

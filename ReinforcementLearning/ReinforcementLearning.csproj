@@ -41,6 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ADP.cs" />
+    <Compile Include="IRLearning.cs" />
+    <Compile Include="IUtility.cs" />
     <Compile Include="RLInstance.cs" />
     <Compile Include="SarsaLambdaLearning.cs" />
     <Compile Include="QLambdaLearning.cs" />
