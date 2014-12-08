@@ -103,6 +103,10 @@ namespace mltak2
 
             else
                 newConfigurationToolStripMenuItem_Click(new object(), new EventArgs());
+            #if __DEBUG_PLOT__
+            loadToolStripMenuItem_Click(new object(), new EventArgs());
+            tDLambdaProgressShowToolStripMenuItem_Click(new object(), new EventArgs());
+            #endif
         }
         public void grid_MouseDown(object sender, MouseEventArgs e)
         {
@@ -362,9 +366,13 @@ namespace mltak2
                 sfd.DefaultExt = "dat";
                 sfd.AddExtension = true;
                 sfd.Filter = "Data files (*.dat)|*.dat";
+#if !__DEBUG_PLOT__
                 var res = sfd.ShowDialog(this);
                 if (res == System.Windows.Forms.DialogResult.OK)
                 {
+#else
+            sfd.FileName = "sarsa.dat";
+#endif
                     BinaryFormatter bf = new BinaryFormatter();
                     {
                         using (var fs = sfd.OpenFile())
@@ -395,7 +403,9 @@ namespace mltak2
                     __plot_policy(ql);
                     __plot_utility(tdl);
                     this.toolStripStatus.Text = "The QTable saved successfully....";
+#if !__DEBUG_PLOT__
                 }
+#endif
             }
             __enable_all_menus(true);
         }

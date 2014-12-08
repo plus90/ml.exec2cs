@@ -54,6 +54,11 @@ namespace mltak2
                     case Keys.Escape: this.Close(); break;
                 }
             });
+#if __DEBUG_PLOT__
+            btn_Click(btn, new EventArgs());
+            btn_Click(this.Controls[2], new EventArgs());
+            plotbtn_Click(new object(), new EventArgs());
+#endif
         }
 
         void plotbtn_Click(object sender, EventArgs e)

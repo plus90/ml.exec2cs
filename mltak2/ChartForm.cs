@@ -24,7 +24,13 @@ namespace mltak2
             {
                 switch (e.KeyCode)
                 {
-                    case Keys.Escape: this.Close(); break;
+                    case Keys.Escape: 
+#if __DEBUG_PLOT__
+                        System.Diagnostics.Process.GetCurrentProcess().Kill();
+#else
+                        this.Close();
+#endif
+                        break;
                 }
             });
         }
@@ -32,6 +38,7 @@ namespace mltak2
         private void __plot_data(DataList dataList, List<string> labels)
         {
             this.chart.Series.Clear();
+            for (int i = 0; i < dataList.Count; i++) { if (dataList[i] == null) dataList[i] = new List<float>() { 0 }; }
             var max_len = 0;
             var data_len_counter = new List<List<int>>();
             foreach (var data in dataList)
@@ -42,7 +49,6 @@ namespace mltak2
             }
             foreach (var data in dataList)
             {
-                if (data.Count <= 0) continue;
                 if (data.Count < max_len)
                 {
                     var f = new float[max_len - data.Count];
@@ -55,22 +61,17 @@ namespace mltak2
                     data_len_counter[data_len_counter.Count - 1].Add(i);
                 }
             }
-            this.chart.Titles.Add("Utiliy Trace Show");
-            ChartArea chartArea = null;
-            foreach (var l in labels)
+            chart.ChartAreas.Clear();
+            chart.Series.Clear();
+            ChartArea chartarea = new ChartArea();
+            chart.ChartAreas.Add(chartarea);
+            var c = 0;
+            foreach (var data  in dataList)
             {
-                 chartArea = this.chart.ChartAreas.Add(l);
-            }
-            chartArea.AxisX.Title = "Episode";
-            chartArea.AxisY.Title = "U-Value";
-            for (int i = 0; i < dataList.Count; i++)
-            {
-                Series series = this.chart.Series.Add(labels[i]);
-                series.ChartArea = labels[i];
-                series.ChartType = SeriesChartType.Line;
-                series.Points.DataBindXY(data_len_counter[i], dataList[i]);
-                Application.DoEvents();
-                chartArea.Position = new ElementPosition(10, 5, 70, 50);
+                var ser = chart.Series.Add(labels[c]);
+                ser.ChartType = SeriesChartType.Line;
+                ser.ChartArea = chartarea.Name;
+                ser.Points.DataBindXY(data_len_counter[c++], data);
             }
         }
     }
