@@ -1,28 +1,19 @@
 \documentclass[10pt,a4paper]{article}
-\usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage{setspace}
 \usepackage{fontspec}
-\usepackage[figurename=Fig.]{caption}
+\usepackage{caption, subcaption}
 \usepackage{float}
 \usepackage{polyglossia}
 \setmainlanguage{english}
 \setotherlanguage{arabic}
 \newfontfamily\arabicfont[Script=Arabic,Scale=1.1]{Scheherazade}
-\hypersetup{
-    colorlinks=true,
-    linkcolor=blue,
-    filecolor=magenta,      
-    urlcolor=blue,
-}
 \graphicspath{ {images/} }
-\renewcommand{\figurename}{\textarabic{عکس}}
-\renewcommand{\thefigure}{\arabic{figure}}
 \begin{document}
 
 \title{\textarabic{تمرین دوم یادگیری ماشین}}
-\author{\textarabic{دایوش حسن پور}}
-\date{}
+\author{\textarabic{داریوش حسن پور}}
+\date{\textarabic{۹۳۰۸۱۶۴}}
 \maketitle
 \null
 \vfill
@@ -120,9 +111,198 @@ $\lambda$
     \textarabic{عکس ۷: با انتخاب خانه های مد نظر(با هم یا به بطور تکی) می توانیم به مقایسه نحوه ی تغییر میزان سودمندی خانه ها بپردازیم.}
     \end{center}
 \end{figure}
+\section{\textarabic{نحوه ی نمایش داده ها}}
+در نحوه ی حرکت عامل در برنامه تعریف شده است که عامل میتواند در هر موقیت تصمیم به انتخاب یکی از ۵ حرکت
+\{
+ شمال؛ شرق؛ جنوب؛ غرب و حفظ موقعیت
+\}
+نماید. که در حفظ موقعیت عامل بی حرکت می ماند.
+\par
+پس از یادگیری سیاست بهینه و سودمندی حالات داده های مرتبط با هر موقیت به شرح زیر در همان موقعیت نمایش داده میشوند:\\
+در هر موقعیت مقدار سیاست بهینه یادگرفته شده برای چهار جهت اصلی در فلش های آبی رنگ مرتبط با همان جهت نمایش داده شده است.\\
+گوشه بالایی سمت چپ هر موقعیت مقدار سیاست بهینه مربوط حرکت «حفظ موقعیت» میباشد.\\
+گوشه بالایی سمت راست هر موقعیت این حقیقت را مشخص میکند که الگوریتم در آخرین مرحله یادگیری چند بار به خانه ی مورد نظر در رجوع کرده است.\\
+مقدار گوشه پایینی چپ هر خانه مقدار سودمندی محاسبه شده با استفاده از برنامه نویسی پویای وفقی برای آن موقیعت را نمایش میدهد و متعاقبا گوشه پایینی راست هر خانه مقدار سومندی آن خانه که توسط روش
+\textenglish{$TD(\lambda)$}
+حساب شده است را نمایش میدهد.
+\footnote{\textarabic{توجه شود که در برنامه نویسی این برنامه مبدا مختصات موقعیت های شبکه را گوشه بالایی سمت چپ در نظر گرفته شده است ولی با توجه به متن تمرین داده شده میتوان این را نتیجه گرفت که مبدا مختصات گوشه پایینی سمت چپ است؛ بنابراین ایندکس های خانه های چاپ شده با توجه یه مبدا مختصات برنامه یعنی گوشه پایینی سمت چپ در نظر گرفته شده است.}}
+
+
+
+\section{\textarabic{اجرای برنامه}}
+شبکه درخواست شده در متن تکلیف توسط ۴ الگوریتم معرفی شده در مقدمه این متن مورد یادگیری قرار گرفته است. که شرح نتایج آنها به صورت زیر است.
+
+\subsection{$Q(s, a)$}
+
 \end{Arabic}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{q}
+    \begin{center}
+    \textarabic{عکس ۸: سیاست و میزان سودمندی های یادگرفته شده توسط الگوریتم $Q(s, a)$ }
+    \end{center}
+\end{figure}
+\newpage
+\begin{figure}[h]
+        \centering
+        \begin{subfigure}[b]{0.5\textwidth}
+            \includegraphics[width=\textwidth]{q-adp}
+            \begin{center}
+                \textarabic{الف: روند تغییر مقاریر سودمندی یادگرفته شده توسط روش $ADP$ }
+            \end{center}
+        \end{subfigure}%
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.5\textwidth}
+           \includegraphics[width=\textwidth]{q-td}
+            \begin{center}
+                \textarabic{ب: روند تغییر مقادیر سودمندی یادگرفته شده توسط روش $TD(\lambda)$ }
+            \end{center}
+        \end{subfigure}
+    \begin{center}
+    \textarabic{عکس ۹: روند تغییر مقدریر سودمندی یادگرفته شده توسط روش های
+     $TD(\lambda)$ و $ADP$
+      برای خانه های 
+     $(3,3)$ ,$(1, 1)$ و $(5, 5)$
+     }
+    \end{center}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{q-exec}
+    \begin{center}
+    \textarabic{عکس ۱۰: مسیر طی شده توسط عامل با توجه به سیاست یادگرفته شده توسط الگوریتم $Q(s, a)$ }
+    \end{center}
+\end{figure}
+
+\subsection{$SARSA(s, a)$}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{r}
+    \begin{center}
+    \textarabic{عکس ۸: سیاست و میزان سودمندی های یادگرفته شده توسط الگوریتم $SARSA(s, a)$ }
+    \end{center}
+\end{figure}
+\begin{figure}[h]
+        \centering
+        \begin{subfigure}[b]{0.5\textwidth}
+            \includegraphics[width=\textwidth]{r-adp}
+            \begin{center}
+                \textarabic{الف: روند تغییر مقاریر سودمندی یادگرفته شده توسط روش $ADP$ }
+            \end{center}
+        \end{subfigure}%
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.5\textwidth}
+           \includegraphics[width=\textwidth]{r-td}
+            \begin{center}
+                \textarabic{ب: روند تغییر مقادیر سودمندی یادگرفته شده توسط روش $TD(\lambda)$ }
+            \end{center}
+        \end{subfigure}
+    \begin{center}
+    \textarabic{عکس ۹: روند تغییر مقدریر سودمندی یادگرفته شده توسط روش های
+     $TD(\lambda)$ و $ADP$
+      برای خانه های 
+     $(3,3)$ ,$(1, 1)$ و $(5, 5)$
+     }
+    \end{center}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{r-exec}
+    \begin{center}
+    \textarabic{عکس ۱۰: مسیر طی شده توسط عامل با توجه به سیاست یادگرفته شده توسط الگوریتم $SARSA(s, a)$ }
+    \end{center}
+\end{figure}
 
 
+\subsection{$Q(\lambda)$}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{qlambda}
+    \begin{center}
+    \textarabic{عکس ۸: سیاست و میزان سودمندی های یادگرفته شده توسط الگوریتم $Q(\lambda)$ }
+    \end{center}
+\end{figure}
+\begin{figure}[h]
+        \centering
+        \begin{subfigure}[b]{0.5\textwidth}
+            \includegraphics[width=\textwidth]{qlambda-adp}
+            \begin{center}
+                \textarabic{الف: روند تغییر مقاریر سودمندی یادگرفته شده توسط روش $ADP$ }
+            \end{center}
+        \end{subfigure}%
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.5\textwidth}
+           \includegraphics[width=\textwidth]{qlambda-td}
+            \begin{center}
+                \textarabic{ب: روند تغییر مقادیر سودمندی یادگرفته شده توسط روش $TD(\lambda)$ }
+            \end{center}
+        \end{subfigure}
+    \begin{center}
+    \textarabic{عکس ۹: روند تغییر مقدریر سودمندی یادگرفته شده توسط روش های
+     $TD(\lambda)$ و $ADP$
+      برای خانه های 
+     $(3,3)$ ,$(1, 1)$ و $(5, 5)$
+     }
+    \end{center}
+\end{figure}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{qlambda-exec}
+    \begin{center}
+    \textarabic{عکس ۱۰: مسیر طی شده توسط عامل با توجه به سیاست یادگرفته شده توسط الگوریتم $Q(\lambda)$ }
+    \end{center}
+\end{figure}
+\subsection{$SARSA(\lambda)$}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{rlambda}
+    \begin{center}
+    \textarabic{عکس ۸: سیاست و میزان سودمندی های یادگرفته شده توسط الگوریتم $SARSA(\lambda)$ }
+    \end{center}
+\end{figure}
+\begin{figure}[h]
+        \centering
+        \begin{subfigure}[b]{0.5\textwidth}
+            \includegraphics[width=\textwidth]{rlambda-adp}
+            \begin{center}
+                \textarabic{الف: روند تغییر مقاریر سودمندی یادگرفته شده توسط روش $ADP$ }
+            \end{center}
+        \end{subfigure}%
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.5\textwidth}
+           \includegraphics[width=\textwidth]{rlambda-td}
+            \begin{center}
+                \textarabic{ب: روند تغییر مقادیر سودمندی یادگرفته شده توسط روش $TD(\lambda)$ }
+            \end{center}
+        \end{subfigure}
+    \begin{center}
+    \textarabic{عکس ۹: روند تغییر مقدریر سودمندی یادگرفته شده توسط روش های
+     $TD(\lambda)$ و $ADP$
+      برای خانه های 
+     $(3,3)$ ,$(1, 1)$ و $(5, 5)$
+     }
+    \end{center}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{rlambda-exec}
+    \begin{center}
+    \textarabic{عکس ۱۰: مسیر طی شده توسط عامل با توجه به سیاست یادگرفته شده توسط الگوریتم $SARSA(\lambda)$ }
+    \end{center}
+\end{figure}
+
+\begin{Arabic}
+\section{\textarabic{توضیحاتی در مورد برنامه نویسی شی گرا و اشیا برنامه}}
+\end{Arabic}
 \end{document}
