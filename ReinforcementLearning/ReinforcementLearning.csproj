@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ADP.cs" />
+    <Compile Include="IRLambdaLearning.cs" />
     <Compile Include="IRLearning.cs" />
     <Compile Include="IUtility.cs" />
     <Compile Include="RLInstance.cs" />

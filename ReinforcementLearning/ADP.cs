@@ -176,10 +176,14 @@ namespace ReinforcementLearning
             var sig = new StateActionState(s, new KeyValuePair<Action, State>(a, sprim));
             if (!this.NSAS.Contains(sig))
                 this.NSAS.Add(sig, (NVal)0);
-            if (this.NSAS.Contains(new StateAction(s, a)))
-                this.NSAS.Add(new StateAction(s, a), new List<State>() { sprim });
-            else (this.NSAS[new StateAction(s, a)] as List<State>).Add(sprim);
             return (NVal)this.NSAS[sig];
+        }
+        protected void __visit(State s, Action a, State sprim)
+        {
+            var sig = new StateAction(s, a);
+            if (!this.VisitedStateActions.Contains(sig))
+                this.VisitedStateActions.Add(sig, new List<State>() { sprim });
+            else (this.VisitedStateActions[sig] as List<State>).Add(sprim);
         }
         /// <summary>
         /// Learn the grid
@@ -198,6 +202,7 @@ namespace ReinforcementLearning
             State state = this.InitialState;
             // define an initial action
             Action a = Action.HOLD;
+            this.VisitedStateActions = new Hashtable();
             do
             {
                 // choose action given this pi for state
@@ -211,6 +216,7 @@ namespace ReinforcementLearning
                 this.__update_u_value(s.OldPoint, r, a, s.NewPoint); 
                 // assign the next state
                 state = s.NewPoint;
+                this.__visit(s.OldPoint, a, s.NewPoint);
                 // examine the learning loop
             } while (!termination_validtor(this.Grid, state, this.StepCounter) && ++this.StepCounter <= long.MaxValue);
             // stop the refresher's timer
@@ -253,12 +259,12 @@ namespace ReinforcementLearning
             {
                 this.__set_nsa_value(st, a, this.__get_nsa_value(st, a) + 1);
                 this.__set_nsas_value(st, a, stplus, this.__get_nsas_value(st, a, stplus) + 1);
-                foreach (var k in this.NSAS.Keys)
+                if (!this.VisitedStateActions.Contains(new StateAction(st, a))) return;
+                foreach (State t in this.VisitedStateActions[new StateAction(st, a)] as List<State>)
                 {
-                    if (!(k is StateAction)) continue;
-                    if (((StateAction)k).Value != a) continue;
-                    this.TTable[new StateActionState(st, new KeyValuePair<Action, State>(a, stplus))] =
-                        this.__get_nsas_value(st, a, (State)this.NSAS[k]) / this.__get_nsa_value(st, a);
+                    if (this.__get_nsas_value(st, a, t) != 0)
+                        this.TTable[new StateActionState(st, new KeyValuePair<Action, State>(a, t))] =
+                            this.__get_nsas_value(st, a, t) / this.__get_nsa_value(st, a);
                 }
             }
         }

@@ -351,6 +351,8 @@ namespace mltak2
                             bf.Serialize(fs, ql.StepCounter);
                             bf.Serialize(fs, tdl.UTable);
                             bf.Serialize(fs, TDLambdaUtilityProgress);
+                            bf.Serialize(fs, adp.UTable);
+                            bf.Serialize(fs, ADPUtilityProgress);
                         }
                     }
                     this.toolStripStatus.Text = "The QTable saved successfully....";
@@ -388,6 +390,9 @@ namespace mltak2
                                 tdl = new ReinforcementLearning.TDLambda(
                                     ql,
                                     Properties.Settings.Default.Lambda);
+                            if (adp == null)
+                                adp = new ReinforcementLearning.ADP(
+                                    ql);
                             ql.QTable = (Hashtable)bf.Deserialize(fs);
                             ql.VisitedStateActions = (Hashtable)bf.Deserialize(fs);
                             ql.StepCounter = (long)bf.Deserialize(fs);
@@ -397,11 +402,17 @@ namespace mltak2
                             // support for non-UTable contain files
                             if (fs.Position < fs.Length)
                                 this.TDLambdaUtilityProgress = (Hashtable)bf.Deserialize(fs);
+                            // support for non-UTable contain files
+                            if (fs.Position < fs.Length)
+                                adp.UTable = (Hashtable)bf.Deserialize(fs);
+                            // support for non-UTable contain files
+                            if (fs.Position < fs.Length)
+                                this.ADPUtilityProgress = (Hashtable)bf.Deserialize(fs);
                         }
                     }
                     __reload_grid();
                     __plot_policy(ql);
-                    __plot_utility(tdl);
+                    __plot_utility(tdl, adp);
                     this.toolStripStatus.Text = "The QTable saved successfully....";
 #if !__DEBUG_PLOT__
                 }
@@ -412,8 +423,8 @@ namespace mltak2
 
         private void tDLambdaProgressShowToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            UtilityHistoryForm uhf = new UtilityHistoryForm(this.g, (sender == this.tDLambdaToolStripMenuItem) ? this.TDLambdaUtilityProgress : this.ADPUtilityProgress);
-            uhf.ShowDialog(this);
+            UtilityHistoryForm uhf = new UtilityHistoryForm((sender as ToolStripDropDownItem).Text, this.g, (sender == this.tDLambdaToolStripMenuItem) ? this.TDLambdaUtilityProgress : this.ADPUtilityProgress);
+            uhf.Show(this);
         }
     }
 }

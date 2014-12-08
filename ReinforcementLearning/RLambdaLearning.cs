@@ -12,7 +12,7 @@ namespace ReinforcementLearning
     using Reward = Int16;
     using Action = Environment.GridHelper.Directions;
     using EligVal = System.Single;
-    public abstract class RLambdaLearning : RLearning
+    public abstract class RLambdaLearning : RLearning, ReinforcementLearning.IRLambdaLearning
     {
         /// <summary>
         /// The lambda rate

@@ -14,9 +14,10 @@ namespace mltak2
     {
         Hashtable blocks;
         Hashtable UtilityProgress;
-        public UtilityHistoryForm(Environment.Grid grid, Hashtable utilityProgress)
+        public UtilityHistoryForm(String Name, Environment.Grid grid, Hashtable utilityProgress)
         {
             InitializeComponent();
+            this.Text = Name;
             this.blocks = new Hashtable();
             this.UtilityProgress = utilityProgress;
             var margin = 10;
@@ -75,7 +76,7 @@ namespace mltak2
                 }
             }
             var c = new ChartForm(list, labels);
-            c.ShowDialog(this);
+            c.Show(this);
         }
 
         void btn_Click(object sender, EventArgs e)
