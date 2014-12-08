@@ -243,7 +243,7 @@ namespace mltak2
                 float c = 0;
                 foreach (var epic in policyHistory)
                 {
-                    tdl.QTable = epic.Key;
+                    //tdl.QTable = epic.Key;
                     foreach (Point state in epic.Value.Keys)
                     {
                         tdl.InitialState = state;
