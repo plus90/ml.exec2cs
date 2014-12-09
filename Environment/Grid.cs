@@ -1,51 +1,70 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
+using System.Drawing;
 
 namespace Environment
 {
+    /// <summary>
+    /// A grid environment abstractor
+    /// </summary>
     public class Grid : IDisposable
     {
+        /// <summary>
+        /// Define a block's possible statuses
+        /// </summary>
         [Flags]
         public enum BlockStatus { NORTH = 0x1, EAST = 0x2, SOUTH = 0x4, WEST = 0x8, BLOCKED = 0x10, UNBLOCKED = 0x20 }
+        /// <summary>
+        /// Get size of grid
+        /// </summary>
         public Size Size { get; private set; }
-        protected Hashtable Gridlines { get; set; }
-        protected BlockStatus[,] __blockStatuses;
-        public const int CellSize = 100;
-        private bool __drawFromBlockStatuses = false;
-        private System.Windows.Forms.PictureBox __pictureBox;
+        /// <summary>
+        /// Get or set the agent location
+        /// </summary>
         public Point AgentPoint { get; set; }
+        /// <summary>
+        /// Get or set the goal location
+        /// </summary>
         public Point GoalPoint { get; set; }
+        /// <summary>
+        /// Constact cells' size
+        /// </summary>
+        public const int CellSize = 100;
+        /// <summary>
+        /// The gridline's container
+        /// </summary>
+        protected Hashtable Gridlines { get; set; }
+        /// <summary>
+        /// The grid's blocks' status
+        /// </summary>
+        protected BlockStatus[,] __blockStatuses;
+        /// <summary>
+        /// Flag that the grid should be draw from received blocks' statuses
+        /// </summary>
+        private bool __drawFromBlockStatuses = false;
+        /// <summary>
+        /// The bounded picturebox instace with grid
+        /// </summary>
+        private System.Windows.Forms.PictureBox __pictureBox;
         /// <summary>
         /// Get block status of a grid-cell
         /// </summary>
         /// <param name="x">The grid-cell's x location</param>
         /// <param name="y">The grid-cell's y location</param>
         /// <returns>The block-status of the grid-cell</returns>
-        public BlockStatus this[int x, int y]
-        {
-            get { return this.__blockStatuses[x, y]; }
-        }
+        public BlockStatus this[int x, int y] { get { return this.__blockStatuses[x, y]; } }
         /// <summary>
         /// Construct a new grid
         /// </summary>
         /// <param name="bs">Target block-status of the grid</param>
         /// <param name="pb">The conatiner's handler</param>
         public Grid(BlockStatus[,] bs, System.Windows.Forms.PictureBox pb)
-            : this(new Size(bs.GetLength(0), bs.GetLength(1)))
-        {
-            this.__blockStatuses = bs;
-            this.__drawFromBlockStatuses = true;
-            this.__pictureBox = pb;
-        }
+            : this(new Size(bs.GetLength(0), bs.GetLength(1))) { this.__blockStatuses = bs; this.__drawFromBlockStatuses = true; this.__pictureBox = pb; }
         /// <summary>
         /// Construct a grid
         /// </summary>
-        /// <param name="size"></param>
-        /// <param name="graphic"></param>
+        /// <param name="size">The size of grid</param>
         public Grid(Size size)
         {
             this.Size = size;
@@ -78,7 +97,7 @@ namespace Environment
         /// <summary>
         /// Draw a grid
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The actual size of grid</returns>
         public Size Draw(Graphics graphic, bool auto_dispose = true)
         {
             for (int i = 0; i < this.Size.Width; i++)
@@ -134,9 +153,9 @@ namespace Environment
             return Grid.GetSizeOfGrid(this.Size);
         }
         /// <summary>
-        /// 
-        /// <param name="bp">The picture box which the changes will be applied to</param>
+        /// Block the borders of current grid
         /// </summary>
+        /// <param name="bp">The picture box which the changes will be applied to</param>
         public void BlockBorders(System.Windows.Forms.PictureBox pb)
         {
             for (int i = 0; i < this.Size.Width; i++)
@@ -165,16 +184,10 @@ namespace Environment
             Color c = bm.GetPixel(p.X, p.Y);
             if (c.A != 255) return;
             foreach (var line in this.__get_line_location(bm, p))
-            {
                 if (this.Gridlines.Contains(line))
-                {
                     this.UnBlock(pb, p, force, auto_update_status);
-                }
                 else
-                {
                     this.Block(pb, p, force, auto_update_status);
-                }
-            }
         }
         /// <summary>
         /// Unblocks UI blocks
@@ -458,7 +471,7 @@ namespace Environment
         /// Draw an empty box
         /// </summary>
         /// <param name="p"></param>
-        private void __drawBox(Point p, Graphics graphic)
+        protected void __drawBox(Point p, Graphics graphic)
         {
             Pen pen = new Pen(Color.Black);
 
