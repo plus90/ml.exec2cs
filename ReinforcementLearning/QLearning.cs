@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Environment;
 using System.Collections;
-using System.Drawing;
+using System.Collections.Generic;
+using Environment;
 namespace ReinforcementLearning
 {
-    using QVal = System.Single;
-    using State = System.Drawing.Point;
-    using Reward = Int16;
     using Action = GridHelper.Directions;
+    using QVal = System.Single;
+    using Reward = Int16;
+    using State = System.Drawing.Point;
     public class QLearning : RLearning
     {
         /// <summary>
@@ -80,12 +77,14 @@ namespace ReinforcementLearning
         {
             var qt = this.__get_q_value(st, a);
             QVal v = QVal.MinValue;
+            // argmaxQ(s', b)                   
             foreach (var __a in this.Actions)
             {
                 var __q = this.__get_q_value(stplus, __a);
                 if (v < __q)
                     v = __q;
             }
+            // Q(s, a) ← (1 - α)Q(s, a) + α[r + γ * argmaxQ(s', b)]
             qt = (1 - this.Alpha) * qt + this.Alpha * (r + this.Gamma * v);
             this.__set_q_value(st, a, qt);
             return qt;
