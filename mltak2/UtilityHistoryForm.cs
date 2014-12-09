@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 using System.Collections;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace mltak2
 {
@@ -61,7 +57,6 @@ namespace mltak2
             plotbtn_Click(new object(), new EventArgs());
 #endif
         }
-
         void plotbtn_Click(object sender, EventArgs e)
         {
             var list = new List<List<float>>();
@@ -78,7 +73,6 @@ namespace mltak2
             var c = new ChartForm(list, labels);
             c.Show(this);
         }
-
         void btn_Click(object sender, EventArgs e)
         {
             var btn = sender as Button;
