@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Environment.GridHelper">
+    <Position X="6.5" Y="1.5" Width="1.5" />
+    <NestedTypes>
+      <Enum Name="Environment.GridHelper.Directions" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>GridHelper.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Class Name="Environment.GridHelper.Status" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>GridHelper.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAgCAAAIAAABAIAAAAAAAAAAAAAAAAhQAAIAAEAAA=</HashCode>
+      <FileName>GridHelper.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Environment.Grid">
+    <Position X="4.75" Y="1.5" Width="1.5" />
+    <NestedTypes>
+      <Enum Name="Environment.Grid.BlockStatus" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Grid.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAEAgAQACAEgiQBCAAAACQEAGAQAyEAAEAAAAEiAAA=</HashCode>
+      <FileName>Grid.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

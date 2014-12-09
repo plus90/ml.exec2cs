@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="ReinforcementLearning.ADP">
+    <Position X="0.5" Y="9.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>ACIAAEEAEAAABAAAAhAAAQAAAAAAAAAAEAAAgAgABAI=</HashCode>
+      <FileName>ADP.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ReinforcementLearning.QLambdaLearning">
+    <Position X="5.75" Y="13.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAA=</HashCode>
+      <FileName>QLambdaLearning.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ReinforcementLearning.QLearning">
+    <Position X="3" Y="9.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAA=</HashCode>
+      <FileName>QLearning.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ReinforcementLearning.RLambdaLearning">
+    <Position X="9" Y="9.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAABAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>RLambdaLearning.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ReinforcementLearning.RLearning">
+    <Position X="9.25" Y="3.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>ACAAJgAAIAABACAAoBAAAAACABAAABAAAIAIoAABAAA=</HashCode>
+      <FileName>RLearning.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ReinforcementLearning.RLInstance">
+    <Position X="9.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAABAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>RLInstance.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ReinforcementLearning.SarsaLambdaLearning">
+    <Position X="9" Y="13.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAA=</HashCode>
+      <FileName>SarsaLambdaLearning.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ReinforcementLearning.SarsaLearning">
+    <Position X="15.5" Y="9.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAA=</HashCode>
+      <FileName>SarsaLearning.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ReinforcementLearning.TDLambda">
+    <Position X="12.5" Y="13.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>ACAAAABAAAAAEAAAAgAAAAAAAAAAAAAAAAAAgAgABAA=</HashCode>
+      <FileName>TDLambda.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="ReinforcementLearning.IRLambdaLearning">
+    <Position X="0.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IRLambdaLearning.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ReinforcementLearning.IRLearning">
+    <Position X="5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAJgAAIAAAAAAAgAAAAAAAABAAAAAAAAAAoAAAAAA=</HashCode>
+      <FileName>IRLearning.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ReinforcementLearning.IUtility">
+    <Position X="2.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAgABAA=</HashCode>
+      <FileName>IUtility.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
