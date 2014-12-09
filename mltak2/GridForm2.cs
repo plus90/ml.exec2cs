@@ -1,16 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using System.Drawing.Imaging;
-using System.Drawing.Drawing2D;
-using System.Runtime.Serialization.Formatters.Binary;
 using Environment;
-using System.Collections;
 namespace mltak2
 {
     public partial class GridForm
@@ -214,7 +209,6 @@ namespace mltak2
             this.__plot_policy(ql);
             this.__build_UTable(this.policyHistory);
         }
-
         private void __plot_utility(ReinforcementLearning.IUtility tdl, ReinforcementLearning.IUtility adp)
         {
             var margin = 23;
@@ -242,7 +236,6 @@ namespace mltak2
                 }
             }
         }
-
         private void __build_UTable(List<KeyValuePair<Hashtable, Hashtable>> policyHistory)
         {
             System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ParameterizedThreadStart((thread) =>
