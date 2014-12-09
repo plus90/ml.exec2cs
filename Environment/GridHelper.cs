@@ -1,20 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Drawing;
 
 namespace Environment
 {
+    /// <summary>
+    /// The grid helper container
+    /// </summary>
     public class GridHelper
     {
-        const float MovementAccuracy = 0.9F;
+        /// <summary>
+        /// The movement accuracy constant
+        /// </summary>
+        const float MovementAccuracy = 0.8F;
+        /// <summary>
+        /// The probability examiner
+        /// </summary>
         Random propExaminer { get; set; }
-        System.Timers.Timer Timer { get; set; }
+        /// <summary>
+        /// The refresh timer
+        /// </summary>
+        System.Timers.Timer RefreshTimer { get; set; }
         /// <summary>
         /// Get or set the bounded grid to the helper
         /// </summary>
         public Grid BoundedGrid { get; private set; }
+        /// <summary>
+        /// Define the movement directions
+        /// </summary>
         [Flags]
         public enum Directions { NORTH = 0x0, EAST = 0x1, SOUTH = 0x2, WEST = 0x4, HOLD = 0x8 }
         /// <summary>
@@ -45,21 +58,21 @@ namespace Environment
         {
             this.Bind(grid);
             this.propExaminer = new Random(System.Environment.TickCount);
-            this.Timer = new System.Timers.Timer(400);
-            this.Timer.Elapsed += new System.Timers.ElapsedEventHandler((sender, e) =>
+            this.RefreshTimer = new System.Timers.Timer(400);
+            this.RefreshTimer.Elapsed += new System.Timers.ElapsedEventHandler((sender, e) =>
             {
                 lock (this.propExaminer)
                     this.propExaminer = new Random(System.Environment.TickCount + e.SignalTime.Millisecond);
             });
-            this.Timer.Start();
+            this.RefreshTimer.Start();
         }
         /// <summary>
         /// de-init the helper
         /// </summary>
         ~GridHelper()
         {
-            this.Timer.Stop();
-            this.Timer.Dispose();
+            this.RefreshTimer.Stop();
+            this.RefreshTimer.Dispose();
         }
         /// <summary>
         /// Bind a grid to the helper
@@ -100,6 +113,13 @@ namespace Environment
             }
             return am;
         }
+        /// <summary>
+        /// Moves a point to a direction
+        /// </summary>
+        /// <param name="point">The target point to move</param>
+        /// <param name="direction">The desired direction</param>
+        /// <returns>The movement status instance</returns>
+        public Status Move(Point point, Directions direction) { return new Status(__getPoint(point, direction), point); }
         /// <summary>
         /// Get the exact point with respect to a point with a direction
         /// </summary>
@@ -203,12 +223,5 @@ namespace Environment
                     throw new ArgumentException("Not supported direction!!!");
             }
         }
-        /// <summary>
-        /// Moves a point to a direction
-        /// </summary>
-        /// <param name="point">The target point to move</param>
-        /// <param name="direction">The desired direction</param>
-        /// <returns>The movement status instance</returns>
-        public Status Move(Point point, Directions direction) { return new Status(__getPoint(point, direction), point); }
     }
 }
