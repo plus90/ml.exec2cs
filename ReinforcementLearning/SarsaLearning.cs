@@ -1,19 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Environment;
 using System.Collections;
+using System.Collections.Generic;
+using Environment;
 namespace ReinforcementLearning
 {
-    using QVal = System.Single;
-    using State = System.Drawing.Point;
-    using Reward = Int16;
     using Action = GridHelper.Directions;
+    using QVal = System.Single;
+    using Reward = Int16;
+    using State = System.Drawing.Point;
     public class SarsaLearning : RLearning
     {
         /// <summary>
-        /// Construct a Q-learner instance
+        /// Construct a SARSA-learner instance
         /// </summary>
         /// <param name="grid">The grid instance which trying to learn</param>
         /// <param name="A">The list of valid actions</param>
@@ -22,7 +20,7 @@ namespace ReinforcementLearning
         /// <param name="QTable">The initial Q-table(Can be also `null`)</param>
         public SarsaLearning(Grid grid, List<Action> A, float gamma, float alpha, Hashtable QSA) : base(grid, A, gamma, alpha, QSA) { }
         /// <summary>
-        /// Construct a Q-learner instance
+        /// Construct a SARSA-learner instance
         /// </summary>
         /// <param name="grid">The grid instance which trying to learn</param>
         /// <param name="A">The list of valid actions</param>
@@ -50,14 +48,14 @@ namespace ReinforcementLearning
             {
                 // change the destination `state` with respect to the choosen action 
                 var s = this.GridHelper.Move(state, a);
-                // mark current state-action as visited
-                this.__visit(s.OldPoint, a);
                 // get the new-state's reward
                 var r = this.__get_reward(s.NewPoint);
                 // choose a' from s'
                 Action aprim = this.__choose_toothily_action(s.NewPoint);
                 // update the Q-Value of current with [s, a, s', r] values
                 this.__update_q_value(s.OldPoint, a, r, s.NewPoint, aprim);
+                // mark current state-action as visited
+                this.__visit(s.OldPoint, a);
                 // assign the next state
                 state = s.NewPoint;
                 // assign the next action
@@ -84,6 +82,7 @@ namespace ReinforcementLearning
                 throw new ArgumentException("Expecting an action as last comment", "aplus");
             var qt = this.__get_q_value(st, a);
             var v = this.__get_q_value(stplus, (Action)aplus[0]);
+            // Q(s, a) ← (1 - α)Q(s, a) + α[r + γ * Q(s', a')]
             qt = (1 - this.Alpha) * qt + this.Alpha * (r + this.Gamma * v);
             this.__set_q_value(st, a, qt);
             return qt;
