@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Environment;
 using System.Collections;
+using System.Collections.Generic;
+using Environment;
 
 namespace ReinforcementLearning
 {
-    using QVal = System.Single;
-    using State = System.Drawing.Point;
-    using Reward = Int16;
     using Action = GridHelper.Directions;
+    using QVal = System.Single;
+    using Reward = Int16;
+    using State = System.Drawing.Point;
     public abstract class RLearning : RLInstance, ReinforcementLearning.IRLearning
     {
         #region Members
