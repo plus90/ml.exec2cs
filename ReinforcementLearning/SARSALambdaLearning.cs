@@ -1,34 +1,35 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Environment;
-using System.Collections;
 namespace ReinforcementLearning
 {
-    using QVal = System.Single;
-    using State = System.Drawing.Point;
-    using Reward = Int16;
     using Action = GridHelper.Directions;
     using EligVal = System.Single;
+    using QVal = System.Single;
+    using Reward = Int16;
+    using State = System.Drawing.Point;
     public class SarsaLambdaLearning : RLambdaLearning
     {
         /// <summary>
-        /// Construct a Q-learner instance
+        /// Construct a SARSA(lambda)-learner instance
         /// </summary>
         /// <param name="grid">The grid instance which trying to learn</param>
         /// <param name="A">The list of valid actions</param>
         /// <param name="gamma">The discount factor</param>
         /// <param name="alpha">The learning rate</param>
-        /// <param name="QTable">The initial Q-table(Can be also `null`)</param>
+        /// <param name="lambda">The lambda factor</param>
+        /// <param name="QSA">The initial Q-table(Can be also `null`)</param>
         public SarsaLambdaLearning(Grid grid, List<Action> A, float gamma, float alpha, float lambda, Hashtable QSA) : base(grid, A, gamma, alpha, lambda, QSA) { }
         /// <summary>
-        /// Construct a Q-learner instance
+        /// Construct a SARSA(lambda)-learner instance
         /// </summary>
         /// <param name="grid">The grid instance which trying to learn</param>
         /// <param name="A">The list of valid actions</param>
         /// <param name="gamma">The discount factor</param>
         /// <param name="alpha">The learning rate</param>
+        /// <param name="lambda">The lambda factor</param>
         public SarsaLambdaLearning(Grid grid, List<Action> A, float gamma, float alpha, float lambda) : base(grid, A, gamma, lambda, alpha) { }
         /// <summary>
         /// Learn the grid
@@ -51,14 +52,14 @@ namespace ReinforcementLearning
             {
                 // change the destination `state` with respect to the choosen action 
                 var s = this.GridHelper.Move(state, a);
-                // mark current state-action as visited
-                this.__visit(s.OldPoint, a);
                 // get the new-state's reward
                 var r = this.__get_reward(s.NewPoint);
                 // choose a' from s'
                 Action aprim = this.__choose_toothily_action(s.NewPoint);
                 // update the Q-Value of current with [s, a, s', r] values
                 this.__update_q_value(s.OldPoint, a, r, s.NewPoint, aprim);
+                // mark current state-action as visited
+                this.__visit(s.OldPoint, a);
                 // assign the next state
                 state = s.NewPoint;
                 // assign the next action
@@ -83,14 +84,19 @@ namespace ReinforcementLearning
         {
             if (aplus.Length == 0 || !(aplus[0] is Action))
                 throw new ArgumentException("Expecting an action as last comment", "aplus");
-            var delta = (r + this.Gamma * this.__get_q_value(stplus, (Action)aplus[0]) - this.__get_q_value(st, a));                        // δ ← r + γ * Q(s', a') - Q(s, a)
-            this.__set_elig_value(st, a, this.__get_elig_value(st, a) + 1);                                                                 // e(s, a) ← e(s, a) + 1
+            // δ ← r + γ * Q(s', a') - Q(s, a)
+            var delta = (r + this.Gamma * this.__get_q_value(stplus, (Action)aplus[0]) - this.__get_q_value(st, a));
+            // e(s, a) ← e(s, a) + 1
+            this.__set_elig_value(st, a, this.__get_elig_value(st, a) + 1);                                                                 
             var keys = this.QTable.Keys.Cast<KeyValuePair<State, Action>>().ToArray();
-            for (int i = 0; i < keys.Length; i++)                                                                                           // for each s,a
+            // for each s,a
+            for (int i = 0; i < keys.Length; i++)                                                                                           
             {
                 var sa = (KeyValuePair<State, Action>)keys[i];
-                this.__set_q_value(sa.Key, sa.Value, (QVal)this.QTable[sa] + this.Alpha * delta * this.__get_elig_value(sa.Key, sa.Value)); // Q(s, a) ← Q(s, a) + αδe(s, a) 
-                this.__set_elig_value(sa.Key, sa.Value, this.Gamma * this.Lambda * this.__get_elig_value(sa.Key, sa.Value));                // e(s, a) ← γλe(s, a)
+                // Q(s, a) ← Q(s, a) + αδe(s, a)
+                this.__set_q_value(sa.Key, sa.Value, (QVal)this.QTable[sa] + this.Alpha * delta * this.__get_elig_value(sa.Key, sa.Value));
+                // e(s, a) ← γλe(s, a)
+                this.__set_elig_value(sa.Key, sa.Value, this.Gamma * this.Lambda * this.__get_elig_value(sa.Key, sa.Value));                
             }
             return this.__get_q_value(st, a);
         }
