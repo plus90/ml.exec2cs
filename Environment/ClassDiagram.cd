@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="Environment.GridHelper">
-    <Position X="6.5" Y="1.5" Width="1.5" />
+    <Position X="7" Y="1.5" Width="1.75" />
     <NestedTypes>
       <Enum Name="Environment.GridHelper.Directions" Collapsed="true">
         <TypeIdentifier>
@@ -15,12 +15,12 @@
       </Class>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AAAAgCAAAIAAABAIAAAAAAAAAAAAAAAAhQAAIAAEAAA=</HashCode>
+      <HashCode>AAAAgCAAAJAAABAIAAAAAAAAAAAAAAAAhQAAIAAAAAA=</HashCode>
       <FileName>GridHelper.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Environment.Grid">
-    <Position X="4.75" Y="1.5" Width="1.5" />
+    <Position X="4.75" Y="1.5" Width="2" />
     <NestedTypes>
       <Enum Name="Environment.Grid.BlockStatus" Collapsed="true">
         <TypeIdentifier>
