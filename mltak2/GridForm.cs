@@ -1,16 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using System.Drawing.Imaging;
-using System.Drawing.Drawing2D;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Windows.Forms;
 using Environment;
-using System.Collections;
 namespace mltak2
 {
     public partial class GridForm : Form
@@ -420,7 +415,6 @@ namespace mltak2
             }
             __enable_all_menus(true);
         }
-
         private void tDLambdaProgressShowToolStripMenuItem_Click(object sender, EventArgs e)
         {
             UtilityHistoryForm uhf = new UtilityHistoryForm((sender as ToolStripDropDownItem).Text, this.g, (sender == this.tDLambdaToolStripMenuItem) ? this.TDLambdaUtilityProgress : this.ADPUtilityProgress);
