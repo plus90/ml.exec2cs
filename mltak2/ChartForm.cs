@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace mltak2
 {
-    using DataList = List<List<float>>;
     using System.Windows.Forms.DataVisualization.Charting;
+    using DataList = List<List<float>>;
     public partial class ChartForm : Form
     {
         public ChartForm(DataList dataList, List<string> labels)
@@ -34,7 +29,11 @@ namespace mltak2
                 }
             });
         }
-
+        /// <summary>
+        /// Plots data and labels them
+        /// </summary>
+        /// <param name="dataList">The data list to plot</param>
+        /// <param name="labels">The label of each data in data-list</param>
         private void __plot_data(DataList dataList, List<string> labels)
         {
             this.chart.Series.Clear();
